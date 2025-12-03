@@ -1,0 +1,739 @@
+%% Copernicus Publications Manuscript Preparation Template for LaTeX Submissions
+%% ---------------------------------
+%% This template should be used for copernicus.cls
+%% The class file and some style files are bundled in the Copernicus Latex Package, which can be downloaded from the different journal webpages.
+%% For further assistance please contact Copernicus Publications at: production@copernicus.org
+%% https://publications.copernicus.org/for_authors/manuscript_preparation.html
+
+
+%% Please use the following documentclass and journal abbreviations for preprints and final revised papers.
+
+%% 2-column papers and preprints
+\documentclass[journal abbreviation, manuscript]{copernicus}
+
+
+
+%% Journal abbreviations (please use the same for preprints and final revised papers)
+
+
+% Advances in Geosciences (adgeo)
+% Advances in Radio Science (ars)
+% Advances in Science and Research (asr)
+% Advances in Statistical Climatology, Meteorology and Oceanography (ascmo)
+% Aerosol Research (ar)
+% Annales Geophysicae (angeo)
+% Archives Animal Breeding (aab)
+% Atmospheric Chemistry and Physics (acp)
+% Atmospheric Measurement Techniques (amt)
+% Biogeosciences (bg)
+% Climate of the Past (cp)
+% DEUQUA Special Publications (deuquasp)
+% Earth Surface Dynamics (esurf)
+% Earth System Dynamics (esd)
+% Earth System Science Data (essd)
+% E&G Quaternary Science Journal (egqsj)
+% EGUsphere (egusphere) | This is only for EGUsphere preprints submitted without relation to an EGU journal.
+% European Journal of Mineralogy (ejm)
+% Geochronology (gchron)
+% Geographica Helvetica (gh)
+% Geoscience Communication (gc)
+% Geoscientific Instrumentation, Methods and Data Systems (gi)
+% Geoscientific Model Development (gmd)
+% History of Geo- and Space Sciences (hgss)
+% Hydrology and Earth System Sciences (hess)
+% Journal of Bone and Joint Infection (jbji)
+% Journal of Environmentally Compatible Air Transport System (jecats)
+% Journal of Micropalaeontology (jm)
+% Journal of Sensors and Sensor Systems (jsss)
+% Magnetic Resonance (mr)
+% Mechanical Sciences (ms)
+% Natural Hazards and Earth System Sciences (nhess)
+% Nonlinear Processes in Geophysics (npg)
+% Ocean Science (os)
+% Polarforschung - Journal of the German Society for Polar Research (polf)
+% Proceedings of the International Association of Hydrological Sciences (piahs)
+% Proceedings of the International Ocean Drilling Programme (piodp)
+% Safety of Nuclear Waste Disposal (sand)
+% Scientific Drilling (sd)
+% SOIL (soil)
+% Solid Earth (se)
+% State of the Planet (sp)
+% The Cryosphere (tc)
+% Weather and Climate Dynamics (wcd)
+% Web Ecology (we)
+% Wind Energy Science (wes)
+
+
+%% \usepackage commands included in the copernicus.cls:
+%\usepackage[german, english]{babel}
+%\usepackage{tabularx}
+%\usepackage{cancel}
+%\usepackage{multirow}
+%\usepackage{supertabular}
+%\usepackage{algorithmic}
+%\usepackage{algorithm}
+%\usepackage{amsthm}
+%\usepackage{float}
+%\usepackage{subfig}
+%\usepackage{rotating}
+
+
+\begin{document}
+
+\title{Quantifying time-series uncertainty with Wiener fouling and drift}
+% \title{Uncertainty of time-series measurements affected by Wiener fouling and drift}
+
+
+
+% \Author[affil]{given_name}{surname}
+
+\Author[1]{Gregory}{Schwarz}
+\Author[1][thodson@usgs.gov]{Timothy O.}{Hodson} %% correspondence author
+
+\affil[1]{U.S. Geological Survey Water Resources Mission Area}
+
+%% The [] brackets identify the author with the corresponding affiliation. 1, 2, 3, etc. should be inserted.
+
+%% If an author is deceased, please add \deceased[$Deceased date if applicable$]{$Author number$} (e.g. \deceased[13 November 2015]{2}) at the end of the affiliations. The author number depends on the placement of the author in the author list, e.g. the third author has number 3.
+
+
+%% If authors contributed equally, please add \equalcontrib{$Author numbers$} (e.g. \equalcontrib{1,3}) at the end of the affiliations. The author number depends on the placement of the author in the author list, e.g. the third author has number 3.
+
+
+
+
+\runningtitle{Wiener Error}
+
+\runningauthor{Schwarz and Hodson}
+
+
+
+
+
+\received{}
+\pubdiscuss{} %% only important for two-stage journals
+\revised{}
+\accepted{}
+\published{}
+
+%% These dates will be inserted by Copernicus Publications during the typesetting process.
+
+
+\firstpage{1}
+
+\maketitle
+
+
+
+\begin{abstract}
+Test
+\end{abstract}
+
+
+\copyrightstatement{TEXT} %% This section is optional and can be used for copyright transfers.
+
+
+\introduction  %% \introduction[modified heading if necessary]
+TEXT
+
+
+\section{HEADING}
+TEXT
+
+\subsection{Introduction}
+
+Let $x$ be the true value of some variable,
+$y$ be a measurement of $x$,
+and the error $e$ be the difference between the two,
+%
+\begin{equation}
+    e = y - x
+    \text{.}
+\end{equation}
+%
+Depending on the properties of the measurement device,
+the error may be more accuractely represented in relative terms,
+%
+\begin{equation}
+    e_{\%} = 100 \times \frac{y - x}{x}
+    \text{,}
+\end{equation}
+%
+given as a percentage of the true value.
+All that follows will apply to either case.
+
+Furthermore, we assume that each measurement is affected by three sources of error:
+fouling error $e_f$,
+calibration-drift error $e_d$,
+and error due to the precision of the measuring device $e_p$,
+%
+\begin{equation}
+    e = e_f + e_d + e_p
+    \text{.}
+\end{equation}
+%
+
+Fouling error results from some physical, chemical, or biological buildup on the measurement device
+and is determined by the difference between measurements taken before and after cleaning.
+Under steady-state conditions, the fouling error is given by
+%
+\begin{equation}
+    e_f = y_a - y_b
+\end{equation}
+%
+where $y_a$ is the measurement after cleaning,
+and $y_b$ is the measurement before cleaning.
+In unstable environments,
+the fouling error must account for any changes during a cleaning:
+%
+\begin{equation}
+    e_f = (y_a - y_b) - (z_a - z_b)
+    \qquad \text{or} \qquad
+    e_{\%f} = 100 \times \frac{(y_a - y_b) - (z_a - z_b)}{(y_b)}
+    \label{eq:fouling_error}
+\end{equation}
+%
+where $z_a$ and $z_b$ are measurements from a reference device in the same
+environment \citep{Wagner_2006}.
+
+
+Calibration drift refers to electronic (or mechanical) drift
+in the measuring device since the last time it was calibrated.
+The calibration-drift error $e_d$ is determined by comparing the measurement against a known standard $z_s$,
+, after correcting for fouling,
+%
+\begin{equation}
+    e_d = y_s - z_s
+    \qquad \text{or} \qquad
+    e_{\%d} = 100 \times \frac{z_s - y_s}{y_s}
+    \label{eq:drift_error}
+\end{equation}
+%
+where $z_s$ is the known standard value,
+and $y_s$ is the measurement of $z_s$ \citep{Wagner_2006}.
+
+Lastly, the precision error $e_p$ results from the inherent inaccuracy of the measurement device not affected by fouling or drift.
+In practice, the precision is either determined in a laboratory
+and assumed to be independent and identically distributed for each measurement
+%
+\begin{equation}
+    e_p \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    \qquad \text{or} \qquad
+    e_{\%p} \sim \mathcal{N}\left(0, \sigma^2_{\%p} \right)
+    \text{.}
+\end{equation}
+%
+In many cases, the measurement precision is determined by the device manufacturer
+and reported in its specifications.
+For example,
+a stated accuracy of $\pm 0.1$ units or $\pm 2$\% of reading,
+would correspond to the $2\sigma$ or 95\% confidence interval.
+Although not strictly necessary,
+we will generally assume the fouling and drift errors have the same
+form--relative or absolute--as the precision.
+
+%TODO transition here
+
+\subsection{Wiener Process}
+
+When correcting time series measurements,
+a standard practice is to assume the error grows at a constant rate \citep{Wagner_2006}.
+We will extend that assumption to modeling the measurement uncertainty.
+Specifically, that the drift and fouling errors
+follow a Wiener process with an optional drift term,
+which represents the average growth rate of the error.
+(as opposed to the calibration drift).
+In practice, this drift term is necessary
+when the 
+is relevant 
+for devices whose 
+devices with some sort of reactive or 
+Note, that the drift term $\mu$ represents the 
+
+
+
+Let $E_t$ be a random variable representing the error at time $t$,
+and $e_t$ be the realization of $E_t$.
+
+Suppose we observe the error at times $0 = t_0 < t_1 < t_2 < \cdots < t_K = T$,
+with observed errors $E_{t_k} = e_k$ for $k = 0, 1, \ldots, K$.
+
+Thus $t_k - t_{k-1}$ represents the time elapsed between subsequent observations.
+% note substitution of subscript for 
+
+Following some observation 
+We will assume fouling and calibration drift grow according to a Wiener process with drift,
+given by
+%
+\begin{equation}
+    p(e_t \mid E_{k-1} = e_{k-1})
+    =
+    \mathcal{N}(e_0 + \mu t ,\; \sigma^2 t)
+\end{equation}
+%
+
+%
+\begin{equation}
+    p(e_t \mid E_0 = e_0)
+    =
+    \mathcal{N}(e_0 + \mu t ,\; \sigma^2 t)
+\end{equation}
+%
+%
+%\begin{equation}
+%    E_{t} \mid E_0 = e_0 \sim \mathcal{N}(e_0 + \mu t ,\; \sigma^2 t) \text{,}
+%    \label{eq:wiener_process}
+%\end{equation}
+%
+where
+$e_0$ is the initial error at time 0,
+$\mathcal{N}$ is the normal distribution
+specified by its mean and variance,
+$\mu$ is the drift rate (mean change per unit time),
+$\sigma^2$ is the instantaneous variance rate (variance per unit time).
+Thus for any $t \ge 0$,
+it follows that the conditional mean and variance  of $E_t$ are
+%
+\begin{align}
+    \mathbb{E}\left[E_t \mid E_0 = e_0 \right] = e_0 + \mu t
+    \text{,} \\
+    \text{Var}\left(E_t \mid E_0 = e_0 \right) = \sigma^2 t
+\end{align}
+%
+
+
+A Weiner process that is conditioned to start and end at specified values
+is known as a Brownian bridge.
+For any interval $\left[t_{k-1}, t_k \right]$,
+the conditioned error process $E_t \mid E_{t_{k-1}} = e_{k-1}, E_{t_k} = e_k$ is a Brownian bridge.
+
+Let $\lambda(t)$ define the linear interpolation weight:
+%
+\begin{equation}
+    \lambda_k(t) = \frac{t - t_{k-1}}{t_k - t_{k-1}}
+    \text{,} \qquad
+    t \in \left[t_{k-1}, t_k \right]
+    \text{,}
+\end{equation}
+%
+where the subscript $k$ is a place holder for either error component ($f$ or $d$).
+For example, $\lambda_f(t)$ denotes the fouling weight for $t \in \left[t_{f-1}, t_f \right]$.
+
+The conditional distribution of the error process at time $t$,
+where $t \in \left[t_{k-1}, t_k \right]$, is
+%
+\begin{equation}
+    p(e_t \mid E_{t_{k-1}} = e_{k-1},\; E_{t_k} = e_k)
+    =
+    \mathcal{N} \left(
+        \left( 1 - \lambda(t) \right)e_{k-1}
+        + 
+        \lambda(t) e_k,\;
+        \sigma^2 (1 - \lambda(t)) \lambda(t) (t_k - t_{k-1})
+    \right)
+    \text{.}
+\end{equation}
+%
+Thus, the conditional mean and variance are
+%
+\begin{align}
+    \mathbb{E}\left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\; E_{t_k} = e_k \right]
+    &=
+    (1 - \lambda(t)) e_{k-1} + \lambda(t) e_k
+    \text{,}
+    \label{eq:wiener_bridge_mean} \\
+    \text{Var} \left(E_t \mid E_{t_{k-1}} = e_{k-1} ,\; E_{t_k} = e_k \right)
+    &= \sigma^2 (1 - \lambda(t)) \; \lambda(t) (t_k - t_{k-1})
+    \text{,} \qquad {or, equivalently,}
+    \label{eq:wiener_bridge_variance} \\
+    &= \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}}
+\end{align}
+%
+
+\subsection{Total variance}
+%
+\begin{align}
+v_{total}(t) =
+    v_{f}(t)
+    +
+    v_{d}(t)
+    +
+    \sigma^2_{p}
+    \lambda_{d}(t)
+    \chi_{d}(t)
+    \label{eq:total_variance_closed}
+\end{align}
+where $\chi_{d}$ is a function that is 1 if $t \neq t_{d}$ and 0 otherwise,
+\begin{equation}
+\chi_{d}(t) =
+\begin{cases}
+    1, & t \neq t_{d} \\
+    0, & t = t_{d}
+\end{cases}
+\label{eq:chi_function}
+\end{equation}
+
+
+and the subscripts $f$, $d$, and $p$ refer to fouling, drift, and precision components, respectively.
+
+The $\chi_{d}(t)$ term represents the indirect effect of the instrument precision.
+
+
+The total error variance during an open interval $o$ at time $t$ is given by
+%
+\begin{equation}
+v_o(t) =
+    \left(t - t_{f-1}\right) \sigma^2_{f}
+    +
+    \left(t - t_{d-1}\right) \sigma^2_{d}
+    +
+    \sigma^2_{p}
+    \text{,}
+    \label{eq:total_variance_open} 
+\end{equation}
+%
+y is our measurement, then the expected value of x at time t is
+\begin{equation}
+    \mathbb{E}\left[X_t \mid y_t ,\; e_F ,\; e_D \right]
+    =
+    y_t - m_f(t) - m_d(t)
+\end{equation}
+and the confidence interval is approximately
+\begin{equation}
+    \pm z_{\alpha/2} \sqrt{v(t)}
+    	ext{,}
+\end{equation}
+where $z_{\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal distribution
+(e.g., $z_{0.025} = 1.96$ for a 95\% confidence interval).
+
+Similarly for relative error,
+\begin{equation}
+    \mathbb{E}\left[X_t \mid y_t ,\; e_F ,\; e_D \right]
+    =
+    y_t \left(1 - \frac{m_f(t) + m_d(t)}{100} \right)
+\end{equation}
+and the confidence interval is approximately
+\begin{equation}
+    \pm y_t \frac{z_{\alpha/2} \sqrt{v(t)}}{100}
+    	ext{.}
+\end{equation}
+
+
+TODO FIGURE
+
+\section{Binning}
+
+\section{Parameter Estimation}
+
+\subsection{Maximum Likelihood Estimation}
+
+%
+\begin{equation}
+\hat{\mu} = X
+\end{equation}
+%
+% variance
+
+\subsection{Method of Moments}
+
+
+\section{Hierarchical Modeling}
+% \sigma_ij (site i and bin j )
+The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site $i$ is given by
+%
+\begin{equation}
+    \hat{\sigma}^2_i = X
+\end{equation}
+%
+Invergese gamma distribution prior
+%
+\begin{equation}
+    p(\sigma^2 \mid \alpha ,\; \beta)
+    =
+    \frac{\beta^\alpha}{\Gamma(\alpha)} (\sigma^2)^{-(\alpha+1)}
+    \exp\left(-\frac{\beta}{\sigma^2}\right)
+\end{equation}
+%
+\begin{equation}
+    \bar{\sigma}
+    \equiv
+    \mathbb{E} \left[ \sigma^2 \mid \alpha, \beta \right]
+    = \frac{\beta}{\alpha - 1}
+\end{equation}
+%
+% TODO define residuals as r and sites as j
+\begin{equation}
+    \ln L(r \mid \alpha ,\; \beta)
+    =
+    \sum_{j \in J}
+    \left(
+        - \frac{N_j}{2} \ln(2 \pi)
+        + \alpha \ln(\beta)
+        + \ln \Gamma \left( \frac{N}{2} + \alpha \right)
+        - \left( \frac{N_j}{2} + \alpha \right)
+        \ln( \frac{N_j s^2_j}{2} + \beta)
+        - \ln \Gamma(\alpha)
+    \right)
+\label{eq:hierarchical_likelihood}
+\end{equation}
+
+The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site $j$ is given by
+\begin{equation}
+    \hat{\sigma}^2_j
+    =
+    \hat{w}_j s_j^2 + (1 - \hat{w}_j) \bar{\hat{\sigma}}^2
+\end{equation}
+where
+\begin{equation}
+    \hat{w}_j
+    =
+    \frac{N_j}{N_j + 2 (\hat{\alpha} - 1)}
+\end{equation}
+\subsection{Maximum Likelihood Estimation}
+
+\subsection{Method of Moments}
+
+\subsection{Simulation Experiments}
+TEXT
+
+
+\conclusions  %% \conclusions[modified heading if necessary]
+TEXT
+
+%% The following commands are for the statements about the availability of data sets and/or software code corresponding to the manuscript.
+%% It is strongly recommended to make use of these sections in case data sets and/or software code have been part of your research the article is based on.
+
+\codeavailability{TEXT} %% use this section when having only software code available
+
+% \dataavailability{TEXT} %% use this section when having only data sets available
+% \codedataavailability{TEXT} %% use this section when having data sets and software code available
+% \sampleavailability{TEXT} %% use this section when having geoscientific samples available
+% \videosupplement{TEXT} %% use this section when having video supplements available
+
+
+\appendix
+\section{Proofs}    %% Appendix A
+
+\subsection{}     %% Appendix A1, A2, etc.
+
+
+\noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
+
+%% Regarding figures and tables in appendices, the following two options are possible depending on your general handling of figures and tables in the manuscript environment:
+
+%% Option 1: If you sorted all figures and tables into the sections of the text, please also sort the appendix figures and appendix tables into the respective appendix sections.
+%% They will be correctly named automatically.
+
+%% Option 2: If you put all figures after the reference list, please insert appendix tables and figures after the normal tables and figures.
+%% To rename them correctly to A1, A2, etc., please add the following commands in front of them:
+
+\appendixfigures  %% needs to be added in front of appendix figures
+
+\appendixtables   %% needs to be added in front of appendix tables
+
+%% Please add \clearpage between each table and/or figure. Further guidelines on figures and tables can be found below.
+
+
+
+\authorcontribution{TEXT} %% this section is mandatory
+
+\competinginterests{TEXT} %% this section is mandatory even if you declare that no competing interests are present
+
+\disclaimer{TEXT} %% optional section
+
+\begin{acknowledgements}
+TEXT
+\end{acknowledgements}
+
+
+
+
+%% REFERENCES
+
+%% The reference list is compiled as follows:
+
+%% \begin{thebibliography}{}
+%% 
+%% \bibitem[AUTHOR(YEAR)]{LABEL1}
+%% REFERENCE 1
+%% 
+%% \bibitem[AUTHOR(YEAR)]{LABEL2}
+%% REFERENCE 2
+%% 
+%% \end{thebibliography}
+
+%% Since the Copernicus LaTeX package includes the BibTeX style file copernicus.bst,
+%% authors experienced with BibTeX only have to include the following two lines:
+%%
+\bibliographystyle{copernicus}
+\bibliography{schwarz_timeseries.bib}
+%%
+%% URLs and DOIs can be entered in your BibTeX file as:
+%%
+%% URL = {http://www.xyz.org/~jones/idx_g.htm}
+%% DOI = {10.5194/xyz}
+
+
+%% LITERATURE CITATIONS
+%%
+%% command                        & example result
+%% \citet{jones90}|               & Jones et al. (1990)
+%% \citep{jones90}|               & (Jones et al., 1990)
+%% \citep{jones90,jones93}|       & (Jones et al., 1990, 1993)
+%% \citep[p.~32]{jones90}|        & (Jones et al., 1990, p.~32)
+%% \citep[e.g.,][]{jones90}|      & (e.g., Jones et al., 1990)
+%% \citep[e.g.,][p.~32]{jones90}| & (e.g., Jones et al., 1990, p.~32)
+%% \citeauthor{jones90}|          & Jones et al.
+%% \citeyear{jones90}|            & 1990
+
+
+
+%% FIGURES
+
+%% When figures and tables are placed at the end of the MS (article in one-column style), please add \clearpage
+%% between bibliography and first table and/or figure as well as between each table and/or figure.
+
+% The figure files should be labelled correctly with Arabic numerals (e.g. fig01.jpg, fig02.png).
+
+
+%% ONE-COLUMN FIGURES
+
+%%f
+%\begin{figure}[t]
+%\includegraphics[width=8.3cm]{FILE NAME}
+%\caption{TEXT}
+%\end{figure}
+%
+%%% TWO-COLUMN FIGURES
+%
+%%f
+%\begin{figure*}[t]
+%\includegraphics[width=12cm]{FILE NAME}
+%\caption{TEXT}
+%\end{figure*}
+%
+%
+%%% TABLES
+%%%
+%%% The different columns must be seperated with a & command and should
+%%% end with \\ to identify the column brake.
+%
+%%% ONE-COLUMN TABLE
+%
+%%t
+%\begin{table}[t]
+%\caption{TEXT}
+%\begin{tabular}{column = lcr}
+%\tophline
+%
+%\middlehline
+%
+%\bottomhline
+%\end{tabular}
+%\belowtable{} % Table Footnotes
+%\end{table}
+%
+%%% TWO-COLUMN TABLE
+%
+%%t
+%\begin{table*}[t]
+%\caption{TEXT}
+%\begin{tabular}{column = lcr}
+%\tophline
+%
+%\middlehline
+%
+%\bottomhline
+%\end{tabular}
+%\belowtable{} % Table Footnotes
+%\end{table*}
+%
+%%% LANDSCAPE TABLE
+%
+%%t
+%\begin{sidewaystable*}[t]
+%\caption{TEXT}
+%\begin{tabular}{column = lcr}
+%\tophline
+%
+%\middlehline
+%
+%\bottomhline
+%\end{tabular}
+%\belowtable{} % Table Footnotes
+%\end{sidewaystable*}
+%
+%
+%%% MATHEMATICAL EXPRESSIONS
+%
+%%% All papers typeset by Copernicus Publications follow the math typesetting regulations
+%%% given by the IUPAC Green Book (IUPAC: Quantities, Units and Symbols in Physical Chemistry,
+%%% 2nd Edn., Blackwell Science, available at: http://old.iupac.org/publications/books/gbook/green_book_2ed.pdf, 1993).
+%%%
+%%% Physical quantities/variables are typeset in italic font (t for time, T for Temperature)
+%%% Indices which are not defined are typeset in italic font (x, y, z, a, b, c)
+%%% Items/objects which are defined are typeset in roman font (Car A, Car B)
+%%% Descriptions/specifications which are defined by itself are typeset in roman font (abs, rel, ref, tot, net, ice)
+%%% Abbreviations from 2 letters are typeset in roman font (RH, LAI)
+%%% Vectors are identified in bold italic font using \vec{x}
+%%% Matrices are identified in bold roman font
+%%% Multiplication signs are typeset using the LaTeX commands \times (for vector products, grids, and exponential notations) or \cdot
+%%% The character * should not be applied as mutliplication sign
+%
+%
+%%% EQUATIONS
+%
+%%% Single-row equation
+%
+%\begin{equation}
+%
+%\end{equation}
+%
+%%% Multiline equation
+%
+%\begin{align}
+%& 3 + 5 = 8\\
+%& 3 + 5 = 8\\
+%& 3 + 5 = 8
+%\end{align}
+%
+%
+%%% MATRICES
+%
+%\begin{matrix}
+%x & y & z\\
+%x & y & z\\
+%x & y & z\\
+%\end{matrix}
+%
+%
+%%% ALGORITHM
+%
+%\begin{algorithm}
+%\caption{...}
+%\label{a1}
+%\begin{algorithmic}
+%...
+%\end{algorithmic}
+%\end{algorithm}
+%
+%
+%%% CHEMICAL FORMULAS AND REACTIONS
+%
+%%% For formulas embedded in the text, please use \chem{}
+%
+%%% The reaction environment creates labels including the letter R, i.e. (R1), (R2), etc.
+%
+%\begin{reaction}
+%%% \rightarrow should be used for normal (one-way) chemical reactions
+%%% \rightleftharpoons should be used for equilibria
+%%% \leftrightarrow should be used for resonance structures
+%\end{reaction}
+%
+%
+%%% PHYSICAL UNITS
+%%%
+%%% Please use \unit{} and apply the exponential notation (e.g. 20\,\unit{W\,m^{-2}})
+
+
+\end{document}
