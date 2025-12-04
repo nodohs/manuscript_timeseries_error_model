@@ -80,8 +80,8 @@
 
 \begin{document}
 
-\title{Quantifying time-series uncertainty with Wiener fouling and drift}
-% \title{Uncertainty of time-series measurements affected by Wiener fouling and drift}
+%\title{Time-series uncertainty with Wiener fouling and drift}
+\title{Uncertainty of time-series measurements subject to Wiener fouling and calibration-drift}
 
 
 
@@ -134,47 +134,54 @@ Test
 
 
 \introduction  %% \introduction[modified heading if necessary]
+%
 TEXT
 
+%TODO transition here
+In a measuring device 
+In practice, deterimination of these errors is used to correct the raw measurements
+Later on, these 
 
-\section{HEADING}
-TEXT
+% USGS operates a network of several thousands of such devices
+% so a flexible approach
 
-\subsection{Introduction}
-
+\subsection{Preliminaries}
+%
 Let $x$ be the true value of some variable,
 $y$ be a measurement of $x$,
-and the error $e$ be the difference between the two,
+such that the absolute error $e$ is the difference between the two,
 %
 \begin{equation}
     e = y - x
-    \text{.}
+    \text{,}
 \end{equation}
 %
-Depending on the properties of the measurement device,
-the error may be more accuractely represented in relative terms,
+or error may be more accurately represented in relative terms,
 %
 \begin{equation}
-    e_{\%} = 100 \times \frac{y - x}{x}
+    \%e = 100 \times \frac{y - x}{x}
     \text{,}
 \end{equation}
 %
 given as a percentage of the true value.
-All that follows will apply to either case.
+Either form may used to estimate an uncertainty interval,
+depending on the properties of the measurement device.
 
-Furthermore, we assume that each measurement is affected by three sources of error:
-fouling error $e_f$,
-calibration-drift error $e_d$,
-and error due to the precision of the measuring device $e_p$,
+Furthermore, we assume each measurement comprises three types of error:
+fouling $e_f$,
+calibration drift $e_d$,
+and the innate precision of the measuring device $e_p$,
+which sum to the total,
 %
 \begin{equation}
     e = e_f + e_d + e_p
     \text{.}
 \end{equation}
 %
-
-Fouling error results from some physical, chemical, or biological buildup on the measurement device
-and is determined by the difference between measurements taken before and after cleaning.
+Fouling results from some physical, chemical, or biological buildup 
+that interferes with the measurement.
+The magnitude of fouling is determined by taking check
+measurements before and after cleaning the measurement device.
 Under steady-state conditions, the fouling error is given by
 %
 \begin{equation}
@@ -183,13 +190,13 @@ Under steady-state conditions, the fouling error is given by
 %
 where $y_a$ is the measurement after cleaning,
 and $y_b$ is the measurement before cleaning.
-In unstable environments,
-the fouling error must account for any changes during a cleaning:
+Otherwise, the error must account for any changes
+in the environment during the cleaning,
 %
 \begin{equation}
     e_f = (y_a - y_b) - (z_a - z_b)
     \qquad \text{or} \qquad
-    e_{\%f} = 100 \times \frac{(y_a - y_b) - (z_a - z_b)}{(y_b)}
+    \%e_f = 100 \times \frac{(y_a - y_b) - (z_a - z_b)}{y_b}
     \label{eq:fouling_error}
 \end{equation}
 %
@@ -197,86 +204,111 @@ where $z_a$ and $z_b$ are measurements from a reference device in the same
 environment \citep{Wagner_2006}.
 
 
-Calibration drift refers to electronic (or mechanical) drift
-in the measuring device since the last time it was calibrated.
-The calibration-drift error $e_d$ is determined by comparing the measurement against a known standard $z_s$,
-, after correcting for fouling,
+Calibration drift results from any electronic (or mechanical) drift
+in accuracy since the measurement device was last calibrated;
+in other words, any residual bias after cleaning the device.
+The magnitude of calibration-drift is determined by comparing a clean measurement
+against a known standard $z_s$,
 %
 \begin{equation}
     e_d = y_s - z_s
     \qquad \text{or} \qquad
-    e_{\%d} = 100 \times \frac{z_s - y_s}{y_s}
+    \%e_{d} = 100 \times \frac{z_s - y_s}{y_s}
     \label{eq:drift_error}
 \end{equation}
 %
-where $z_s$ is the known standard value,
-and $y_s$ is the measurement of $z_s$ \citep{Wagner_2006}.
+where $z_s$ is the standard value,
+and $y_s$ is its measurement of $z_s$ \citep{Wagner_2006}.
 
-Lastly, the precision error $e_p$ results from the inherent inaccuracy of the measurement device not affected by fouling or drift.
-In practice, the precision is either determined in a laboratory
-and assumed to be independent and identically distributed for each measurement
+Lastly, precision error $e_p$ results from the inherent inaccuracy of any measurement device.
+% not affected by fouling or drift.
+In practice, precision is determined under controlled laboratory conditions
+and is approximated with a normal distribution,
 %
 \begin{equation}
-    e_p \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    e_p \sim \mathcal{N}\left(0, \% \sigma^2_p \right)
     \qquad \text{or} \qquad
-    e_{\%p} \sim \mathcal{N}\left(0, \sigma^2_{\%p} \right)
+    \%e_{p} \sim \mathcal{N}\left(0, \% \sigma^2_{p} \right)
     \text{.}
 \end{equation}
 %
-In many cases, the measurement precision is determined by the device manufacturer
-and reported in its specifications.
+In many cases, precision is determined by the manufacturer
+and reported among the device specifications
+(often reported as "accuracy").
 For example,
-a stated accuracy of $\pm 0.1$ units or $\pm 2$\% of reading,
-would correspond to the $2\sigma$ or 95\% confidence interval.
-Although not strictly necessary,
-we will generally assume the fouling and drift errors have the same
-form--relative or absolute--as the precision.
+an accuracy of $\pm 0.1$ units or $\pm 2$\% of reading,
+usually corresponds to the $2\sigma$ or 95\% confidence interval,
+such that $\sigma_p$ is half the reported value.
+%$e_p \sim \mathcal{N}\left(0, 0.05^2 \right)$
+Though not a requirement,
+we often assume fouling and drift errors have the same
+form---absolute or relative---as the precision.
 
-%TODO transition here
+\subsection{The Measurement Procedure}
+
+A clean and calibrated device is deployed into the environment to measure some variable of interest.
+As time passes, fouling and calibration-drift errors accumulate,
+which bias the raw measurements.
+To correct for that bias,
+the fouling and calibration are periodically checked.
+Any check might determine one or both errors,
+and may or may not involve cleaning or recalibrating the device.
+After the check,
+the raw time series measurements should be corrected to account for any fouling and calibration error,
+typically, by assuming the error grows at a constant rate between checks \citep{Wagner_2006}.
+Reality can be more complicated, but for simplicity,
+we will extend this same assumption as a basis for modeling the uncertainty.
 
 \subsection{Wiener Process}
 
-When correcting time series measurements,
-a standard practice is to assume the error grows at a constant rate \citep{Wagner_2006}.
-We will extend that assumption to modeling the measurement uncertainty.
-Specifically, that the drift and fouling errors
-follow a Wiener process with an optional drift term,
-which represents the average growth rate of the error.
-(as opposed to the calibration drift).
-In practice, this drift term is necessary
-when the 
-is relevant 
-for devices whose 
-devices with some sort of reactive or 
-Note, that the drift term $\mu$ represents the 
-
-
+In order to estimate the uncertainty of the corrected measurement,
+we will assume that the drift and fouling errors
+follow a Wiener process with an optional drift term $\mu$.
+%not to be confused with the calibration drift.
+Formally, a Wiener process is a continuous-time stochastic process
+for which the increments are independent and normally distributed,
+with variance proportional to the time elapsed,
+and a drift term representing the average rate of change over time
+(with $\mu=0$ for a classical Wiener process).
+The drift term is important when a device exhibits a systematic bias over time,
+such as the gradual degradation of some consumable element.
 
 Let $E_t$ be a random variable representing the error at time $t$,
-and $e_t$ be the realization of $E_t$.
-
+and $e_t$ be its realization (observed value).
 Suppose we observe the error at times $0 = t_0 < t_1 < t_2 < \cdots < t_K = T$,
-with observed errors $E_{t_k} = e_k$ for $k = 0, 1, \ldots, K$.
+with $E_{t_k} = e_k$ for $k = 0, 1, \ldots, K$.
+Thus, $t_k - t_{k-1}$ represents the time elapsed between subsequent observations
+$e_{k-1}$ and $e_k$.
+The subscript $k$ serves a place holder for either fouling $f$ or drift $d$ throughout.
+For example, $\lambda_f(t)$ will denotes the fouling weight for $t \in \left[t_{f-1}, t_f \right]$.
 
-Thus $t_k - t_{k-1}$ represents the time elapsed between subsequent observations.
-% note substitution of subscript for 
+%Following the last observation at time $t_k-1$,
+%Assuming the error process 
+First, consider the case after observing the error at time $t_{k-1}$,
+but before observing the error at time $t_k$
+%($t \in [t_{k-1}, t_k)$).
+% ($t_{k-1} \le t < t_k$).
+We refer to this as an open interval,
+which occurs during real-time estimation of the measurement uncertainty.
+In contrast, a closed interval is bracketed by observations at $t_{k-1}$ and $t_k$,
+and the conditional mean and variance are revised accordingly.
+Pratically speaking,
+our initial real-time estimate needs to be revised after observing the next error.
 
-Following some observation 
-We will assume fouling and calibration drift grow according to a Wiener process with drift,
-given by
+For an open interval,
+we assume the conditional distribution
+of $E_t$ follows a Wiener process with drift,
 %
 \begin{equation}
     p(e_t \mid E_{k-1} = e_{k-1})
     =
-    \mathcal{N}(e_0 + \mu t ,\; \sigma^2 t)
-\end{equation}
-%
-
-%
-\begin{equation}
-    p(e_t \mid E_0 = e_0)
-    =
-    \mathcal{N}(e_0 + \mu t ,\; \sigma^2 t)
+    \mathcal{N}(\delta_{k-1}  e_{k-1} + \mu t ,\; \sigma^2 t)
+    \text{,} \qquad
+    \delta_{k-1} =
+    \begin{cases}
+        0, & \text{reset} \\
+        1, & \text{otherwise}
+    \end{cases}
 \end{equation}
 %
 %
@@ -286,28 +318,34 @@ given by
 %\end{equation}
 %
 where
-$e_0$ is the initial error at time 0,
-$\mathcal{N}$ is the normal distribution
-specified by its mean and variance,
+$\delta_{k-1}$ is a binary variable indicating whether the error process has been reset
+due to cleaning or recalibration,
+$e_{k-1}$ is the error at time $t_{k-1}$,
+%$\mathcal{N}$ is the normal distribution
+%specified by its mean and variance,
 $\mu$ is the drift rate (mean change per unit time),
 $\sigma^2$ is the instantaneous variance rate (variance per unit time).
 Thus for any $t \ge 0$,
-it follows that the conditional mean and variance  of $E_t$ are
+it follows that the conditional mean and variance of $E_t$ are
 %
 \begin{align}
-    \mathbb{E}\left[E_t \mid E_0 = e_0 \right] = e_0 + \mu t
-    \text{,} \\
-    \text{Var}\left(E_t \mid E_0 = e_0 \right) = \sigma^2 t
+    \mathbb{E}\left[E_t \mid E_{k-1}
+        &= e_{k-1} \right] = \delta_{k-1} e_{k-1} + \mu t
+        \text{,} \\
+    \text{Var}\left(E_t \mid E_{k-1}
+        &= e_{k-1} \right) = \sigma^2 t
+    \text{.}
 \end{align}
 %
-
-
-A Weiner process that is conditioned to start and end at specified values
+%
+Later on, upon observing the error at time $t_k$,
+we update the conditional distribution of $E_t$ to include that new information.
+A Wiener process conditioned to start and end at specified values
 is known as a Brownian bridge.
-For any interval $\left[t_{k-1}, t_k \right]$,
-the conditioned error process $E_t \mid E_{t_{k-1}} = e_{k-1}, E_{t_k} = e_k$ is a Brownian bridge.
-
-Let $\lambda(t)$ define the linear interpolation weight:
+%For any interval $\left[t_{k-1}, t_k \right]$,
+%the conditioned error process $E_t \mid E_{t_{k-1}} = e_{k-1}, E_{t_k} = e_k$ is a Brownian bridge.
+To simplify notation, 
+let $\lambda(t)$ be the linear interpolation weight,
 %
 \begin{equation}
     \lambda_k(t) = \frac{t - t_{k-1}}{t_k - t_{k-1}}
@@ -316,37 +354,34 @@ Let $\lambda(t)$ define the linear interpolation weight:
     \text{,}
 \end{equation}
 %
-where the subscript $k$ is a place holder for either error component ($f$ or $d$).
-For example, $\lambda_f(t)$ denotes the fouling weight for $t \in \left[t_{f-1}, t_f \right]$.
-
-The conditional distribution of the error process at time $t$,
-where $t \in \left[t_{k-1}, t_k \right]$, is
+%Using $\lambda_k(t)$,
+then the conditional distribution of the error process at time $t$ is given by
 %
 \begin{equation}
     p(e_t \mid E_{t_{k-1}} = e_{k-1},\; E_{t_k} = e_k)
     =
     \mathcal{N} \left(
-        \left( 1 - \lambda(t) \right)e_{k-1}
+        \delta_{k-1} \left( 1 - \lambda(t) \right)e_{k-1}
         + 
         \lambda(t) e_k,\;
         \sigma^2 (1 - \lambda(t)) \lambda(t) (t_k - t_{k-1})
     \right)
-    \text{.}
+    \text{,}
 \end{equation}
-%
-Thus, the conditional mean and variance are
+where $t \in \left[t_{k-1}, t_k \right]$,
+and the conditional mean and variance are
 %
 \begin{align}
     \mathbb{E}\left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\; E_{t_k} = e_k \right]
-    &=
-    (1 - \lambda(t)) e_{k-1} + \lambda(t) e_k
-    \text{,}
-    \label{eq:wiener_bridge_mean} \\
+        &=
+        \delta_{k-1} \left( 1 - \lambda(t) \right) e_{k-1} + \lambda(t) e_k
+        \text{,}
+        \label{eq:wiener_bridge_mean} \\
     \text{Var} \left(E_t \mid E_{t_{k-1}} = e_{k-1} ,\; E_{t_k} = e_k \right)
-    &= \sigma^2 (1 - \lambda(t)) \; \lambda(t) (t_k - t_{k-1})
-    \text{,} \qquad {or, equivalently,}
-    \label{eq:wiener_bridge_variance} \\
-    &= \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}}
+        &= \sigma^2 (1 - \lambda(t)) \; \lambda(t) (t_k - t_{k-1})
+        \qquad \text{or} \\
+        &= \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
+        \label{eq:wiener_bridge_variance}
 \end{align}
 %
 
@@ -363,7 +398,7 @@ v_{total}(t) =
     \chi_{d}(t)
     \label{eq:total_variance_closed}
 \end{align}
-where $\chi_{d}$ is a function that is 1 if $t \neq t_{d}$ and 0 otherwise,
+where $\chi_{d}$ is a binary function equal to 1 if $t \neq t_{d}$ and 0 otherwise,
 \begin{equation}
 \chi_{d}(t) =
 \begin{cases}

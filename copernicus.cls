@@ -1329,8 +1329,6 @@
   \input{fontawesomesymbols-pdftex.tex}
   \renewcommand{\faHourglass}[1][]{\faicon{hourglass\if\relax\detokenize{#1}\relax\else-#1\fi}}
   \renewcommand{\faBattery}[1][4]{\faicon{battery-#1}}
-\else
-  \RequirePackage{fontawesome}
 \fi
 \usepackage{upquote}%% #7510
 \usepackage{regexpatch}
