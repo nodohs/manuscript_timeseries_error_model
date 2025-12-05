@@ -188,7 +188,7 @@ measurements before and after cleaning the measurement device.
 Under steady-state conditions, the fouling error is given by
 %
 \begin{equation}
-    e_f = y_a - y_b
+    e_f = y_b - y_a
 \end{equation}
 %
 where $y_a$ is the measurement after cleaning,
@@ -197,9 +197,9 @@ Otherwise, the error must account for any changes
 in the environment during the cleaning,
 %
 \begin{equation}
-    e_f = (y_a - y_b) - (z_a - z_b)
+    e_f = (y_b - y_a) - (z_b - z_a)
     \qquad \text{or} \qquad
-    \%e_f = 100 \times \frac{(y_a - y_b) - (z_a - z_b)}{y_b}
+    \%e_f = 100 \times \frac{(y_b - y_a) - (z_b - z_a)}{y_b}
     \label{eq:fouling_error}
 \end{equation}
 %
@@ -521,10 +521,10 @@ with approximate confidence interval
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal distribution
 (e.g., $q_{0.975} = 1.96$ for a 95\% confidence interval).
 
-Alternatively, for percent error $E_{\%t}$, the measured value is
+Alternatively, for percent error $\%E_{t}$, the measured value is
 %
 \begin{equation}
-    Y_t = \frac{X_t}{1 - E_{\%t}/100}
+    Y_t = \frac{X_t}{1 - \%E_{t}/100}
     % removing the 100x from the error simplifies here
 \end{equation}
 %
@@ -532,14 +532,14 @@ Then, on the original scale, the bias-corrected estimate of $X_t$ is
 %
 \begin{equation}
     x(t) := \mathbb{E}[X_t \mid Y_t = y_t]
-        = y_t \left( 1 - \frac{m_{\%}(t)}{100} \right)
+        = y_t \left( 1 - \frac{\%m(t)}{100} \right)
         \text{.}
 \end{equation}
 %
 and the confidence interval is
 %
 \begin{equation}
-    \text{CI} = x(t) \pm q_{1-\alpha/2} \, \frac{y_t}{100} \sqrt{v_{\%}(t)}
+    \text{CI} = x(t) \pm q_{1-\alpha/2} \, \frac{y_t}{100} \sqrt{\%v(t)}
 \text{.}
 \end{equation}
 
