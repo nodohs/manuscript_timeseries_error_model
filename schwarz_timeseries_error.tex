@@ -159,11 +159,11 @@ such that the absolute error $e$ is the difference between the two,
 or error may be more accurately represented in relative terms,
 %
 \begin{equation}
-    \%e = 100 \times \frac{y - x}{x}
+    \%e = 100 \times \frac{y - x}{y}
     \text{,}
 \end{equation}
 %
-given as a percentage of the true value.
+given as a percentage of the measured value.
 Either form may used to estimate an uncertainty interval,
 depending on the properties of the measurement device.
 
@@ -174,7 +174,7 @@ and the innate precision of the measuring device $e_p$,
 which sum to the total,
 %
 \begin{equation}
-    e = e_f + e_d + e_p
+    e = e_f + e_d + e_p % note e = -c (correction)
     \text{.}
 \end{equation}
 %
@@ -201,7 +201,7 @@ in the environment during the cleaning,
 \end{equation}
 %
 where $z_a$ and $z_b$ are measurements from a reference device in the same
-environment \citep{Wagner_2006}.
+environment \citep[][]{Wagner_2006}.
 
 
 Calibration drift results from any electronic (or mechanical) drift
@@ -211,7 +211,7 @@ The magnitude of calibration-drift is determined by comparing a clean measuremen
 against a known standard $z_s$,
 %
 \begin{equation}
-    e_d = y_s - z_s
+    e_d = z_s - y_s
     \qquad \text{or} \qquad
     \%e_{d} = 100 \times \frac{z_s - y_s}{y_s}
     \text{.}
@@ -227,24 +227,34 @@ In practice, precision is determined under controlled laboratory conditions
 and is approximated with a normal distribution,
 %
 \begin{equation}
-    e_p \sim \mathcal{N}\left(0, \% \sigma^2_p \right)
+    e_p \sim \mathcal{N}\left(0, \sigma^2_p \right)
     \qquad \text{or} \qquad
-    \%e_{p} \sim \mathcal{N}\left(0, \% \sigma^2_{p} \right)
+    \%e_{p} \sim y \frac{\%\sigma_p}{100} \mathcal{N}\left(0 ,\, 1 \right)
+    %\%e_{p} \sim \mathcal{N}\left(0, \left( \frac{\%\sigma_p}{100} y \right)^2 \right)
     \text{.}
     \label{eq:precision_error}
 \end{equation}
 %
 In many cases, precision is determined by the manufacturer
 and reported among the device specifications
-(often reported as "accuracy").
-For example,
-an accuracy of $\pm 0.1$ units or $\pm 2$\% of reading,
-usually corresponds to the $2\sigma$ or 95\% confidence interval,
-such that $\sigma_p$ is half the reported value.
+(as "accuracy"),
+and noting that the reported accuracy usually corresponds to the $2\sigma$ or
+95\% confidence interval.
 %$e_p \sim \mathcal{N}\left(0, 0.05^2 \right)$
 Though not a requirement,
 we often assume fouling and drift errors have the same
 form---absolute or relative---as the precision.
+
+In normal operation,
+the device is calibrated against a standard of known precision $\sigma_s$,
+which affects the accuracy of the calibration.
+We often ignore $\sigma_s$,
+unless it is large relative to the device precision,
+in which case it should be included in the variance,
+\begin{equation}
+    \sigma^2_{\tilde{p}} = \sigma^2_{p} + \sigma^2_{s}
+    \text{.}
+\end{equation}
 
 \subsection{The Measurement Procedure}
 
@@ -259,12 +269,11 @@ After the check,
 the raw time series measurements should be corrected to account for any fouling and calibration error,
 typically, by assuming the error grows at a constant rate between checks \citep{Wagner_2006}.
 Reality can be more complicated, but for simplicity,
-we will extend this same assumption as a basis for modeling the uncertainty.
+we extend this same assumption as a basis for modeling the uncertainty.
 
-\subsection{Wiener Process}
+\subsection{Wiener-Process Error Model}
 
-In order to estimate the uncertainty of the corrected measurement,
-we will assume that the drift and fouling errors
+We will assume that the drift and fouling errors
 follow a Wiener process with an optional drift term $\mu$.
 %not to be confused with the calibration drift.
 Formally, a Wiener process is a continuous-time stochastic process
@@ -272,17 +281,19 @@ for which the increments are independent and normally distributed,
 with variance proportional to the time elapsed,
 and a drift term representing the average rate of change over time
 (with $\mu=0$ for a classical Wiener process).
-The drift term is important when a device exhibits a systematic bias over time,
-such as the gradual degradation of some consumable element.
+This drift term is important for devices exhibiting a systematic bias over time,
+such as due to the gradual degradation of some consumable element.
 
 Let $E_t$ be a random variable representing the error at time $t$,
 and $e_t$ be its realization (observed value).
 Suppose we observe the error at times $0 = t_0 < t_1 < t_2 < \cdots < t_K = T$,
 with $E_{t_k} = e_k$ for $k = 0, 1, \ldots, K$.
 Thus, $t_k - t_{k-1}$ represents the time elapsed between subsequent observations
-$e_{k-1}$ and $e_k$.
-The subscript $k$ serves a place holder for either fouling $f$ or drift $d$ throughout.
-For example, $\lambda_f(t)$ will denotes the fouling weight for $t \in \left[t_{f-1}, t_f \right]$.
+$e_{k-1}$ and $e_k$,
+and the subscript $k$ serves a place holder for either fouling $f$ or drift $d$ terms,
+$k \in \{f, d\}$.
+For example, $\lambda_f(t)$ denotes the fouling weight
+for $t \in \left[t_{f-1}, t_f \right]$.
 
 %Following the last observation at time $t_k-1$,
 %Assuming the error process 
@@ -290,117 +301,145 @@ First, consider the case after observing the error at time $t_{k-1}$,
 but before observing the error at time $t_k$
 %($t \in [t_{k-1}, t_k)$).
 % ($t_{k-1} \le t < t_k$).
-We refer to this as an open interval,
-which occurs during real-time estimation of the measurement uncertainty.
-In contrast, a closed interval is bracketed by observations at $t_{k-1}$ and $t_k$,
-and the conditional mean and variance are revised accordingly.
-Pratically speaking,
-our initial real-time estimate needs to be revised after observing the next error.
+We refer to this as an open interval, typical of real-time uncertainty estimation.
+In contrast, a closed interval is bracketed by observations at both $t_{k-1}$ and $t_k$,
+and the conditional mean and variance are revised retrospectively.
 
 For an open interval,
-we assume the conditional distribution
-of $E_t$ follows a Wiener process with drift,
+the conditional distribution of the Wiener-process error is
 %
 \begin{equation}
     p(e_t \mid E_{k-1} = e_{k-1})
     =
-    \mathcal{N}(\delta_{k-1}  e_{k-1} + \mu t ,\; \sigma^2 t)
+    \mathcal{N}(m^o(t),\, v^o(t))
     \text{,} \qquad
-    \delta_{k-1} =
-    \begin{cases}
-        0, & \text{reset} \\
-        1, & \text{otherwise}
-    \end{cases}
+    t > t_{k-1}
+    %\mathcal{N}(\delta_{k-1}  e_{k-1} + \mu t ,\, \sigma^2 t)
 \end{equation}
-%
 %
 %\begin{equation}
 %    E_{t} \mid E_0 = e_0 \sim \mathcal{N}(e_0 + \mu t ,\; \sigma^2 t) \text{,}
 %    \label{eq:wiener_process}
 %\end{equation}
 %
-where
-$\delta_{k-1}$ is a binary variable indicating whether the error process has been reset
+with conditional mean and variance given by
+\begin{align}
+    m^o(t) &:=
+        \mathbb{E}\left[E_t \mid E_{k-1} = e_{k-1} \right]
+        = \delta_{k-1} e_{k-1} + \mu t
+        \qquad \text{and}
+        \label{eq:wiener_mean}\\
+    v^o(t) &:=
+        \text{Var}\left(E_t \mid E_{k-1} = e_{k-1} \right)
+        = \sigma^2 t
+        \label{eq:wiener_variance}
+    \text{.}
+\end{align}
+%
+where $\delta_{k-1}$ indicates whether the error process has been reset
 due to cleaning or recalibration,
+\begin{equation}
+    \delta_{k-1} =
+    \begin{cases}
+        0, & \text{reset at } t_{k-1} \\
+        1, & \text{otherwise}
+    \end{cases}
+    \text{,}
+\end{equation}
 $e_{k-1}$ is the error at time $t_{k-1}$,
 %$\mathcal{N}$ is the normal distribution
 %specified by its mean and variance,
 $\mu$ is the drift rate (mean change per unit time),
 $\sigma^2$ is the instantaneous variance rate (variance per unit time).
 Thus for any $t \ge 0$,
-it follows that the conditional mean and variance of $E_t$ are
+it follows that the conditional mean and variance are
 %
-\begin{align}
-    \mathbb{E}\left[E_t \mid E_{k-1}
-        &= e_{k-1} \right] = \delta_{k-1} e_{k-1} + \mu t
-        \text{,} \\
-    \text{Var}\left(E_t \mid E_{k-1}
-        &= e_{k-1} \right) = \sigma^2 t
-    \text{.}
-\end{align}
 %
 %
 Later on, upon observing the error at time $t_k$,
-we update the conditional distribution of $E_t$ to include that new information.
+the conditional distribution of $E_t$ is updated.
 A Wiener process conditioned to start and end at specified values
 is known as a Brownian bridge.
-%For any interval $\left[t_{k-1}, t_k \right]$,
-%the conditioned error process $E_t \mid E_{t_{k-1}} = e_{k-1}, E_{t_k} = e_k$ is a Brownian bridge.
 To simplify notation, 
 let $\lambda(t)$ be the linear interpolation weight,
 %
 \begin{equation}
     \lambda_k(t) = \frac{t - t_{k-1}}{t_k - t_{k-1}}
-    \text{,} \qquad
-    t \in \left[t_{k-1}, t_k \right]
-    \text{,}
 \end{equation}
 %
-%Using $\lambda_k(t)$,
-then the conditional distribution of the error process at time
-$t \in \left[t_{k-1}, t_k \right]$ is given by
+then the conditional distribution of the bridge at time
+$t$ is
 %
 \begin{equation}
-    p(e_t \mid E_{t_{k-1}} = e_{k-1},\; E_{t_k} = e_k)
+    p(e_t \mid E_{t_{k-1}} = e_{k-1},\, E_{t_k} = e_k)
     =
     \mathcal{N} \left(
-        \delta_{k-1} \left( 1 - \lambda(t) \right)e_{k-1}
-        + 
-        \lambda(t) e_k,\;
-        \sigma^2 (1 - \lambda(t)) \lambda(t) (t_k - t_{k-1})
+        m^c(t), v^c(t)
+        %\delta_{k-1} \left( 1 - \lambda(t) \right)e_{k-1}
+        %+ 
+        %\lambda(t) e_k,\;
+        %\sigma^2 (1 - \lambda(t)) \lambda(t) (t_k - t_{k-1})
     \right)
+    \text{,} \qquad
+    t \in \left[t_{k-1},\, t_k \right]
+\end{equation}
+%
+with conditional mean and variance given by
+%
+\begin{align}
+    m^c(t) &:=
+        \mathbb{E}\left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
+        =
+        \delta_{k-1} \left( 1 - \lambda(t) \right) e_{k-1} + \lambda(t) e_k
+        \qquad \text{and}
+        \label{eq:bridge_mean} \\
+    v^c(t) &:=
+    \text{Var} \left(E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right)
+        = \sigma^2 (1 - \lambda(t)) \, \lambda(t) (t_k - t_{k-1})
+        = \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
+        \label{eq:bridge_variance}
+    \text{.}
+\end{align}
+%
+\subsection{Precision Error Model}
+
+Recall that the precision of the measurement device $\sigma_{p}$ is assumed to be
+constant over time (Equation~\ref{eq:precision_error}).
+Thus, for normal errors, the conditional distribution is
+%
+\begin{equation}
+    p(e_t \mid E_{t_{k-1}} = e_{k-1}) = \mathcal{N}
+        \left(m^o(t),\,v^o(t)\right)
     \text{,}
 \end{equation}
-and the conditional mean and variance are
+%
+with conditional mean and variance given by
 %
 \begin{align}
-    \mathbb{E}\left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\; E_{t_k} = e_k \right]
-        &=
-        \delta_{k-1} \left( 1 - \lambda(t) \right) e_{k-1} + \lambda(t) e_k
+    m^o(t)
+        &:= \mathbb{E}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
+        = 0
+        \qquad \text{and} \\
+    v^o(t)
+        &:= \text{Var}\left(E_t \mid E_{t_{k-1}} = e_{k-1} \right)
+        = \sigma^2_{p}
+        \text{.}
+        \label{eq:precision_variance_open}
+\end{align}
+%
+However, the conditional distribution for the closed interval is complicated
+by the indirect effect of calibration-drift.
+In this case, the conditional variance is
+%
+\begin{align}
+    v^c(t)
+        &:= \text{Var}\left(E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right)
+        = \sigma^2_{p} \lambda_{d}(t) \chi_{d}(t)
         \text{,}
-        \label{eq:wiener_bridge_mean} \\
-    \text{Var} \left(E_t \mid E_{t_{k-1}} = e_{k-1} ,\; E_{t_k} = e_k \right)
-        &= \sigma^2 (1 - \lambda(t)) \; \lambda(t) (t_k - t_{k-1})
-        \qquad \text{or} \\
-        &= \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
-        \label{eq:wiener_bridge_variance}
+        \label{eq:precision_variance_closed}
 \end{align}
-%
-
-\subsection{Total variance}
-%
-\begin{align}
-v_{total}(t) =
-    v_{f}(t)
-    +
-    v_{d}(t)
-    +
-    \sigma^2_{p}
-    \lambda_{d}(t)
-    \chi_{d}(t)
-    \label{eq:total_variance_closed}
-\end{align}
-where $\chi_{d}$ is a binary function equal to 1 if $t \neq t_{d}$ and 0 otherwise,
+where $\chi_{d}$ is an indicator function
+equal to 1 if $t \neq t_{d}$ and 0 otherwise,
 \begin{equation}
 \chi_{d}(t) =
 \begin{cases}
@@ -408,53 +447,86 @@ where $\chi_{d}$ is a binary function equal to 1 if $t \neq t_{d}$ and 0 otherwi
     0, & t = t_{d}
 \end{cases}
 \label{eq:chi_function}
+\text{,}
 \end{equation}
+which modulates the indirect effect of calibration-drift on the precision error.
 
+\subsection{Combined Error}
 
-and the subscripts $f$, $d$, and $p$ refer to fouling, drift, and precision components, respectively.
-
-The $\chi_{d}(t)$ term represents the indirect effect of the instrument precision.
-
-
-The total error variance during an open interval $o$ at time $t$ is given by
 %
-\begin{equation}
-v_o(t) =
-    \left(t - t_{f-1}\right) \sigma^2_{f}
+%The total error variance is the sum of the fouling, drift, and precision components.
+In summary,
+the affect of drift, fouling and precision ($d$, $f$, and $p$)
+is modeled by the sum of the relevant means and variances.
+Let $m_k(t)$ and $v_k(t)$ be the conditional mean and variance
+of the error process at time $t$, respectively,
+then combined mean $m(t)$ and variance $v(t)$ are written concisely as
+\begin{align}
+m(t) &=
+    m_{f}(t)
     +
-    \left(t - t_{d-1}\right) \sigma^2_{d}
+    m_{d}(t)
+    \qquad \text{and}
+    \label{eq:total_mean_open} \\
+v(t) &=
+    v_{f}(t)
     +
-    \sigma^2_{p}
+    v_{d}(t)
+    +
+    v_{p}(t)
     \text{,}
-    \label{eq:total_variance_open} 
+\end{align}
+where the subscripts $f$, $d$, and $p$ refer to fouling, drift, and precision components, respectively,
+and using the appropriate definitions for open
+(Equations~\ref{eq:wiener_mean}, \ref{eq:wiener_variance}, \ref{eq:precision_variance_open})
+or closed intervals (Equations~\ref{eq:bridge_mean}, \ref{eq:precision_variance_closed},
+\ref{eq:bridge_variance}).
+%
+\subsection{Corrected Measurement and Confidence Interval}
+
+Let $X_t$ denote the true value at time $t$,
+and let $E_t$ denote the measurement error so that $y_t = X_t + E_t$.
+%Define $m(t) := \mathbb{E}[E_t]$ and $v(t) := \operatorname{Var}(E_t)$.
+Then the bias-corrected estimate of $X_t$ is
+%
+\begin{equation}
+    x(t) := \mathbb{E}\!\left[X_t \mid y_t\right]
+        \approx y_t - m(t)
+        \text{,}
 \end{equation}
 %
-y is our measurement, then the expected value of x at time t is
+with approximate confidence interval
+%
 \begin{equation}
-    \mathbb{E}\left[X_t \mid y_t ,\; e_F ,\; e_D \right]
-    =
-    y_t - m_f(t) - m_d(t)
+    \text{CI} = x(t) \pm q_{1-\alpha/2} \sqrt{v(t)}
+    \text{, }
 \end{equation}
-and the confidence interval is approximately
-\begin{equation}
-    \pm z_{\alpha/2} \sqrt{v(t)}
-    	ext{,}
-\end{equation}
-where $z_{\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal distribution
-(e.g., $z_{0.025} = 1.96$ for a 95\% confidence interval).
+%
+where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal distribution
+(e.g., $q_{0.975} = 1.96$ for a 95\% confidence interval).
 
-Similarly for relative error,
+In the relative-error case, the measured value is
+%
 \begin{equation}
-    \mathbb{E}\left[X_t \mid y_t ,\; e_F ,\; e_D \right]
-    =
-    y_t \left(1 - \frac{m_f(t) + m_d(t)}{100} \right)
+    y_t = X_t \left(1 + \frac{E_t}{100}\right),
 \end{equation}
-and the confidence interval is approximately
+%
+where $E_t$ is the percent error.
+Then, on the original scale,
+%
 \begin{equation}
-    \pm y_t \frac{z_{\alpha/2} \sqrt{v(t)}}{100}
-    	ext{.}
+    x(t) := \mathbb{E}[X_t \mid y_t]
+        = \frac{y_t}{1 + m(t)/100}
+        \text{.}
 \end{equation}
-
+%
+and the confidence interval is
+%
+\begin{equation}
+    \text{CI} = x(t) \pm q_{1-\alpha/2} \, \frac{\%\sigma_p}{100} \, y_t
+\text{.}
+\end{equation}
+%
 
 TODO FIGURE
 
@@ -485,31 +557,31 @@ The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site
 Invergese gamma distribution prior
 %
 \begin{equation}
-    p(\sigma^2 \mid \alpha ,\; \beta)
+    p(\sigma^2 \mid a ,\; b)
     =
-    \frac{\beta^\alpha}{\Gamma(\alpha)} (\sigma^2)^{-(\alpha+1)}
-    \exp\left(-\frac{\beta}{\sigma^2}\right)
+    \frac{b^a}{\Gamma(a)} (\sigma^2)^{-(a+1)}
+    \exp\left(-\frac{b}{\sigma^2}\right)
 \end{equation}
 %
 \begin{equation}
     \bar{\sigma}
     \equiv
-    \mathbb{E} \left[ \sigma^2 \mid \alpha, \beta \right]
-    = \frac{\beta}{\alpha - 1}
+    \mathbb{E} \left[ \sigma^2 \mid a, b \right]
+    = \frac{b}{a - 1}
 \end{equation}
 %
 % TODO define residuals as r and sites as j
 \begin{equation}
-    \ln L(r \mid \alpha ,\; \beta)
+    \ln L(r \mid a ,\; b)
     =
     \sum_{j \in J}
     \left(
         - \frac{N_j}{2} \ln(2 \pi)
-        + \alpha \ln(\beta)
-        + \ln \Gamma \left( \frac{N}{2} + \alpha \right)
-        - \left( \frac{N_j}{2} + \alpha \right)
-        \ln( \frac{N_j s^2_j}{2} + \beta)
-        - \ln \Gamma(\alpha)
+        + a \ln(b)
+        + \ln \Gamma \left( \frac{N}{2} + a \right)
+        - \left( \frac{N_j}{2} + a \right)
+        \ln( \frac{N_j s^2_j}{2} + b)
+        - \ln \Gamma(a)
     \right)
 \label{eq:hierarchical_likelihood}
 \end{equation}
@@ -524,8 +596,9 @@ where
 \begin{equation}
     \hat{w}_j
     =
-    \frac{N_j}{N_j + 2 (\hat{\alpha} - 1)}
+    \frac{N_j}{N_j + 2 (\hat{a} - 1)}
 \end{equation}
+
 \subsection{Maximum Likelihood Estimation}
 
 \subsection{Method of Moments}
@@ -550,9 +623,7 @@ TEXT
 
 \appendix
 \section{Proofs}    %% Appendix A
-
-\subsection{}     %% Appendix A1, A2, etc.
-
+\subsection{}
 
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
