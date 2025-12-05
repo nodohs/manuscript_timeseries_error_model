@@ -144,6 +144,9 @@ Later on, these
 
 % USGS operates a network of several thousands of such devices
 % so a flexible approach
+% Introduce Wagner here as the standard USGS methodology for correcting
+% time-series measurements for drift and fouling,
+% which is why we reference instead of more standard texts on measurement error.
 
 \subsection{Preliminaries}
 %
@@ -201,7 +204,8 @@ in the environment during the cleaning,
 \end{equation}
 %
 where $z_a$ and $z_b$ are measurements from a reference device in the same
-environment \citep[][]{Wagner_2006}.
+environment \citep[][but note their convention, $e = x - y$,
+flips the sign in several equations]{Wagner_2006}.
 
 
 Calibration drift results from any electronic (or mechanical) drift
@@ -211,9 +215,9 @@ The magnitude of calibration-drift is determined by comparing a clean measuremen
 against a known standard $z_s$,
 %
 \begin{equation}
-    e_d = z_s - y_s
+    e_d = y_s - z_s
     \qquad \text{or} \qquad
-    \%e_{d} = 100 \times \frac{z_s - y_s}{y_s}
+    \%e_{d} = 100 \times \frac{y_s - z_s}{y_s}
     \text{.}
     \label{eq:drift_error}
 \end{equation}
@@ -229,7 +233,7 @@ and is approximated with a normal distribution,
 \begin{equation}
     e_p \sim \mathcal{N}\left(0, \sigma^2_p \right)
     \qquad \text{or} \qquad
-    \%e_{p} \sim y \frac{\%\sigma_p}{100} \mathcal{N}\left(0 ,\, 1 \right)
+    \%e_{p} \sim y \frac{\sigma_{\%p}}{100} \mathcal{N}\left(0 ,\, 1 \right)
     %\%e_{p} \sim \mathcal{N}\left(0, \left( \frac{\%\sigma_p}{100} y \right)^2 \right)
     \text{.}
     \label{eq:precision_error}
@@ -292,8 +296,9 @@ Thus, $t_k - t_{k-1}$ represents the time elapsed between subsequent observation
 $e_{k-1}$ and $e_k$,
 and the subscript $k$ serves a place holder for either fouling $f$ or drift $d$ terms,
 $k \in \{f, d\}$.
+This notation is slighly overloaded but concise.
 For example, $\lambda_f(t)$ denotes the fouling weight
-for $t \in \left[t_{f-1}, t_f \right]$.
+for the interval $t \in \left[t_{f-1}, t_f \right]$.
 
 %Following the last observation at time $t_k-1$,
 %Assuming the error process 
@@ -330,7 +335,7 @@ with conditional mean and variance given by
         \qquad \text{and}
         \label{eq:wiener_mean}\\
     v^o(t) &:=
-        \text{Var}\left(E_t \mid E_{k-1} = e_{k-1} \right)
+        \text{Var}\left[E_t \mid E_{k-1} = e_{k-1} \right]
         = \sigma^2 t
         \label{eq:wiener_variance}
     \text{.}
@@ -394,7 +399,7 @@ with conditional mean and variance given by
         \qquad \text{and}
         \label{eq:bridge_mean} \\
     v^c(t) &:=
-    \text{Var} \left(E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right)
+    \text{Var} \left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
         = \sigma^2 (1 - \lambda(t)) \, \lambda(t) (t_k - t_{k-1})
         = \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
         \label{eq:bridge_variance}
@@ -421,7 +426,7 @@ with conditional mean and variance given by
         = 0
         \qquad \text{and} \\
     v^o(t)
-        &:= \text{Var}\left(E_t \mid E_{t_{k-1}} = e_{k-1} \right)
+        &:= \text{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
         = \sigma^2_{p}
         \text{.}
         \label{eq:precision_variance_open}
@@ -433,7 +438,7 @@ In this case, the conditional variance is
 %
 \begin{align}
     v^c(t)
-        &:= \text{Var}\left(E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right)
+        &:= \text{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
         = \sigma^2_{p} \lambda_{d}(t) \chi_{d}(t)
         \text{,}
         \label{eq:precision_variance_closed}
@@ -456,7 +461,7 @@ which modulates the indirect effect of calibration-drift on the precision error.
 %
 %The total error variance is the sum of the fouling, drift, and precision components.
 In summary,
-the affect of drift, fouling and precision ($d$, $f$, and $p$)
+the affect of drift $d$, fouling $f$, and precision $p$
 is modeled by the sum of the relevant means and variances.
 Let $m_k(t)$ and $v_k(t)$ be the conditional mean and variance
 of the error process at time $t$, respectively,
@@ -482,16 +487,27 @@ and using the appropriate definitions for open
 or closed intervals (Equations~\ref{eq:bridge_mean}, \ref{eq:precision_variance_closed},
 \ref{eq:bridge_variance}).
 %
+
+
+TODO FIGURE
+
+\begin{figure*}[t]
+%\includegraphics[width=12cm]{FILE NAME}
+\caption{TEXT}
+\label{fig:}
+\end{figure*}
+%
+
 \subsection{Corrected Measurement and Confidence Interval}
 
 Let $X_t$ denote the true value at time $t$,
-and let $E_t$ denote the measurement error so that $y_t = X_t + E_t$.
+and let $E_t$ denote the measurement error so that $Y_t = X_t + E_t$.
 %Define $m(t) := \mathbb{E}[E_t]$ and $v(t) := \operatorname{Var}(E_t)$.
 Then the bias-corrected estimate of $X_t$ is
 %
 \begin{equation}
-    x(t) := \mathbb{E}\!\left[X_t \mid y_t\right]
-        \approx y_t - m(t)
+    x(t) := \mathbb{E}\!\left[X_t \mid Y_t = y_t\right]
+        = y_t - m(t)
         \text{,}
 \end{equation}
 %
@@ -505,32 +521,46 @@ with approximate confidence interval
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal distribution
 (e.g., $q_{0.975} = 1.96$ for a 95\% confidence interval).
 
-In the relative-error case, the measured value is
+Alternatively, for percent error $E_{\%t}$, the measured value is
 %
 \begin{equation}
-    y_t = X_t \left(1 + \frac{E_t}{100}\right),
+    Y_t = \frac{X_t}{1 - E_{\%t}/100}
+    % removing the 100x from the error simplifies here
 \end{equation}
 %
-where $E_t$ is the percent error.
-Then, on the original scale,
+Then, on the original scale, the bias-corrected estimate of $X_t$ is
 %
 \begin{equation}
-    x(t) := \mathbb{E}[X_t \mid y_t]
-        = \frac{y_t}{1 + m(t)/100}
+    x(t) := \mathbb{E}[X_t \mid Y_t = y_t]
+        = y_t \left( 1 - \frac{m_{\%}(t)}{100} \right)
         \text{.}
 \end{equation}
 %
 and the confidence interval is
 %
 \begin{equation}
-    \text{CI} = x(t) \pm q_{1-\alpha/2} \, \frac{\%\sigma_p}{100} \, y_t
+    \text{CI} = x(t) \pm q_{1-\alpha/2} \, \frac{y_t}{100} \sqrt{v_{\%}(t)}
 \text{.}
 \end{equation}
+
+\section{Variable Corrections}
+
+General form
 %
+\begin{equation}
+    x(t) = y_t - m_{\theta}(y_t, t)
+\end{equation}
+%
+where $\theta$ is a set of parameters to be estimated from the check measurements.
 
-TODO FIGURE
-
-\section{Binning}
+Intro Binning.
+Confidence interval has the general formula
+%
+\begin{equation}
+    \text{CI} = x(t) \pm q_{1-\alpha/2} \sqrt{v_{b}(y_t, t)}
+\end{equation}
+%
+where $b$ indicates the bin associated with time $t$.
 
 \section{Parameter Estimation}
 
