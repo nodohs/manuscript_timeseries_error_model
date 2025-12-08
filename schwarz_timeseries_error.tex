@@ -290,18 +290,16 @@ such as due to the gradual degradation of some consumable element.
 
 Let $E_t$ be a random variable representing the error at time $t$,
 and $e_t$ be its realization (observed value).
-Suppose we observe the error at times $0 = t_0 < t_1 < t_2 < \cdots < t_K = T$,
-with $E_{t_k} = e_k$ for $k = 0, 1, \ldots, K$.
+
+
+Suppose we observe the error at times $0 = t_0 < t_1 < t_2 < \cdots < t_K = T$.
+To simplify notation, we write $e_k := e_{t_k}$,
+such that $E_{t_k} = e_k$ for $k = 0, 1, \ldots, K$.
 Thus, $t_k - t_{k-1}$ represents the time elapsed between subsequent observations
 $e_{k-1}$ and $e_k$,
 and the subscript $k$ serves a place holder for either fouling $f$ or drift $d$ terms,
 $k \in \{f, d\}$.
-This notation is slighly overloaded but concise.
-For example, $\lambda_f(t)$ denotes the fouling weight
-for the interval $t \in \left[t_{f-1}, t_f \right]$.
 
-%Following the last observation at time $t_k-1$,
-%Assuming the error process 
 First, consider the case after observing the error at time $t_{k-1}$,
 but before observing the error at time $t_k$
 %($t \in [t_{k-1}, t_k)$).
@@ -331,12 +329,12 @@ with conditional mean and variance given by
 \begin{align}
     m^o(t) &:=
         \mathbb{E}\left[E_t \mid E_{k-1} = e_{k-1} \right]
-        = \delta_{k-1} e_{k-1} + \mu t
+        = \delta_{k-1} e_{k-1} + \mu (t - t_{k-1})
         \qquad \text{and}
         \label{eq:wiener_mean}\\
     v^o(t) &:=
-        \text{Var}\left[E_t \mid E_{k-1} = e_{k-1} \right]
-        = \sigma^2 t
+        \operatorname{Var}\left[E_t \mid E_{k-1} = e_{k-1} \right]
+        = \sigma^2 (t - t_{k-1})
         \label{eq:wiener_variance}
     \text{.}
 \end{align}
@@ -370,9 +368,13 @@ let $\lambda(t)$ be the linear interpolation weight,
 %
 \begin{equation}
     \lambda_k(t) = \frac{t - t_{k-1}}{t_k - t_{k-1}}
+    \text{,} \qquad
+    k \in \{f, d\}
 \end{equation}
 %
-then the conditional distribution of the bridge at time
+such that $\lambda_f(t)$ denotes the fouling weight
+for the interval $t \in \left[t_{f-1}, t_f \right]$.
+Then the conditional distribution of the bridge at time
 $t$ is
 %
 \begin{equation}
@@ -399,7 +401,7 @@ with conditional mean and variance given by
         \qquad \text{and}
         \label{eq:bridge_mean} \\
     v^c(t) &:=
-    \text{Var} \left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
+    \operatorname{Var} \left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
         = \sigma^2 (1 - \lambda(t)) \, \lambda(t) (t_k - t_{k-1})
         = \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
         \label{eq:bridge_variance}
@@ -426,20 +428,23 @@ with conditional mean and variance given by
         = 0
         \qquad \text{and} \\
     v^o(t)
-        &:= \text{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
+        &:= \operatorname{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
         = \sigma^2_{p}
         \text{.}
         \label{eq:precision_variance_open}
 \end{align}
 %
 However, the conditional distribution for the closed interval is complicated
-by the indirect effect of calibration-drift.
+by the indirect effect of calibration.
 In this case, the conditional variance is
 %
+% TODO XXX note the indirect effect of calibration
 \begin{align}
     v^c(t)
-        &:= \text{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
-        = \sigma^2_{p} \lambda_{d}(t) \chi_{d}(t)
+        &:= \operatorname{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
+        = \lambda_{d}(t) \chi_{d}(t) \sigma_p^2
+        +
+        \sigma_p^2
         \text{,}
         \label{eq:precision_variance_closed}
 \end{align}
@@ -456,38 +461,179 @@ equal to 1 if $t \neq t_{d}$ and 0 otherwise,
 \end{equation}
 which modulates the indirect effect of calibration-drift on the precision error.
 
+\subsection{Multi-point Calibration}
+
+Sometimes multiple standards are used to calibrate the device.
+For example, a pH meter might be calibrated against standards at pH 4, 7, and 10.
+In that case, the expected drift-correction for a measurement is 
+a linear interpolation between
+the corrections for the two nearest standards \citep{Wagner_2006}.
+Given standard values $z_s$ for $s = 1, 2, \ldots, S$,
+the conditional mean of the Wiener-process error at time $t$ and reading $y$ is
+%
+\begin{align}
+    m^o(t, y)
+    &:=
+    \mathbb{E}\left[
+        E_{t,y}\,\mid\,
+        E_{k-1,s-1} = e_{k-1,s-1}, \,
+        E_{k-1,s} = e_{k-1,s}, \,
+        \right] \\
+    &=
+    (1-\lambda^+_s(t))
+    \left[
+        \delta_{k-1} e_{k-1,s-1} + \mu_{s-1}(t - t_{k-1})
+    \right]
+    +
+    \lambda^+_s(t)
+    \left[
+         \delta_{k-1} e_{k-1,s} + \mu_{s} (t - t_{k-1})
+    \right]
+\end{align}
+%
+where $\lambda^+_s(t)$ is the linear interpolation weight,
+extended by
+%
+\begin{equation}
+    \lambda^+_s(t) =
+    \begin{cases}
+        1, & y < y_{1} \\
+        \dfrac{y - y_{s-1}}{y_s - y_{s-1}}, & y \in [y_{s-1}, y_s] \\
+        0, & y > y_{S}
+    \end{cases}
+    \text{,}
+\end{equation}
+%
+such that $\lambda^+_s(t) = 1$ or $0$ when extrapolating
+below or above the standard range, respectively.
+
+Similarly,
+the variance is interpolated between the two standards,
+%
+% TODO change all notation to e_{t_{k-1}} and so forth for clarity
+% OR preliminary notes that e_{k-1} = e_{t_{k-1}}
+\begin{align}
+    v^o(t, y)
+    &:=
+    \operatorname{Var}\left[
+        E_{t,x} \mid
+        E_{k-1,s-1} = e_{k-1,s-1}, \,
+        E_{k-1,s} = e_{k-1,s}
+    \right] \\
+    &=
+    (1 - \lambda^+_s(y))^2
+    \operatorname{Var}\left[ 
+        E_{t,y} \mid
+        E_{k-1,s-1} = e_{k-1,s-1}
+    \right]
+    +
+    \lambda^+_s(y)^2
+    \operatorname{Var}\left[
+        E_{t,x} \mid
+        E_{k-1,s} = e_{k-1,s}
+    \right] \\
+    &=
+    \left[
+    \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
+    +
+    \lambda^+_s(y)^2 \sigma^2_{s}
+    \right]
+    \left(t - t_{k-1}\right)
+\end{align}
+%
+
+The closed-interval version of the conditional mean is a bilinear interpolation between four points,
+$e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$,
+denote as the set
+$\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
+%
+% bilinear interpolation between four points
+% e{k,s} and so on
+% in terms of \lambda_k(t) \lambda_s(x)
+\begin{align}
+    m^c(t, y)
+    &:=
+    \mathbb{E}\left[
+        E_{t,y}\,\mid\,
+        \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
+        \right] \\
+    %\mathbb{E}
+    %\left[
+    %    E_{t,x} \mid
+    %    E_{t_{k-1},x_{s-1}} = e_{k-1,s-1} ,,\
+    %    E_{t_{k-1},x_s} = e_{k-1,s} ,\,
+    %    E_{t_k,x_{s-1}} = e_{k,s-1} ,\,
+    %    E_{t_k,x_s} = e_{k,s}
+    %\right] \\ 
+    &=
+    (1-\lambda^+_k(t),\;\lambda^+_k(t))
+    \begin{bmatrix}
+        e_{k-1,s-1} & e_{k-1,s} \\
+        e_{k,s-1}   & e_{k,s}
+    \end{bmatrix}
+    \begin{bmatrix}
+        1-\lambda^+_s(y) \\
+        \lambda^+_s(y)
+    \end{bmatrix},
+\end{align}
+which expands to
+\begin{equation}
+    m^c(t,y)
+    =
+    (1 - \lambda^+_k(t))(1 - \lambda^+_s(y)) e_{k-1,s-1}
+    +
+    (1 - \lambda^+_k(t)) \lambda^+_s(y) e_{k-1,s}
+    +
+    \lambda^+_k(t)(1 - \lambda^+_s(y)) e_{k,s-1}
+    +
+    \lambda^+_k(t) \lambda^+_s(y) e_{k,s}
+\end{equation}
+where
+\begin{equation}
+    m^c(t_{k-1}, y_{s-1}) = e_{k-1,s-1} \text{,}
+    \quad
+    m^c(t_{k-1}, y_{s}) = e_{k-1,s} \text{,}
+    \quad
+    m^c(t_{k}, y_{s-1}) = e_{k,s-1} \text{,}
+    \quad
+    m^c(t_{k}, y_{s}) = e_{k,s} \text{.}
+\end{equation}
+
+% TODO missing standards
+
 \subsection{Combined Error}
 
-%
-%The total error variance is the sum of the fouling, drift, and precision components.
-In summary,
-the affect of drift $d$, fouling $f$, and precision $p$
-is modeled by the sum of the relevant means and variances.
-Let $m_k(t)$ and $v_k(t)$ be the conditional mean and variance
-of the error process at time $t$, respectively,
-then combined mean $m(t)$ and variance $v(t)$ are written concisely as
+By substituting $\lambda^+$ for $\lambda$,
+it is easily verified that the open and closed forms are equivalent,
+\begin{align}
+    m(t) &= m^c(t) = m^o(t)
+    \qquad \text{and} \qquad \\
+    v(t) &= v^c(t) = v^o(t)
+    \text{,}
+\end{align}
+and thereby define the conditional distribution of the error
+without using superscripts,
+%Letting $d$, $f,$ and $p$ denote the drift, fouling, and precision components,
+\begin{equation}
+    p(e_t \mid SET) = \mathcal{N}(m(t), v(t))
+\end{equation}
+with conditional mean and variance given by the sum of the individual components,
 \begin{align}
 m(t) &=
     m_{f}(t)
     +
-    m_{d}(t)
+    m_{d}(t, y)
     \qquad \text{and}
     \label{eq:total_mean_open} \\
 v(t) &=
     v_{f}(t)
     +
-    v_{d}(t)
+    v_{d}(t, y)
     +
     v_{p}(t)
     \text{,}
 \end{align}
-where the subscripts $f$, $d$, and $p$ refer to fouling, drift, and precision components, respectively,
-and using the appropriate definitions for open
-(Equations~\ref{eq:wiener_mean}, \ref{eq:wiener_variance}, \ref{eq:precision_variance_open})
-or closed intervals (Equations~\ref{eq:bridge_mean}, \ref{eq:precision_variance_closed},
-\ref{eq:bridge_variance}).
-%
-
+where $d$, $f,$ and $p$ denote the drift, fouling, and precision components, respectively.
 
 TODO FIGURE
 
@@ -543,8 +689,7 @@ and the confidence interval is
 \text{.}
 \end{equation}
 
-\section{Variable Corrections}
-
+\subsection{DELETE}
 General form
 %
 \begin{equation}
@@ -552,6 +697,18 @@ General form
 \end{equation}
 %
 where $\theta$ is a set of parameters to be estimated from the check measurements.
+
+Uncertainty in calibration 
+for standards
+$s \in \{s_1, s_2, \ldots, s_S\}$ 
+is
+\begin{equation}
+    \operatorname{Var} \left[ f (x) \right]
+    =
+    (1 - x)^2 \sigma_p(x_{s-1})^2 +
+    x^2 \sigma_p(x_{s})^2
+\end{equation}
+
 
 Intro Binning.
 Confidence interval has the general formula
