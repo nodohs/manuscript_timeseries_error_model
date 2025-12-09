@@ -249,6 +249,7 @@ Though not a requirement,
 we often assume fouling and drift errors have the same
 form---absolute or relative---as the precision.
 
+% TODO define \sigma_s
 In normal operation,
 the device is calibrated against a standard of known precision $\sigma_s$,
 which affects the accuracy of the calibration.
@@ -402,14 +403,23 @@ with conditional mean and variance given by
         \label{eq:bridge_mean} \\
     v^c(t) &:=
     \operatorname{Var} \left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
-        = \sigma^2 (1 - \lambda(t)) \, \lambda(t) (t_k - t_{k-1})
+        = \sigma^2 (1 - \lambda_k(t)) \, \lambda_k(t) (t_k - t_{k-1})
         = \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
         \label{eq:bridge_variance}
     \text{.}
 \end{align}
+
+% By introducting a bridge factor $\phi_k$,
+% \begin{equation}
+%     \phi_k(t)
+%         = \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}}
+%         = (1 - \lambda_k(t)) \, \lambda_k(t)
+%     \text{,}
+% \end{equation}
+% the variance can be expressed as
 %
 \subsection{Precision Error Model}
-
+% TODO revise to calibration error model
 Recall that the precision of the measurement device $\sigma_{p}$ is assumed to be
 constant over time (Equation~\ref{eq:precision_error}).
 Thus, for normal errors, the conditional distribution is
@@ -468,6 +478,9 @@ For example, a pH meter might be calibrated against standards at pH 4, 7, and 10
 In that case, the expected drift-correction for a measurement is 
 a linear interpolation between
 the corrections for the two nearest standards \citep{Wagner_2006}.
+
+Since lack observations to fully characterize the calibration error as a Wiener process,
+
 Given standard values $z_s$ for $s = 1, 2, \ldots, S$,
 the conditional mean of the Wiener-process error at time $t$ and reading $y$ is
 %
@@ -478,27 +491,36 @@ the conditional mean of the Wiener-process error at time $t$ and reading $y$ is
         E_{t,y}\,\mid\,
         E_{k-1,s-1} = e_{k-1,s-1}, \,
         E_{k-1,s} = e_{k-1,s}, \,
-        \right] \\
+        \right] \notag \\
     &=
-    (1-\lambda^+_s(t))
+    (1-\lambda_s(y))
     \left[
         \delta_{k-1} e_{k-1,s-1} + \mu_{s-1}(t - t_{k-1})
     \right]
     +
-    \lambda^+_s(t)
+    \lambda_s(y)
     \left[
          \delta_{k-1} e_{k-1,s} + \mu_{s} (t - t_{k-1})
     \right]
 \end{align}
+Note this is a linear interpolation between the two standards.
+% and also applies to extraplolation
 %
-where $\lambda^+_s(t)$ is the linear interpolation weight,
+
+TODO use $\lambda^+_s(t)$ for the interpolation weight in the mean also,
+which matches Figure 11 of Wagner.
+
+We will also estimate the variance by interpolation,
+but we need to modify the weight to ensure 
+that the variance is non-negative when extrapolating beyond the standard range.
+Let $\lambda^+_s(t)$ be the linear interpolation weight,
 extended by
 %
 \begin{equation}
-    \lambda^+_s(t) =
+    \lambda^+_s(y) =
     \begin{cases}
         1, & y < y_{1} \\
-        \dfrac{y - y_{s-1}}{y_s - y_{s-1}}, & y \in [y_{s-1}, y_s] \\
+        \frac{y - y_{s-1}}{y_s - y_{s-1}}, & y \in [y_{s-1}, y_s] \\
         0, & y > y_{S}
     \end{cases}
     \text{,}
@@ -506,9 +528,20 @@ extended by
 %
 such that $\lambda^+_s(t) = 1$ or $0$ when extrapolating
 below or above the standard range, respectively.
+For reasons that will become clear,
+we also define the time-variance factor,
+\begin{equation}
+    \phi^+_k(t) =
+    \begin{cases}
+        (t_{1} - t), & t < t_{1} \\
+        \frac{(t - t_{k-1})(t_{k} - t)}{(t_{k} - t_{k-1})},
+        & t \in [t_{k-1}, t_{k}] \\
+        (t - t_{K}), & t > t_{K} 
+    \end{cases}
+\end{equation}
 
-Similarly,
-the variance is interpolated between the two standards,
+
+Then the variance of the calibration-drift is
 %
 % TODO change all notation to e_{t_{k-1}} and so forth for clarity
 % OR preliminary notes that e_{k-1} = e_{t_{k-1}}
@@ -519,7 +552,7 @@ the variance is interpolated between the two standards,
         E_{t,x} \mid
         E_{k-1,s-1} = e_{k-1,s-1}, \,
         E_{k-1,s} = e_{k-1,s}
-    \right] \\
+    \right] \notag \\
     &=
     (1 - \lambda^+_s(y))^2
     \operatorname{Var}\left[ 
@@ -531,15 +564,22 @@ the variance is interpolated between the two standards,
     \operatorname{Var}\left[
         E_{t,x} \mid
         E_{k-1,s} = e_{k-1,s}
-    \right] \\
+    \right] \notag \\
     &=
     \left[
     \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
     +
     \lambda^+_s(y)^2 \sigma^2_{s}
     \right]
-    \left(t - t_{k-1}\right)
-\end{align}
+    \underbrace{\left(t - t_{k-1}\right)}_{\text{time-variance factor}} \notag \\
+    &=
+    \left[
+    \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
+    +
+    \lambda^+_s(y)^2 \sigma^2_{s}
+    \right]
+    \phi^+_k(t)
+ \end{align}
 %
 
 The closed-interval version of the conditional mean is a bilinear interpolation between four points,
@@ -556,7 +596,7 @@ $\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
     \mathbb{E}\left[
         E_{t,y}\,\mid\,
         \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
-        \right] \\
+        \right] \notag \\
     %\mathbb{E}
     %\left[
     %    E_{t,x} \mid
@@ -566,44 +606,97 @@ $\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
     %    E_{t_k,x_s} = e_{k,s}
     %\right] \\ 
     &=
-    (1-\lambda^+_k(t),\;\lambda^+_k(t))
+    (1-\lambda^k(t),\;\lambda^k(t))
     \begin{bmatrix}
         e_{k-1,s-1} & e_{k-1,s} \\
         e_{k,s-1}   & e_{k,s}
     \end{bmatrix}
     \begin{bmatrix}
-        1-\lambda^+_s(y) \\
-        \lambda^+_s(y)
-    \end{bmatrix},
+        1-\lambda_s(y) \\
+        \lambda_s(y)
+    \end{bmatrix}.
 \end{align}
-which expands to
-\begin{equation}
+Expanding the right-hand side yields
+\begin{align}
     m^c(t,y)
-    =
-    (1 - \lambda^+_k(t))(1 - \lambda^+_s(y)) e_{k-1,s-1}
+    &=
+    (1 - \lambda_k(t))(1 - \lambda_s(y)) e_{k-1,s-1} \notag \\
+    &\quad
+    + (1 - \lambda_k(t)) \lambda_s(y) e_{k-1,s} \notag \\
+    &\quad
+    + \lambda_k(t)(1 - \lambda_s(y)) e_{k,s-1} \notag \\
+    &\quad
+    + \lambda_k(t) \lambda_s(y) e_{k,s}
+    \text{,}
+\end{align}
+which satisfies the conditions for the four corner points,
+\begin{align}
+    m^c(t_{k-1}, y_{s-1}) &=  e_{k-1,s-1} \text{,} \notag \\
+    m^c(t_{k-1}, y_{s})   &=  e_{k-1,s} \text{,} \notag \\
+    m^c(t_{k}, y_{s-1})   &=  e_{k,s-1} \text{,} \notag \\
+    m^c(t_{k}, y_{s})     &=  e_{k,s} \text{.}
+\end{align}
+%
+The closed-interval conditional variance
+%
+\begin{align}
+    v^c(t, y)
+    &:=
+    \operatorname{Var}\left[
+        E_{t,y}\,\mid\,
+        \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
+        \right] \\
+    &=
+    \left[
+        \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
+        +
+        \lambda^+_s(y)^2 \sigma^2_{s}
+    \right]
+    \underbrace{
+        \frac{\left(t - t_{k-1}\right) \left(t_{k} - t\right)}
+        {\left(t_{k} - t_{k-1}\right)}
+    }_{\text{time-variance factor}} \\
+    &=
+    \left[
+    \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
     +
-    (1 - \lambda^+_k(t)) \lambda^+_s(y) e_{k-1,s}
-    +
-    \lambda^+_k(t)(1 - \lambda^+_s(y)) e_{k,s-1}
-    +
-    \lambda^+_k(t) \lambda^+_s(y) e_{k,s}
-\end{equation}
-where
+    \lambda^+_s(y)^2 \sigma^2_{s}
+    \right]
+    \phi^+_k(t)
+\end{align}
+% TODO need to verify closed-interval variance
+
+\subsection{RESUME HERE}
+In practice, imputation
+Say you observe $e_{k, s-1}$ and $e_{k, s+1}$ at time $t_k$,
+but not $e_{k, s}$.
+%Then the closed-interval conditional mean is
 \begin{equation}
-    m^c(t_{k-1}, y_{s-1}) = e_{k-1,s-1} \text{,}
-    \quad
-    m^c(t_{k-1}, y_{s}) = e_{k-1,s} \text{,}
-    \quad
-    m^c(t_{k}, y_{s-1}) = e_{k,s-1} \text{,}
-    \quad
-    m^c(t_{k}, y_{s}) = e_{k,s} \text{.}
+   \hat{e}_{k,s} =
+    (1 - \lambda^+_s(y)) e_{k,s-1} + \lambda^+_s(y) e_{k,s+1}
+    \text{,}
 \end{equation}
 
-% TODO missing standards
+and the conditional variance of the imputed error
+\begin{align}
+    \hat{\sigma}^2_{s}
+    &=
+    \operatorname{Var}\left[
+        E_{t,y} \mid
+        E_{k,s-1} = e_{k,s-1}, \,
+        E_{k,s+1} = e_{k,s+1}
+        \right] \\
+    &=
+    (1 - \lambda^+_s(y))^2 \sigma^2_{s-1} + \lambda^+_s(y)^2 \sigma^2_{s+1}
+\end{align}
+
+Conversly, when $e_{k,s}$ is observed, then
+$\hat{\sigma}^2_{c} = \sigma^2_{p} + \sigma^2_{s}$.
 
 \subsection{Combined Error}
-
-By substituting $\lambda^+$ for $\lambda$,
+% TODO change superscript notations to $o$ and $b$ for bridge
+By substituting $\lambda^+$ for $\lambda$
+and $\phi^+$ for the time variance factor,
 it is easily verified that the open and closed forms are equivalent,
 \begin{align}
     m(t) &= m^c(t) = m^o(t)
@@ -611,8 +704,7 @@ it is easily verified that the open and closed forms are equivalent,
     v(t) &= v^c(t) = v^o(t)
     \text{,}
 \end{align}
-and thereby define the conditional distribution of the error
-without using superscripts,
+and thereby define the error distribution without superscripts,
 %Letting $d$, $f,$ and $p$ denote the drift, fouling, and precision components,
 \begin{equation}
     p(e_t \mid SET) = \mathcal{N}(m(t), v(t))
@@ -623,6 +715,8 @@ m(t) &=
     m_{f}(t)
     +
     m_{d}(t, y)
+    +
+    m_{c}(t, y)
     \qquad \text{and}
     \label{eq:total_mean_open} \\
 v(t) &=
@@ -630,10 +724,12 @@ v(t) &=
     +
     v_{d}(t, y)
     +
+    v_{c}(t, y)
+    +
     v_{p}(t)
     \text{,}
 \end{align}
-where $d$, $f,$ and $p$ denote the drift, fouling, and precision components, respectively.
+where $f$, $d$, $c$, and $p$ denote the fouling, drift, calibration, and precision, respectively.
 
 TODO FIGURE
 
@@ -666,7 +762,6 @@ with approximate confidence interval
 %
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal distribution
 (e.g., $q_{0.975} = 1.96$ for a 95\% confidence interval).
-
 Alternatively, for percent error $\%E_{t}$, the measured value is
 %
 \begin{equation}
@@ -689,50 +784,39 @@ and the confidence interval is
 \text{.}
 \end{equation}
 
-\subsection{DELETE}
-General form
-%
-\begin{equation}
-    x(t) = y_t - m_{\theta}(y_t, t)
-\end{equation}
-%
-where $\theta$ is a set of parameters to be estimated from the check measurements.
-
-Uncertainty in calibration 
-for standards
-$s \in \{s_1, s_2, \ldots, s_S\}$ 
-is
-\begin{equation}
-    \operatorname{Var} \left[ f (x) \right]
-    =
-    (1 - x)^2 \sigma_p(x_{s-1})^2 +
-    x^2 \sigma_p(x_{s})^2
-\end{equation}
-
-
-Intro Binning.
-Confidence interval has the general formula
-%
-\begin{equation}
-    \text{CI} = x(t) \pm q_{1-\alpha/2} \sqrt{v_{b}(y_t, t)}
-\end{equation}
-%
-where $b$ indicates the bin associated with time $t$.
-
 \section{Parameter Estimation}
 
-\subsection{Maximum Likelihood Estimation}
-
+Letting
+%
+\begin{align}
+    r(\mu_k) &:= e_k - \delta_{k-1} e_{k-1} - \mu_k (t - t_{k-1}) \\
+    u(\sigma^2_k) &:= \sigma^2_k (t - t_{k-1}) + \sigma^2_p
+\end{align}
+%
+and assuming the residuals are independent and identically distributed (i.i.d),
 %
 \begin{equation}
-\hat{\mu} = X
+    e_k \mid \mu, \sigma^2
+    \sim \mathcal{N}(
+        \delta_{k-1} e_{k-1} + \mu_k (t_k - t_{k-1}),\;
+        \sigma^2_k (t_k - t_{k-1}) + \sigma^2_p
+    )
 \end{equation}
 %
-% variance
-
-\subsection{Method of Moments}
-
-
+then we can estimate $\mu$ and $\sigma^2_k$ by maximumizing the log-likelihood function,
+%
+\begin{equation}
+    \ell(\mu, \sigma^2)
+    =
+    %-\frac{K_i}{2} \ln(2 \pi)
+    - \frac{1}{2} \sum_{k=1}^{K_i}
+    \left[
+        \log \left( u(\sigma^2_k) \right)
+        +
+        \frac{r(\mu_k)^2}{u(\sigma^2_k)}
+    \right]
+\end{equation}
+%
 \section{Hierarchical Modeling}
 % \sigma_ij (site i and bin j )
 The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site $i$ is given by
