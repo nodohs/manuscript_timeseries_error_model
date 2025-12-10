@@ -414,7 +414,7 @@ Let $\lambda^+_k(t)$ be the linear interpolation weight,
 extended by
 %
 \begin{equation}
-    \lambda^+_k(y) =
+    \lambda^+_k(y) :=
     \begin{cases}
         1, & t < t_{1} \\
         \frac{t - t_{k-1}}{t_k - t_{k-1}}, & t \in [t_{k-1}, t_k] \\
@@ -427,29 +427,27 @@ such that $\lambda^+_k(t) = 1$ or $0$ when extrapolating
 below or above the standard range, respectively.
 Also let $\phi^+_k(t)$ define the bridge factor, extended by
 \begin{equation}
-    \phi^+_k(t) =
+    \phi^+_k(t) :=
     \begin{cases}
         (t_{1} - t), & t < t_{1} \\
         \frac{(t - t_{k-1})(t_{k} - t)}{(t_{k} - t_{k-1})},
         & t \in [t_{k-1}, t_{k}] \\
         (t - t_{K}), & t > t_{K} 
     \end{cases}
-    \text{,}
+    \text{.}
 \end{equation}
-so that the open and closed forms are expressed in the same terms,
+By substituting these definitions into the equations for the mean and covariance,
+the open and closed forms become equivalent,
 \begin{align}
     m(t) &= \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1} + \lambda^+_k(t) e_k
     \qquad \text{and} \qquad \\
     v(t) &= \sigma^2 \phi^+_k(t)
     \text{,}
 \end{align}
-thereby removing the need for superscripts ($o$ and $c$) in the notation.
-
-
-
-
+thereby eliminating the need for superscripts ($m^o$, $m^c$, etc.).
 
 \subsection{Precision Error Model}
+
 % TODO revise to calibration error model
 Recall that the precision of the measurement device $\sigma_{p}$ is assumed to be
 constant over time (Equation~\ref{eq:precision_error}).
@@ -502,7 +500,7 @@ equal to 1 if $t \neq t_{d}$ and 0 otherwise,
 \end{equation}
 which modulates the indirect effect of calibration-drift on the precision error.
 
-\subsection{Multi-point Calibration}
+\subsection{Multi-point Correction}
 
 Sometimes multiple standards are used to calibrate the device.
 For example, a pH meter might be calibrated against standards at pH 4, 7, and 10.
@@ -510,9 +508,88 @@ In that case, the expected drift-correction for a measurement is
 a linear interpolation between
 the corrections for the two nearest standards \citep{Wagner_2006}.
 
-Since lack observations to fully characterize the calibration error as a Wiener process,
-
 Given standard values $z_s$ for $s = 1, 2, \ldots, S$,
+the conditional mean is a bilinear interpolation between four points,
+$e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$,
+denote as the set
+$\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
+%
+% bilinear interpolation between four points
+% e{k,s} and so on
+% in terms of \lambda_k(t) \lambda_s(x)
+\begin{align}
+    m(t, y)
+    &:=
+    \mathbb{E}\left[
+        E_{t,y}\,\mid\,
+        \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
+        \right] \notag \\
+    &=
+    (1-\lambda^+_k(t),\;\lambda^+_k(t))
+    \begin{bmatrix}
+        \delta_{k-1} e_{k-1,s-1} & \delta_{k-1} e_{k-1,s} \\
+        e_{k,s-1}   & e_{k,s}
+    \end{bmatrix}
+    \begin{bmatrix}
+        1-\lambda^+_s(y) \\
+        \lambda^+_s(y)
+    \end{bmatrix}.
+\end{align}
+Expanding the right-hand side yields
+\begin{align}
+    m(t,y)
+    &=
+    (1 - \lambda_k(t))(1 - \lambda_s(y)) \delta_{k-1} e_{k-1,s-1} \notag \\
+    &\quad
+    + (1 - \lambda_k(t)) \lambda_s(y) \delta_{k-1} e_{k-1,s} \notag \\
+    &\quad
+    + \lambda_k(t)(1 - \lambda_s(y)) e_{k,s-1} \notag \\
+    &\quad
+    + \lambda_k(t) \lambda_s(y) e_{k,s}
+    \text{,}
+\end{align}
+which satisfies the conditions for the four corner points,
+\begin{align}
+    m(t_{k-1}, y_{s-1}) &=  \delta_{k-1}e_{k-1,s-1} \text{,} \notag \\
+    m(t_{k-1}, y_{s})   &=  \delta_{k-1}e_{k-1,s} \text{,} \notag \\
+    m(t_{k}, y_{s-1})   &=  e_{k,s-1} \text{,} \notag \\
+    m(t_{k}, y_{s})     &=  e_{k,s} \text{.}
+\end{align}
+%
+The conditional variance is given by
+%
+\begin{align}
+    v(t, y)
+    &:=
+    \operatorname{Var}\left[
+        E_{t,y}\,\mid\,
+        \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
+        \right] \\
+    &=
+    \left[
+        \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
+        +
+        \lambda^+_s(y)^2 \sigma^2_{s}
+    \right]
+    \underbrace{
+        \frac{\left(t - t_{k-1}\right) \left(t_{k} - t\right)}
+        {\left(t_{k} - t_{k-1}\right)}
+    }_{\text{time-variance factor}} \\
+    &=
+    \left[
+    \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
+    +
+    \lambda^+_s(y)^2 \sigma^2_{s}
+    \right]
+    \phi^+_k(t)
+\end{align}
+% TODO need to verify closed-interval variance
+Here, we might reasonably assume
+\begin{equation}
+    v(t, y) = \sigma \phi^+_k(t)
+\end{equation}
+
+\subsection{SCRATCH}
 the conditional mean of the Wiener-process error at time $t$ and reading $y$ is
 %
 \begin{align}
@@ -538,133 +615,6 @@ Note this is a linear interpolation between the two standards.
 % and also applies to extraplolation
 %
 
-TODO use $\lambda^+_s(t)$ for the interpolation weight in the mean also,
-which matches Figure 11 of Wagner.
-
-Then the variance of the calibration-drift is
-%
-% TODO change all notation to e_{t_{k-1}} and so forth for clarity
-% OR preliminary notes that e_{k-1} = e_{t_{k-1}}
-\begin{align}
-    v^o(t, y)
-    &:=
-    \operatorname{Var}\left[
-        E_{t,x} \mid
-        E_{k-1,s-1} = e_{k-1,s-1}, \,
-        E_{k-1,s} = e_{k-1,s}
-    \right] \notag \\
-    &=
-    (1 - \lambda^+_s(y))^2
-    \operatorname{Var}\left[ 
-        E_{t,y} \mid
-        E_{k-1,s-1} = e_{k-1,s-1}
-    \right]
-    +
-    \lambda^+_s(y)^2
-    \operatorname{Var}\left[
-        E_{t,x} \mid
-        E_{k-1,s} = e_{k-1,s}
-    \right] \notag \\
-    &=
-    \left[
-    \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
-    +
-    \lambda^+_s(y)^2 \sigma^2_{s}
-    \right]
-    \underbrace{\left(t - t_{k-1}\right)}_{\text{time-variance factor}} \notag \\
-    &=
-    \left[
-    \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
-    +
-    \lambda^+_s(y)^2 \sigma^2_{s}
-    \right]
-    \phi^+_k(t)
- \end{align}
-%
-
-The closed-interval version of the conditional mean is a bilinear interpolation between four points,
-$e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$,
-denote as the set
-$\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
-%
-% bilinear interpolation between four points
-% e{k,s} and so on
-% in terms of \lambda_k(t) \lambda_s(x)
-\begin{align}
-    m^c(t, y)
-    &:=
-    \mathbb{E}\left[
-        E_{t,y}\,\mid\,
-        \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
-        \right] \notag \\
-    %\mathbb{E}
-    %\left[
-    %    E_{t,x} \mid
-    %    E_{t_{k-1},x_{s-1}} = e_{k-1,s-1} ,,\
-    %    E_{t_{k-1},x_s} = e_{k-1,s} ,\,
-    %    E_{t_k,x_{s-1}} = e_{k,s-1} ,\,
-    %    E_{t_k,x_s} = e_{k,s}
-    %\right] \\ 
-    &=
-    (1-\lambda^k(t),\;\lambda^k(t))
-    \begin{bmatrix}
-        \delta_{k-1} e_{k-1,s-1} & \delta_{k-1} e_{k-1,s} \\
-        e_{k,s-1}   & e_{k,s}
-    \end{bmatrix}
-    \begin{bmatrix}
-        1-\lambda_s(y) \\
-        \lambda_s(y)
-    \end{bmatrix}.
-\end{align}
-Expanding the right-hand side yields
-\begin{align}
-    m^c(t,y)
-    &=
-    (1 - \lambda_k(t))(1 - \lambda_s(y)) \delta_{k-1} e_{k-1,s-1} \notag \\
-    &\quad
-    + (1 - \lambda_k(t)) \lambda_s(y) \delta_{k-1} e_{k-1,s} \notag \\
-    &\quad
-    + \lambda_k(t)(1 - \lambda_s(y)) e_{k,s-1} \notag \\
-    &\quad
-    + \lambda_k(t) \lambda_s(y) e_{k,s}
-    \text{,}
-\end{align}
-which satisfies the conditions for the four corner points,
-\begin{align}
-    m^c(t_{k-1}, y_{s-1}) &=  \delta_{k-1}e_{k-1,s-1} \text{,} \notag \\
-    m^c(t_{k-1}, y_{s})   &=  \delta_{k-1}e_{k-1,s} \text{,} \notag \\
-    m^c(t_{k}, y_{s-1})   &=  e_{k,s-1} \text{,} \notag \\
-    m^c(t_{k}, y_{s})     &=  e_{k,s} \text{.}
-\end{align}
-%
-The closed-interval conditional variance
-%
-\begin{align}
-    v^c(t, y)
-    &:=
-    \operatorname{Var}\left[
-        E_{t,y}\,\mid\,
-        \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
-        \right] \\
-    &=
-    \left[
-        \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
-        +
-        \lambda^+_s(y)^2 \sigma^2_{s}
-    \right]
-    \underbrace{
-        \frac{\left(t - t_{k-1}\right) \left(t_{k} - t\right)}
-        {\left(t_{k} - t_{k-1}\right)}
-    }_{\text{time-variance factor}} \\
-    &=
-    \left[
-    \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
-    +
-    \lambda^+_s(y)^2 \sigma^2_{s}
-    \right]
-    \phi^+_k(t)
-\end{align}
-% TODO need to verify closed-interval variance
 
 \subsection{RESUME HERE}
 In practice, imputation
@@ -695,21 +645,8 @@ $\hat{\sigma}^2_{c} = \sigma^2_{p} + \sigma^2_{s}$.
 
 \subsection{Combined Error}
 % TODO change superscript notations to $o$ and $b$ for bridge
-By substituting $\lambda^+$ for $\lambda$
-and $\phi^+$ for the time variance factor,
-it is easily verified that the open and closed forms are equivalent,
-\begin{align}
-    m(t) &= m^c(t) = m^o(t)
-    \qquad \text{and} \qquad \\
-    v(t) &= v^c(t) = v^o(t)
-    \text{,}
-\end{align}
-and thereby define the error distribution without superscripts,
-%Letting $d$, $f,$ and $p$ denote the drift, fouling, and precision components,
-\begin{equation}
-    p(e_t \mid SET) = \mathcal{N}(m(t), v(t))
-\end{equation}
-with conditional mean and variance given by the sum of the individual components,
+The conditional mean and variance given by the sum of the individual components,
+%
 \begin{align}
 m(t) &=
     m_{f}(t)
@@ -729,6 +666,7 @@ v(t) &=
     v_{p}(t)
     \text{,}
 \end{align}
+%
 where $f$, $d$, $c$, and $p$ denote the fouling, drift, calibration, and precision, respectively.
 
 TODO FIGURE
