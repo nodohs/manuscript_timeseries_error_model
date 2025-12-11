@@ -409,7 +409,6 @@ with conditional mean and variance given by
         \label{eq:bridge_variance}
     \text{,}
 \end{align}
-
 %
 Let $\lambda^+_k(t)$ be the linear interpolation weight,
 extended by
@@ -427,6 +426,7 @@ extended by
 such that $\lambda^+_k(t) = 1$ or $0$ when extrapolating
 below or above the standard range, respectively.
 Also let $\phi^+_k(t)$ define the bridge factor, extended by
+%
 \begin{equation}
     \phi^+_k(t) :=
     \begin{cases}
@@ -437,69 +437,103 @@ Also let $\phi^+_k(t)$ define the bridge factor, extended by
     \end{cases}
     \text{.}
 \end{equation}
+%
 By substituting these definitions into the equations for the mean and covariance,
 the open and closed forms become equivalent,
+%
 \begin{align}
     m(t) &= \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1} + \lambda^+_k(t) e_k
     \qquad \text{and} \qquad \\
     v(t) &= \sigma^2 \phi^+_k(t)
     \text{,}
 \end{align}
+%
 thereby eliminating the need for superscripts ($m^o$, $m^c$, etc.).
 
-\subsection{Precision Error Model}
+\subsection{Check-Measurement Uncertainty}
 
-% TODO revise to calibration error model
-Recall that the precision of the measurement device $\sigma_{p}$ is assumed to be
-constant over time (Equation~\ref{eq:precision_error}).
-Thus, for normal errors, the conditional distribution is
+Recall that the checks measurements have their own uncertainty, which must be propagated through the error model.
+We will explain the general statistical procedure, then apply it to fouling and calibration-drift.
+
+Formally, we define a Gaussian bridge with uncertain endpoints,
+where the expectation and variance of the endpoints is given by
+\begin{equation}
+    \mathbb{E}\left[ E_{k-1}\right] = m_{k-1}
+    \text{,} \qquad
+    \mathbb{E}\left[ E_{k}\right] = m_{k}
+    \text{,} \qquad
+    \operatorname{Var}\left[ E_{k-1}\right] = v_{k-1}
+    \text{,} \qquad
+    \operatorname{Var}\left[ E_{k}\right] = v_{k}
+    \text{,} \qquad
+    \operatorname{Cov}\left[ E_{k-1}, E_{k}\right] = 0
+\end{equation}
+
+The Gaussian bridge is given by 
 %
 \begin{equation}
-    p(e_t \mid E_{t_{k-1}} = e_{k-1}) = \mathcal{N}
-        \left(m^o(t),\,v^o(t)\right)
+    E_t = (1 - \lambda_k(t)) E_{k-1} + \lambda_k(t) E_k + W_t
+    \text{,} \qquad
+    W_t \sim \mathcal{N}\left(0, \sigma^2 \phi^+_k(t)\right)
+    \text{.}
+\end{equation}
+%
+Using the linearity of expectation,
+%
+\begin{align}
+    \mathbb{E}[E_t] &= (1 - \lambda_k(t)) \mathbb{E}[E_{k-1}]
+                        + \lambda_k(t) \mathbb{E}[E_k] + \mathbb{E}[W_t] \\
+                    &= (1 - \lambda_k(t)) m_{k-1} + \lambda_k(t) m_{k}
+\end{align}
+%
+Because $W_t$ is independent of the endpoint errors $E_{k-1}$ and $E_k$,
+these terms can be decomposed in the variance,
+then using variance of the linear combination yields
+%
+\begin{align}
+    \operatorname{Var}[E_t]
+        &= \operatorname{Var}[
+            (1 - \lambda_k(t))^2 E_{k-1}
+            +
+            \lambda_k(t)^2 E_{k}
+            ]
+            + \operatorname{Var}[W_t] \\
+        &= (1 - \lambda_k(t))^2 v_{k-1}
+            + \lambda_k(t)^2 v_{k}
+            + \sigma^2 \phi^+_k(t)
+    \text{.}
+\end{align}
+%
+
+For a fouling check, we assume the measuring and reference devices have known precisions
+of $\sigma_p$ and $\sigma_r$, respectively,
+and that the error is perfectly correlated during the check process.
+
+
+For a calibration check, we assume the standard and measurement device have known precisions
+of $\sigma_p$ and $\sigma_s$, respectively,
+and are independent of each other,
+%
+\begin{equation}
+    E_{p} \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    \text{,} \qquad
+    E_{s} \sim \mathcal{N}\left(0, \sigma^2_s \right)
     \text{,}
 \end{equation}
 %
-with conditional mean and variance given by
+such that the variance induced by the calibration error is
 %
-\begin{align}
-    m^o(t)
-        &:= \mathbb{E}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
-        = 0
-        \qquad \text{and} \\
-    v^o(t)
-        &:= \operatorname{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
-        = \sigma^2_{p}
-        \text{.}
-        \label{eq:precision_variance_open}
-\end{align}
-%
-However, the conditional distribution for the closed interval is complicated
-by the indirect effect of calibration.
-In this case, the conditional variance is
-%
-% TODO XXX note the indirect effect of calibration
-\begin{align}
-    v^c(t)
-        &:= \operatorname{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
-        = \lambda_{d}(t) \chi_{d}(t) \sigma_p^2
-        +
-        \sigma_p^2
-        \text{,}
-        \label{eq:precision_variance_closed}
-\end{align}
-where $\chi_{d}$ is an indicator function
-equal to 1 if $t \neq t_{d}$ and 0 otherwise,
 \begin{equation}
-\chi_{d}(t) =
-\begin{cases}
-    1, & t \neq t_{d} \\
-    0, & t = t_{d}
-\end{cases}
-\label{eq:chi_function}
-\text{,}
+    \operatorname{Var}\left[ E_p + E_s \right] = \sigma^2_p + \sigma^2_s
+    \text{.}
 \end{equation}
-which modulates the indirect effect of calibration-drift on the precision error.
+%
+Substituting into equation X
+%
+\begin{equation}
+    v_c(t) := (1 - \lambda^+_k(t))^2 (\sigma^2_p + \sigma^2_s)
+\end{equation}
+%
 
 \subsection{Multi-point Correction}
 
@@ -587,34 +621,8 @@ The conditional variance is given by
 % TODO need to verify closed-interval variance
 Here, we might reasonably assume
 \begin{equation}
-    v(t, y) = \sigma \phi^+_k(t)
+    v(t, y) = \sigma^2 \phi^+_k(t)
 \end{equation}
-
-\subsection{SCRATCH}
-the conditional mean of the Wiener-process error at time $t$ and reading $y$ is
-%
-\begin{align}
-    m^o(t, y)
-    &:=
-    \mathbb{E}\left[
-        E_{t,y}\,\mid\,
-        E_{k-1,s-1} = e_{k-1,s-1}, \,
-        E_{k-1,s} = e_{k-1,s}, \,
-        \right] \notag \\
-    &=
-    (1-\lambda_s(y))
-    \left[
-        \delta_{k-1} e_{k-1,s-1} + \mu_{s-1}(t - t_{k-1})
-    \right]
-    +
-    \lambda_s(y)
-    \left[
-         \delta_{k-1} e_{k-1,s} + \mu_{s} (t - t_{k-1})
-    \right]
-\end{align}
-Note this is a linear interpolation between the two standards.
-% and also applies to extraplolation
-%
 
 
 \subsection{RESUME HERE}
@@ -670,7 +678,7 @@ v(t) &=
 %
 where $f$, $d$, $c$, and $p$ denote the fouling, drift, calibration, and precision, respectively.
 
-TODO FIGURE
+FIGURE HERE
 
 \begin{figure*}[t]
 %\includegraphics[width=12cm]{FILE NAME}
@@ -678,6 +686,8 @@ TODO FIGURE
 \label{fig:}
 \end{figure*}
 %
+
+
 
 \subsection{Corrected Measurement and Confidence Interval}
 
@@ -913,8 +923,113 @@ TEXT
 
 
 \appendix
+\section{Theorems}
+\subsection{Variance of a Linear Combination}
+For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments, and any constants $a_1, a_2, \ldots, a_n$,
+\begin{equation}
+    Y = a_1 X_1 + a_2 X_2 + \ldots + a_n X_n
+\end{equation}
+the variance is given by
+\begin{equation}
+    \operatorname{Var}(Y)
+    =
+    \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j \operatorname{Cov}(X_i, X_j)
+\end{equation}
+
+For two-variable case, if
+\begin{equation}
+    Y = a X + b Z
+\end{equation}
+then
+\begin{equation}
+    \operatorname{Var}(Y) = a^2 \operatorname{Var}(X) + b^2 \operatorname{Var}(Z) + 2ab \operatorname{Cov}(X, Z)
+\end{equation}
+
 \section{Proofs}    %% Appendix A
 \subsection{}
+\section{SCRATCH}
+\subsection{Precision model}
+%\end{align}
+% TODO revise to calibration error model
+Recall that the precision of the measurement device $\sigma_{p}$ is assumed to be
+constant over time (Equation~\ref{eq:precision_error}).
+Thus, for normal errors, the conditional distribution is
+%
+\begin{equation}
+    p(e_t \mid E_{t_{k-1}} = e_{k-1}) = \mathcal{N}
+        \left(m^o(t),\,v^o(t)\right)
+    \text{,}
+\end{equation}
+%
+with conditional mean and variance given by
+%
+\begin{align}
+    m^o(t)
+        &:= \mathbb{E}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
+        = 0
+        \qquad \text{and} \\
+    v^o(t)
+        &:= \operatorname{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
+        = \sigma^2_{p}
+        \text{.}
+        \label{eq:precision_variance_open}
+\end{align}
+%
+However, the conditional distribution for the closed interval is complicated
+by the indirect effect of calibration.
+In this case, the conditional variance is
+%
+% TODO XXX note the indirect effect of calibration
+\begin{align}
+    v^c(t)
+        &:= \operatorname{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
+        = \lambda_{d}(t) \chi_{d}(t) \sigma_p^2
+        +
+        \sigma_p^2
+        \text{,}
+        \label{eq:precision_variance_closed}
+\end{align}
+where $\chi_{d}$ is an indicator function
+equal to 1 if $t \neq t_{d}$ and 0 otherwise,
+\begin{equation}
+\chi_{d}(t) =
+\begin{cases}
+    1, & t \neq t_{d} \\
+    0, & t = t_{d}
+\end{cases}
+\label{eq:chi_function}
+\text{,}
+\end{equation}
+which modulates the indirect effect of calibration-drift on the precision error.
+
+
+
+\subsection{2D Interpolation}
+the conditional mean of the Wiener-process error at time $t$ and reading $y$ is
+%
+\begin{align}
+    m^o(t, y)
+    &:=
+    \mathbb{E}\left[
+        E_{t,y}\,\mid\,
+        E_{k-1,s-1} = e_{k-1,s-1}, \,
+        E_{k-1,s} = e_{k-1,s}, \,
+        \right] \notag \\
+    &=
+    (1-\lambda_s(y))
+    \left[
+        \delta_{k-1} e_{k-1,s-1} + \mu_{s-1}(t - t_{k-1})
+    \right]
+    +
+    \lambda_s(y)
+    \left[
+         \delta_{k-1} e_{k-1,s} + \mu_{s} (t - t_{k-1})
+    \right]
+\end{align}
+Note this is a linear interpolation between the two standards.
+% and also applies to extraplolation
+%
+
 
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
