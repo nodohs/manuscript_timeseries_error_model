@@ -139,7 +139,7 @@ TEXT
 
 %TODO transition here
 In a measuring device 
-In practice, deterimination of these errors is used to correct the raw measurements
+In practice, determination of these errors is used to correct the raw measurements
 Later on, these 
 
 % USGS operates a network of several thousands of such devices
@@ -268,13 +268,14 @@ As time passes, fouling and calibration-drift errors accumulate,
 which bias the raw measurements.
 To correct for that bias,
 the fouling and calibration are periodically checked.
-Any check might determine one or both errors,
-and may or may not involve cleaning or recalibrating the device.
-After the check,
-the raw time series measurements should be corrected to account for any fouling and calibration error,
-typically, by assuming the error grows at a constant rate between checks \citep{Wagner_2006}.
-Reality can be more complicated, but for simplicity,
-we extend this same assumption as a basis for modeling the uncertainty.
+Any check may determine one or both types of error,
+and may or may not involve cleaning or recalibration of the device,
+which resets the error to zero.
+After each check,
+the raw time-series measurements is corrected to account for any fouling and calibration error,
+which are propagated through time between the checks points.
+The uncertainty of the corrected measurements therefore incorporates any uncertainty in the check measurements,
+as well as the uncertainty of the time-dependent correction processes.
 
 \subsection{Wiener-Process Error Model}
 
@@ -640,7 +641,7 @@ and the conditional variance of the imputed error
     (1 - \lambda^+_s(y))^2 \sigma^2_{s-1} + \lambda^+_s(y)^2 \sigma^2_{s+1}
 \end{align}
 
-Conversly, when $e_{k,s}$ is observed, then
+Conversely, when $e_{k,s}$ is observed, then
 $\hat{\sigma}^2_{c} = \sigma^2_{p} + \sigma^2_{s}$.
 
 \subsection{Combined Error}
@@ -741,7 +742,7 @@ and assuming the residuals are independent and identically distributed (i.i.d),
     )
 \end{equation}
 %
-then we can estimate $\mu$ and $\sigma^2_k$ by maximumizing the log-likelihood function,
+then we can estimate $\mu$ and $\sigma^2_k$ by maximizing the log-likelihood function,
 %
 \begin{equation}
     \ell(\mu, \sigma^2)
@@ -844,7 +845,7 @@ The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site
     \hat{\sigma}^2_i = X
 \end{equation}
 %
-Invergese gamma distribution prior
+Inverse gamma distribution prior
 %
 \begin{equation}
     p(\sigma^2 \mid a ,\; b)
