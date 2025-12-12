@@ -150,165 +150,170 @@ Later on, these
 
 \subsection{Preliminaries}
 %
-Let $x$ be the true value of some variable,
-$y$ be a measurement of $x$,
-such that the absolute error $e$ is the difference between the two,
+Let $x$ denote the true value of some variable
+and let $y$ denote its measured value.
+The absolute error $e$ and percent error $\%e$ are given by
 %
 \begin{equation}
     e = y - x
+    \label{eq:absolute_error}
     \text{,}
 \end{equation}
 %
-or error may be more accurately represented in relative terms,
+and
 %
 \begin{equation}
     \%e = 100 \times \frac{y - x}{y}
+    \label{eq:percent_error}
     \text{,}
 \end{equation}
 %
-given as a percentage of the measured value.
-Either form may used to estimate an uncertainty interval,
-depending on the properties of the measurement device.
-
-Furthermore, we assume each measurement comprises three types of error:
-fouling $e_f$,
-calibration drift $e_d$,
-and the innate precision of the measuring device $e_p$,
-which sum to the total,
+so that $\%e$ is expressed as a percentage of the measured value.
+For simplicity, we will instead work in terms of the fractional error
 %
 \begin{equation}
-    e = e_f + e_d + e_p % note e = -c (correction)
+    \varepsilon = \frac{y - x}{y} = \frac{\%e}{100}
+    \label{eq:fractional_error}
+    \text{,}
+\end{equation}
+%
+and only convert back to a percentage when needed.
+Either scale (absolute or relative) may be used for uncertainty quantification,
+depending on the characteristics of the measurement device.
+
+We assume that the measurement error has three components---
+fouling $e_f$, calibration-drift $e_d$,
+and instrument precision $e_p$---
+that add on the absolute scale,
+%
+\begin{equation}
+    e = e_f + e_d + e_p
     \text{.}
 \end{equation}
 %
-Fouling results from some physical, chemical, or biological buildup 
-that interferes with the measurement.
-The magnitude of fouling is determined by taking check
-measurements before and after cleaning the measurement device.
-Under steady-state conditions, the fouling error is given by
+On the relative scale, these components combine multiplicatively,
+%
+\begin{equation}
+    1 + \varepsilon = (1 + \varepsilon_f)(1 + \varepsilon_d)(1 + \varepsilon_p)
+    \text{,}
+\end{equation}
+%
+but when the errors are small (less than a few percent),
+their relation is approximately additive,
+%
+\begin{equation}
+    \varepsilon \approx \varepsilon_f + \varepsilon_d + \varepsilon_p
+    \text{.}
+\end{equation}
+%
+
+Fouling arises from physical, chemical, or biological buildup that biases the measurement.
+It is assessed using check measurements taken immediately
+before (subscript $b$) and after (subscript $a$) cleaning the device.
+Under steady conditions,
 %
 \begin{equation}
     e_f = y_b - y_a
+    \text{,}
 \end{equation}
 %
-where $y_a$ is the measurement after cleaning,
-and $y_b$ is the measurement before cleaning.
-Otherwise, the error must account for any changes
-in the environment during the cleaning,
+where $y_b$ and $y_a$ are the measurements before and after cleaning, respectively.
+If the environment changes during the cleaning,
+then the fouling check must account for that change by using a reference device,
+which measures the same environment during the cleaning period,
 %
 \begin{equation}
     e_f = (y_b - y_a) - (z_b - z_a)
     \qquad \text{or} \qquad
-    \%e_f = 100 \times \frac{(y_b - y_a) - (z_b - z_a)}{y_b}
+    \varepsilon_f = \frac{(y_b - y_a) - (z_b - z_a)}{y_b}
     \label{eq:fouling_error}
+    \text{,}
 \end{equation}
 %
-where $z_a$ and $z_b$ are measurements from a reference device in the same
-environment \citep[][but note their convention, $e = x - y$,
-flips the sign in several equations]{Wagner_2006}.
+where $z_b$ and $z_a$ are the before-and-after reference measurements
+\citep[][noting their convention flips the sign of the error]{Wagner_2006}.
 
-
-Calibration drift results from any electronic (or mechanical) drift
-in accuracy since the measurement device was last calibrated;
-in other words, any residual bias after cleaning the device.
-The magnitude of calibration-drift is determined by comparing a clean measurement
-against a known standard $z_s$,
+The calibration-drift represents any residual bias after cleaning the device,
+which is measured by comparing a clean measurement against a known standard.
+Let $z_s$ be the standard value and let $y_s$ be the clean measurement of $z_s$.
+Then
 %
 \begin{equation}
     e_d = y_s - z_s
     \qquad \text{or} \qquad
-    \%e_{d} = 100 \times \frac{y_s - z_s}{y_s}
-    \text{.}
+    \varepsilon_{d} = \frac{y_s - z_s}{y_s}
     \label{eq:drift_error}
+    \qquad \text{\citep{Wagner_2006}.}
 \end{equation}
 %
-where $z_s$ is the standard value,
-and $y_s$ is its measurement of $z_s$ \citep{Wagner_2006}.
 
-Lastly, precision error $e_p$ results from the inherent inaccuracy of any measurement device.
-% not affected by fouling or drift.
-In practice, precision is determined under controlled laboratory conditions
-and is approximated with a normal distribution,
+Lastly, precision error $e_p$ represents irreducible measurement noise.
+In practice, the precision is determined under controlled conditions,
+and the error has a Gaussian distribution,
 %
 \begin{equation}
-    e_p \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    e_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
     \qquad \text{or} \qquad
-    \%e_{p} \sim y \frac{\sigma_{\%p}}{100} \mathcal{N}\left(0 ,\, 1 \right)
-    %\%e_{p} \sim \mathcal{N}\left(0, \left( \frac{\%\sigma_p}{100} y \right)^2 \right)
-    \text{.}
+    \varepsilon_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
+    \text{,} \qquad \text{by} \quad
+    \sigma_p := \frac{\sigma_{\%p}}{100} 
     \label{eq:precision_error}
+    \text{.}
 \end{equation}
 %
-In many cases, precision is determined by the manufacturer
-and reported among the device specifications
-(as "accuracy"),
-and noting that the reported accuracy usually corresponds to the $2\sigma$ or
-95\% confidence interval.
-%$e_p \sim \mathcal{N}\left(0, 0.05^2 \right)$
-Though not a requirement,
-we often assume fouling and drift errors have the same
-form---absolute or relative---as the precision.
-
-% TODO define \sigma_s
-In normal operation,
-the device is calibrated against a standard of known precision $\sigma_s$,
-which affects the accuracy of the calibration.
-We often ignore $\sigma_s$,
-unless it is large relative to the device precision,
-in which case it should be included in the variance,
-\begin{equation}
-    \sigma^2_{\tilde{p}} = \sigma^2_{p} + \sigma^2_{s}
-    \text{.}
-\end{equation}
+The precision is typically reported in the device specifications,
+(sometimes as the "accuracy") and given as a $2\sigma$ (approximately 95\%)
+confidence interval.
+We assume fouling and drift errors have the same scale (absolute or relative)
+as the precision, but this is not a requirement.
 
 \subsection{The Measurement Procedure}
 
-A clean and calibrated device is deployed into the environment to measure some variable of interest.
-As time passes, fouling and calibration-drift errors accumulate,
-which bias the raw measurements.
-To correct for that bias,
-the fouling and calibration are periodically checked.
-Any check may determine one or both types of error,
-and may or may not involve cleaning or recalibration of the device,
-which resets the error to zero.
-After each check,
-the raw time-series measurements is corrected to account for any fouling and calibration error,
-which are propagated through time between the checks points.
-The uncertainty of the corrected measurements therefore incorporates any uncertainty in the check measurements,
-as well as the uncertainty of the time-dependent correction processes.
+A clean, calibrated device is deployed into the environment
+to measure a variable of interest.
+Over time, fouling and calibration-drift errors accumulate
+and bias the raw measurements.
+To correct this bias, fouling and calibration are checked periodically.
+Each check may quantify one or both error components
+and may involve cleaning or recalibration,
+which resets the corresponding error to zero.
+After each check, the raw time-series measurements are corrected
+for fouling and calibration-drift,
+and these corrections are propagated between check points.
+The uncertainty of the corrected measurements therefore includes uncertainty
+from the check measurements as well as uncertainty about the accumulation of
+error through time.
 
 \subsection{Wiener-Process Error Model}
 
-We will assume that the drift and fouling errors
-follow a Wiener process with an optional drift term $\mu$.
-%not to be confused with the calibration drift.
+We assume that drift and fouling errors follow a Wiener process
+with an optional drift term $\mu$.
 Formally, a Wiener process is a continuous-time stochastic process
-for which the increments are independent and normally distributed,
-with variance proportional to the time elapsed,
-and a drift term representing the average rate of change over time
+whose increments are independent and normally distributed,
+with variance proportional to elapsed time.
+The drift term $\mu$ represents the mean rate of change over time
 (with $\mu=0$ for a classical Wiener process).
-This drift term is important for devices exhibiting a systematic bias over time,
-such as due to the gradual degradation of some consumable element.
+This term is important for devices that exhibit systematic bias over time,
+such as bias caused by gradual degradation of a consumable element.
 
 Let $E_t$ be a random variable representing the error at time $t$,
 and $e_t$ be its realization (observed value).
-
-
 Suppose we observe the error at times $0 = t_0 < t_1 < t_2 < \cdots < t_K = T$.
 To simplify notation, we write $e_k := e_{t_k}$,
 such that $E_{t_k} = e_k$ for $k = 0, 1, \ldots, K$.
 Thus, $t_k - t_{k-1}$ represents the time elapsed between subsequent observations
 $e_{k-1}$ and $e_k$,
-and the subscript $k$ serves a place holder for either fouling $f$ or drift $d$ terms,
+and the subscript $k$ serves as a placeholder for either fouling $f$ or drift $d$ terms,
 $k \in \{f, d\}$.
 
 First, consider the case after observing the error at time $t_{k-1}$,
-but before observing the error at time $t_k$
-%($t \in [t_{k-1}, t_k)$).
-% ($t_{k-1} \le t < t_k$).
-We refer to this as an open interval, typical of real-time uncertainty estimation.
-In contrast, a closed interval is bracketed by observations at both $t_{k-1}$ and $t_k$,
-and the conditional mean and variance are revised retrospectively.
+but before observing the error at time $t_k$.
+We refer to this as an open interval,
+which occurs during real-time uncertainty estimation.
+In contrast, a closed interval is bracketed by
+observations at both $t_{k-1}$ and $t_k$,
+and the conditional mean and variance are revised after
+accounting for the observation at $t_k$.
 
 For an open interval,
 the conditional distribution of the Wiener-process error is
@@ -507,8 +512,55 @@ then using variance of the linear combination yields
 
 For a fouling check, we assume the measuring and reference devices have known precisions
 of $\sigma_p$ and $\sigma_r$, respectively,
-and that the error is perfectly correlated during the check process.
+and are independent of each other,
+\begin{equation}
+    E_{p} \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    \text{,} \qquad
+    E_{s} \sim \mathcal{N}\left(0, \sigma^2_r \right)
+    \text{,}
+\end{equation}
+%
 
+We will assume that the measuring device uses internal filtering,
+like time averaging of the raw signal,
+such that the error is perfectly correlated before and after the check,
+%
+\begin{equation}
+    Y_b = X_b + E_{y_{b}}
+    \text{,} \qquad
+    Y_a = X_a + E_{y_{a}}
+    \text{,} \qquad
+    \operatorname{Corr} \left( E_{y_{a}}, E_{y_{b}} \right) = 1
+\end{equation}
+%
+\begin{equation}
+    E_f = (Y_b + E_{y_{b}}) - (Y_a + E_{y_{a}}) - (Z_b + E_{z_{b}} - Z_a + E_{z_{a}})
+\end{equation}
+%
+then
+\begin{align}
+    \mathbb{E}[E_f] &= (y_b - y_a) - (z_b - z_a) \\ % EQUATION XXX
+    \operatorname{Var}[E_f]
+        &= \operatorname{Var}[E_{y_{b}} - E_{y_{a}}] + \operatorname{Var}[E_{z_{b}} - E_{z_{a}}] \\
+        &= 0 + \operatorname{Var}[E_{z_{b}} - E_{z_{a}}]
+\end{align}
+%
+If the reference device also uses filtering,
+then
+\begin{equation}
+    \operatorname{Corr}(E_{z_a}, E_{z_b}) = 1 
+    \quad \Rightarrow \quad
+    \operatorname{Var}[E_f] = 0
+    \text{;}
+\end{equation}
+otherwise, if its errors are independent,
+then
+\begin{equation}
+    \operatorname{Corr}(E_{z_a}, E_{z_b}) = 0
+    \quad \Rightarrow \quad
+    \operatorname{Var}[E_f] = 2 \sigma^2_r
+    \text{.}
+\end{equation}
 
 For a calibration check, we assume the standard and measurement device have known precisions
 of $\sigma_p$ and $\sigma_s$, respectively,
@@ -521,12 +573,16 @@ and are independent of each other,
     \text{,}
 \end{equation}
 %
-such that the variance induced by the calibration error is
-%
 \begin{equation}
-    \operatorname{Var}\left[ E_p + E_s \right] = \sigma^2_p + \sigma^2_s
-    \text{.}
+    E_d = (Y_s + E_{y_{s}}) - (Z_s + E_{z_{s}})
 \end{equation}
+then
+\begin{align}
+    \mathbb{E}[E_d] &= y_s - z_s \\ % EQUATION XXX
+    \operatorname{Var}\left[ E_{y_{s}} + E_{z_{s}} \right]
+        &= \sigma^2_p + \sigma^2_s
+\end{align}
+
 %
 Substituting into equation X
 %
@@ -624,33 +680,8 @@ Here, we might reasonably assume
     v(t, y) = \sigma^2 \phi^+_k(t)
 \end{equation}
 
-
-\subsection{RESUME HERE}
-In practice, imputation
-Say you observe $e_{k, s-1}$ and $e_{k, s+1}$ at time $t_k$,
-but not $e_{k, s}$.
-%Then the closed-interval conditional mean is
-\begin{equation}
-   \hat{e}_{k,s} =
-    (1 - \lambda^+_s(y)) e_{k,s-1} + \lambda^+_s(y) e_{k,s+1}
-    \text{,}
-\end{equation}
-
-and the conditional variance of the imputed error
-\begin{align}
-    \hat{\sigma}^2_{s}
-    &=
-    \operatorname{Var}\left[
-        E_{t,y} \mid
-        E_{k,s-1} = e_{k,s-1}, \,
-        E_{k,s+1} = e_{k,s+1}
-        \right] \\
-    &=
-    (1 - \lambda^+_s(y))^2 \sigma^2_{s-1} + \lambda^+_s(y)^2 \sigma^2_{s+1}
-\end{align}
-
-Conversely, when $e_{k,s}$ is observed, then
-$\hat{\sigma}^2_{c} = \sigma^2_{p} + \sigma^2_{s}$.
+% discuss imputation of missing standards here
+% specifically, by using the v_c term
 
 \subsection{Combined Error}
 % TODO change superscript notations to $o$ and $b$ for bridge
@@ -747,8 +778,8 @@ and assuming the residuals are independent and identically distributed (i.i.d),
 \begin{equation}
     e_k \mid \mu, \sigma^2
     \sim \mathcal{N}(
-        \delta_{k-1} e_{k-1} + \mu_k (t_k - t_{k-1}),\;
-        \sigma^2_k (t_k - t_{k-1}) + \sigma^2_p
+        \delta_{k-1} e_{k-1} + \mu_k (t - t_{k-1}),\;
+        \sigma^2_k (t - t_{k-1}) + \sigma^2_p
     )
 \end{equation}
 %
@@ -899,10 +930,6 @@ where
     =
     \frac{N_j}{N_j + 2 (\hat{a} - 1)}
 \end{equation}
-
-\subsection{Maximum Likelihood Estimation}
-
-\subsection{Method of Moments}
 
 \subsection{Simulation Experiments}
 TEXT
