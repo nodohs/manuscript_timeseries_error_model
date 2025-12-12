@@ -198,8 +198,8 @@ On the relative scale, these components combine multiplicatively,
     \text{,}
 \end{equation}
 %
-but when the errors are small (less than a few percent),
-their relation is approximately additive,
+but for small errors (less than a few percent),
+the relation is approximately additive,
 %
 \begin{equation}
     \varepsilon \approx \varepsilon_f + \varepsilon_d + \varepsilon_p
@@ -208,9 +208,10 @@ their relation is approximately additive,
 %
 
 Fouling arises from physical, chemical, or biological buildup that biases the measurement.
-It is assessed using check measurements taken immediately
+It is assessed by taking check measurements immediately
 before (subscript $b$) and after (subscript $a$) cleaning the device.
 Under steady conditions,
+the fouling error is given by
 %
 \begin{equation}
     e_f = y_b - y_a
@@ -231,12 +232,12 @@ which measures the same environment during the cleaning period,
 \end{equation}
 %
 where $z_b$ and $z_a$ are the before-and-after reference measurements
-\citep[][noting their convention flips the sign of the error]{Wagner_2006}.
+\citep[][noting they flip the sign of the error]{Wagner_2006}.
 
 The calibration-drift represents any residual bias after cleaning the device,
 which is measured by comparing a clean measurement against a known standard.
 Let $z_s$ be the standard value and let $y_s$ be the clean measurement of $z_s$.
-Then
+Then the calibration-drift error is given by
 %
 \begin{equation}
     e_d = y_s - z_s
@@ -261,10 +262,10 @@ and the error has a Gaussian distribution,
     \text{.}
 \end{equation}
 %
-The precision is typically reported in the device specifications,
-(sometimes as the "accuracy") and given as a $2\sigma$ (approximately 95\%)
+This precision is reported in the device specifications
+(sometimes called the "accuracy") as a $2\sigma$ (approximately 95\%)
 confidence interval.
-We assume fouling and drift errors have the same scale (absolute or relative)
+We typically assume fouling and drift errors have the same scale (absolute or relative)
 as the precision, but this is not a requirement.
 
 \subsection{The Measurement Procedure}
@@ -274,11 +275,11 @@ to measure a variable of interest.
 Over time, fouling and calibration-drift errors accumulate
 and bias the raw measurements.
 To correct this bias, fouling and calibration are checked periodically.
-Each check may quantify one or both error components
+Each check may quantify one or both components
 and may involve cleaning or recalibration,
 which resets the corresponding error to zero.
 After each check, the raw time-series measurements are corrected
-for fouling and calibration-drift,
+for any observed fouling and calibration-drift,
 and these corrections are propagated between check points.
 The uncertainty of the corrected measurements therefore includes uncertainty
 from the check measurements as well as uncertainty about the accumulation of
@@ -286,15 +287,29 @@ error through time.
 
 \subsection{Wiener-Process Error Model}
 
-We assume that drift and fouling errors follow a Wiener process
+We model drift and fouling errors as a Wiener process
 with an optional drift term $\mu$.
-Formally, a Wiener process is a continuous-time stochastic process
-whose increments are independent and normally distributed,
-with variance proportional to elapsed time.
-The drift term $\mu$ represents the mean rate of change over time
-(with $\mu=0$ for a classical Wiener process).
-This term is important for devices that exhibit systematic bias over time,
-such as bias caused by gradual degradation of a consumable element.
+A Wiener process is a continuous-time stochastic process
+with independent, normally distributed increments
+whose variance grows linearly with elapsed time.
+In particular, for a process $\{X_t\}_{t \ge 0}$
+with drift $\mu$ and diffusion rate $\sigma^2$,
+the increment over time $t$ satisfies
+%
+\begin{equation}
+    X_t - X_0 \sim
+    \mathcal{N}\!\left(\mu t,\; \sigma^2 t\right)
+    \qquad \text{for } t \ge 0
+    \qquad
+    \text{\citep{Taylor_1998}.}
+\end{equation}
+%
+The drift term $\mu$ represents the mean rate of change
+(with $\mu=0$ for a classical Wiener process)
+and is important for devices that exhibit systematic bias,
+such as a device that gradually loses responsiveness
+due to the degradation of a consumable component,
+like a reagent in a colorimetric analyzer.
 
 Let $E_t$ be a random variable representing the error at time $t$,
 and $e_t$ be its realization (observed value).
