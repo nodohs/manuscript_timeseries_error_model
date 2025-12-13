@@ -248,9 +248,8 @@ Then the calibration-drift error is given by
 \end{equation}
 %
 
-Lastly, precision error $e_p$ represents irreducible measurement noise.
-In practice, the precision is determined under controlled conditions,
-and the error has a Gaussian distribution,
+Lastly, precision error $e_p$ represents irreducible measurement noise,
+which is modeled using a Gaussian distribution,
 %
 \begin{equation}
     e_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
@@ -262,9 +261,10 @@ and the error has a Gaussian distribution,
     \text{.}
 \end{equation}
 %
-This precision is reported in the device specifications
-(sometimes called the "accuracy") as a $2\sigma$ (approximately 95\%)
-confidence interval.
+In practice, the precision is determined under controlled conditions,
+and reported in the device specifications
+(sometimes called the "accuracy")
+as a $2\sigma$ (approximately 95\%) confidence interval.
 We typically assume fouling and drift errors have the same scale (absolute or relative)
 as the precision, but this is not a requirement.
 
@@ -384,7 +384,7 @@ it follows that the conditional mean and variance are
 Later on, upon observing the error at time $t_k$,
 the conditional distribution of $E_t$ is updated.
 A Wiener process conditioned to start and end at specified values
-is known as a Brownian bridge.
+is known as a Brownian bridge \citep{Taylor_1998}.
 To simplify notation, 
 let $\lambda(t)$ be the linear interpolation weight,
 %
@@ -427,7 +427,7 @@ with conditional mean and variance given by
         = \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
         % = \sigma^2 (1 - \lambda_k(t)) (t - t_{k-1})
         \label{eq:bridge_variance}
-    \text{,}
+    \text{.}
 \end{align}
 %
 Let $\lambda^+_k(t)$ be the linear interpolation weight,
@@ -477,6 +477,7 @@ We will explain the general statistical procedure, then apply it to fouling and 
 
 Formally, we define a Gaussian bridge with uncertain endpoints,
 where the expectation and variance of the endpoints is given by
+%
 \begin{equation}
     \mathbb{E}\left[ E_{k-1}\right] = m_{k-1}
     \text{,} \qquad
@@ -488,7 +489,7 @@ where the expectation and variance of the endpoints is given by
     \text{,} \qquad
     \operatorname{Cov}\left[ E_{k-1}, E_{k}\right] = 0
 \end{equation}
-
+%
 The Gaussian bridge is given by 
 %
 \begin{equation}
@@ -498,17 +499,18 @@ The Gaussian bridge is given by
     \text{.}
 \end{equation}
 %
-Using the linearity of expectation,
+By linearity of expectation,
 %
 \begin{align}
     \mathbb{E}[E_t] &= (1 - \lambda_k(t)) \mathbb{E}[E_{k-1}]
-                        + \lambda_k(t) \mathbb{E}[E_k] + \mathbb{E}[W_t] \\
+                        + \lambda_k(t) \mathbb{E}[E_k] + \mathbb{E}[W_t]
+                        \notag \\
                     &= (1 - \lambda_k(t)) m_{k-1} + \lambda_k(t) m_{k}
 \end{align}
 %
 Because $W_t$ is independent of the endpoint errors $E_{k-1}$ and $E_k$,
-these terms can be decomposed in the variance,
-then using variance of the linear combination yields
+the variance decomposes into separate terms.
+Applying the variance formula for a linear combination yields
 %
 \begin{align}
     \operatorname{Var}[E_t]
@@ -517,7 +519,8 @@ then using variance of the linear combination yields
             +
             \lambda_k(t)^2 E_{k}
             ]
-            + \operatorname{Var}[W_t] \\
+            + \operatorname{Var}[W_t]
+            \notag \\
         &= (1 - \lambda_k(t))^2 v_{k-1}
             + \lambda_k(t)^2 v_{k}
             + \sigma^2 \phi^+_k(t)
@@ -525,20 +528,22 @@ then using variance of the linear combination yields
 \end{align}
 %
 
+\subsubsection{Fouling-Check Uncertainty}
+
 For a fouling check, we assume the measuring and reference devices have known precisions
-of $\sigma_p$ and $\sigma_r$, respectively,
-and are independent of each other,
+$\sigma_p$ and $\sigma_r$, respectively,
+and are independent,
 \begin{equation}
     E_{p} \sim \mathcal{N}\left(0, \sigma^2_p \right)
     \text{,} \qquad
-    E_{s} \sim \mathcal{N}\left(0, \sigma^2_r \right)
-    \text{,}
+    E_{r} \sim \mathcal{N}\left(0, \sigma^2_r \right)
+    \text{.}
 \end{equation}
 %
 
-We will assume that the measuring device uses internal filtering,
-like time averaging of the raw signal,
-such that the error is perfectly correlated before and after the check,
+We assume the measuring device uses internal filtering
+(e.g., time averaging),
+so its error is perfectly correlated before and after the check,
 %
 \begin{equation}
     Y_b = X_b + E_{y_{b}}
@@ -548,16 +553,19 @@ such that the error is perfectly correlated before and after the check,
     \operatorname{Corr} \left( E_{y_{a}}, E_{y_{b}} \right) = 1
 \end{equation}
 %
+and the fouling error $E_f$ is given by
+%
 \begin{equation}
-    E_f = (Y_b + E_{y_{b}}) - (Y_a + E_{y_{a}}) - (Z_b + E_{z_{b}} - Z_a + E_{z_{a}})
+    E_f = (Y_b + E_{y_{b}}) - (Y_a + E_{y_{a}}) - (Z_b + E_{z_{b}} - Z_a - E_{z_{a}})
 \end{equation}
 %
-then
+Then
 \begin{align}
     \mathbb{E}[E_f] &= (y_b - y_a) - (z_b - z_a) \\ % EQUATION XXX
     \operatorname{Var}[E_f]
-        &= \operatorname{Var}[E_{y_{b}} - E_{y_{a}}] + \operatorname{Var}[E_{z_{b}} - E_{z_{a}}] \\
-        &= 0 + \operatorname{Var}[E_{z_{b}} - E_{z_{a}}]
+        &= \operatorname{Var}[E_{y_{b}} - E_{y_{a}}] + \operatorname{Var}[E_{z_{b}} - E_{z_{a}}]
+        \notag \\
+        &= \operatorname{Var}[E_{z_{b}} - E_{z_{a}}]
 \end{align}
 %
 If the reference device also uses filtering,
@@ -577,24 +585,26 @@ then
     \text{.}
 \end{equation}
 
+\subsubsection{Calibration-Check Uncertainty}
+
 For a calibration check, we assume the standard and measurement device have known precisions
-of $\sigma_p$ and $\sigma_s$, respectively,
-and are independent of each other,
+$\sigma_s$ and $\sigma_p$, respectively,
+and are independent,
 %
 \begin{equation}
-    E_{p} \sim \mathcal{N}\left(0, \sigma^2_p \right)
-    \text{,} \qquad
     E_{s} \sim \mathcal{N}\left(0, \sigma^2_s \right)
-    \text{,}
+    \text{,} \qquad
+    E_{p} \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    \text{.}
 \end{equation}
 %
 \begin{equation}
     E_d = (Y_s + E_{y_{s}}) - (Z_s + E_{z_{s}})
 \end{equation}
-then
+Then
 \begin{align}
     \mathbb{E}[E_d] &= y_s - z_s \\ % EQUATION XXX
-    \operatorname{Var}\left[ E_{y_{s}} + E_{z_{s}} \right]
+    \operatorname{Var}[E_d]
         &= \sigma^2_p + \sigma^2_s
 \end{align}
 
@@ -670,7 +680,7 @@ The conditional variance is given by
     \operatorname{Var}\left[
         E_{t,y}\,\mid\,
         \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
-        \right] \\
+        \right] \notag \\
     &=
     \left[
         \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
@@ -680,7 +690,7 @@ The conditional variance is given by
     \underbrace{
         \frac{\left(t - t_{k-1}\right) \left(t_{k} - t\right)}
         {\left(t_{k} - t_{k-1}\right)}
-    }_{\text{time-variance factor}} \\
+    }_{\text{time-variance factor}} \notag \\
     &=
     \left[
     \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
