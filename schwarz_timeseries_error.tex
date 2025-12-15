@@ -693,15 +693,53 @@ In that case, the expected drift-correction for a measurement is
 a linear interpolation between
 the corrections for the two nearest standards \citep{Wagner_2006}.
 
-Given standard values $z_s$ for $s = 1, 2, \ldots, S$,
-the conditional mean is a bilinear interpolation between four points,
+Let $z_s$ be the standard values for $s = 1, 2, \ldots, S$,
+% end point condition
+\begin{equation}
+    E_{k-1}(y) := E(y, t_{k-1})
+    \text{,}
+\end{equation}
+%
+the conditional mean at time $t_{k-1}$ given the check measurements is
+%
+\begin{align}
+m_{k-1}(y) &:= \mathbb{E} \left[
+                            E_{k-1,y}
+                            \mid
+                            E_{k-1,s-1} = e_{k-1,s-1},\,
+                            E_{k-1,s} = e_{k-1,s}
+                           \right]
+            \notag \\
+            &= (1 - \lambda^+_s(y)) \, \mathbb{E} [E_{k-1,s-1}]
+             + \lambda^+_s(y) \, \mathbb{E} [E_{k-1,s}] \notag \\
+            &= (1 - \lambda^+_s(y)) e_{k-1,s-1}
+             + \lambda^+_s(y) e_{k-1,s}
+%\operatorname{Var} = (1-)
+\end{align}
+%
+and the conditional variance is
+%
+\begin{align}
+    v_{k-1}(y) &:= \operatorname{Var} \left[
+                            E_{k-1,y}
+                            \mid
+                            E_{k-1,s-1} = e_{k-1,s-1},\,
+                            E_{k-1,s} = e_{k-1,s}
+                            \right] \notag \\
+               &= (1 - \lambda^+_s(y))^2 \operatorname{Var}[E_{k-1,s-1}]
+                + \lambda^+_s(y)^2 \operatorname{Var}[E_{k-1,s}]
+                + \eta^2 \phi^+_{s}(m_{k-1}(y))
+\end{align}
+%
+where $\eta^2$ is the diffusion rate in the $y$ dimension.
+
+The mean and variance during the check become the
+boundary conditions for the bridge in the time dimension,
+thus the conditional mean is a bilinear interpolation between four points,
 $e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$,
-denote as the set
+denoted as the set
 $\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
 %
-% bilinear interpolation between four points
-% e{k,s} and so on
-% in terms of \lambda_k(t) \lambda_s(x)
 \begin{align}
     m(t, y)
     &:=
@@ -1078,92 +1116,6 @@ then the variance is
 \begin{equation}
     \operatorname{Var}(Y) = a^2 \operatorname{Var}(X) + b^2 \operatorname{Var}(Z) + 2ab \operatorname{Cov}(X, Z)
 \end{equation}
-
-\section{Proofs}    %% Appendix A
-
-\section{SCRATCH}
-\subsection{Precision model}
-%\end{align}
-% TODO revise to calibration error model
-Recall that the precision of the measurement device $\sigma_{p}$ is assumed to be
-constant over time (Equation~\ref{eq:precision_error}).
-Thus, for normal errors, the conditional distribution is
-%
-\begin{equation}
-    p(e_t \mid E_{t_{k-1}} = e_{k-1}) = \mathcal{N}
-        \left(m^o(t),\,v^o(t)\right)
-    \text{,}
-\end{equation}
-%
-with conditional mean and variance given by
-%
-\begin{align}
-    m^o(t)
-        &:= \mathbb{E}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
-        = 0
-        \qquad \text{and} \\
-    v^o(t)
-        &:= \operatorname{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} \right]
-        = \sigma^2_{p}
-        \text{.}
-        \label{eq:precision_variance_open}
-\end{align}
-%
-However, the conditional distribution for the closed interval is complicated
-by the indirect effect of calibration.
-In this case, the conditional variance is
-%
-% TODO XXX note the indirect effect of calibration
-\begin{align}
-    v^c(t)
-        &:= \operatorname{Var}\left[E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
-        = \lambda_{d}(t) \chi_{d}(t) \sigma_p^2
-        +
-        \sigma_p^2
-        \text{,}
-        \label{eq:precision_variance_closed}
-\end{align}
-where $\chi_{d}$ is an indicator function
-equal to 1 if $t \neq t_{d}$ and 0 otherwise,
-\begin{equation}
-\chi_{d}(t) =
-\begin{cases}
-    1, & t \neq t_{d} \\
-    0, & t = t_{d}
-\end{cases}
-\label{eq:chi_function}
-\text{,}
-\end{equation}
-which modulates the indirect effect of calibration-drift on the precision error.
-
-
-
-\subsection{2D Interpolation}
-the conditional mean of the Wiener-process error at time $t$ and reading $y$ is
-%
-\begin{align}
-    m^o(t, y)
-    &:=
-    \mathbb{E}\left[
-        E_{t,y}\,\mid\,
-        E_{k-1,s-1} = e_{k-1,s-1}, \,
-        E_{k-1,s} = e_{k-1,s}, \,
-        \right] \notag \\
-    &=
-    (1-\lambda_s(y))
-    \left[
-        \delta_{k-1} e_{k-1,s-1} + \mu_{s-1}(t - t_{k-1})
-    \right]
-    +
-    \lambda_s(y)
-    \left[
-         \delta_{k-1} e_{k-1,s} + \mu_{s} (t - t_{k-1})
-    \right]
-\end{align}
-Note this is a linear interpolation between the two standards.
-% and also applies to extraplolation
-%
-
 
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
