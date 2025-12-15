@@ -397,7 +397,7 @@ let $\lambda(t)$ be the linear interpolation weight,
 %
 such that $\lambda_f(t)$ denotes the fouling weight
 for the interval $t \in \left[t_{f-1}, t_f \right]$.
-Then the conditional distribution of the bridge at time
+The conditional distribution of the bridge at time
 $t$ is
 %
 \begin{equation}
@@ -463,9 +463,9 @@ By substituting these definitions into the equations for the mean and covariance
 the open and closed forms become equivalent,
 %
 \begin{align}
-    m(t) &= \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1} + \lambda^+_k(t) e_k
+    m_k(t) &= \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1} + \lambda^+_k(t) e_k
     \qquad \text{and} \qquad \\
-    v(t) &= \sigma^2 \phi^+_k(t)
+    v_k(t) &= \sigma^2 \phi^+_k(t)
     \text{,}
 \end{align}
 %
@@ -494,7 +494,7 @@ where the expectation and variance of the endpoints is given by
 The Gaussian bridge is given by 
 %
 \begin{equation}
-    E_t = (1 - \lambda_k(t)) E_{k-1} + \lambda_k(t) E_k + W_t
+    E_t = (1 - \lambda^+_k(t)) E_{k-1} + \lambda^+_k(t) E_k + W_t
     \text{,} \qquad
     W_t \sim \mathcal{N}\left(0, \sigma^2 \phi^+_k(t)\right)
     \text{.}
@@ -503,10 +503,10 @@ The Gaussian bridge is given by
 By linearity of expectation,
 %
 \begin{align}
-    \mathbb{E}[E_t] &= (1 - \lambda_k(t)) \mathbb{E}[E_{k-1}]
-                        + \lambda_k(t) \mathbb{E}[E_k] + \mathbb{E}[W_t]
+    \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \mathbb{E}[E_{k-1}]
+                        + \lambda^+_k(t) \mathbb{E}[E_k] + \mathbb{E}[W_t]
                         \notag \\
-                    &= (1 - \lambda_k(t)) m_{k-1} + \lambda_k(t) m_{k}
+                    &= (1 - \lambda^+_k(t)) m_{k-1} + \lambda^+_k(t) m_{k}
 \end{align}
 %
 Because $W_t$ is independent of the endpoint errors $E_{k-1}$ and $E_k$,
@@ -516,24 +516,56 @@ Applying the variance formula for a linear combination yields
 \begin{align}
     \operatorname{Var}[E_t]
         &= \operatorname{Var}[
-            (1 - \lambda_k(t))^2 E_{k-1}
+            (1 - \lambda^+_k(t)) E_{k-1}
             +
-            \lambda_k(t)^2 E_{k}
+            \lambda^+_k(t) E_{k}
             ]
             + \operatorname{Var}[W_t]
             \notag \\
-        &= (1 - \lambda_k(t))^2 v_{k-1}
-            + \lambda_k(t)^2 v_{k}
-            + \sigma^2 \phi^+_k(t)
-    \text{.}
+        &=  \underbrace{
+            (1 - \lambda^+_k(t))^2 \operatorname{Var}[E_{k-1}]
+            + \lambda^+_k(t)^2 \operatorname{Var}[E_{k}]
+            }_{\tilde{v}_k(t)}
+            + 
+            \underbrace{\sigma^2 \phi^+_k(t)}_{v_k(t)}
+    \text{,}
 \end{align}
 %
+where $\tilde{v}_k(t)$ represents the contribution from check-measurement uncertainty,
+\begin{equation}
+    \tilde{v}_k(t) := 
+        (1 - \lambda^+_k(t))^2 \operatorname{Var}[E_{k-1}]
+        + \lambda^+_k(t)^2 \operatorname{Var}[E_{k}]
+    \label{eq:check_variance}
+    \text{.}
+\end{equation}
+%
+Assuming the check-measurements have constant variance
+$\operatorname{Var}[E_k]$,
+the conditional variance at time $t$ is
+%
+\begin{equation}
+    \tilde{v}_k(t) = \left(
+                        (1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2
+                      \right) \operatorname{Var}[E_k]
+    \label{eq:check_constant_variance}
+    \text{,}
+\end{equation}
+%
+which simplifies to $ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$
+during open intervals.
+The following sections derive expressions for
+$\operatorname{Var}[E_f]$ and $\operatorname{Var}[E_d]$,
+which are substituted into Equation~\ref{eq:check_constant_variance}.
+Later, we will relax the constant-variance assumption,
+and refer back to the full expression for the check variance
+(Equation~\ref{eq:check_variance}).
 
 \subsubsection{Fouling-Check Uncertainty}
 
 For a fouling check, we assume the measuring $m$ and reference $r$
 devices have known precisions $\sigma_p$ and $\sigma_r$, respectively,
-and their errors are independent,
+and their errors are normally distributed and independent,
 \begin{equation}
     E^{m} \sim \mathcal{N}\left(0, \sigma^2_p \right)
     \text{,} \qquad
@@ -551,21 +583,6 @@ and $Z$ their true values,
     \text{,} \qquad
     Z = X^r + E^{r}
 \end{equation}
-%
-%We assume the measuring device uses internal filtering
-%(e.g., time averaging),
-%so its error is perfectly correlated during the check,
-%
-%\begin{equation}
-%    Y_b = X_b + E^{m}_{b}
-%    \text{,} \qquad
-%    Y_a = X_a + E^{m}_{a}
-%    \text{,} \qquad
-%    \operatorname{Corr} \left( E^{m}_{a}, E^{m}_{b} \right) = 1
-%    \label{eq:fouling_measurement}
-%    \text{,}
-%\end{equation}
-%
 %
 Substituting these back into the fouling error (Equation~\ref{eq:fouling_error})
 gives
@@ -585,10 +602,21 @@ By independence ($E^{m} \perp E^{r}$), the variance is
           + \operatorname{Var}[E^r_b - E^r_a]
 \end{align}
 %
+Furthermore, we assume the measuring device uses internal filtering
+(e.g., time averaging),
+so its error is perfectly correlated during the check,
+%
+\begin{equation}
+    \operatorname{Corr} \left( E^{m}_{a},\, E^{m}_{b} \right) = 1
+    \quad \Rightarrow \quad
+    \operatorname{Var}[E^m_b - E^m_a] = 0
+    \text{,}
+\end{equation}
+%
 If the reference device also uses filtering,
 then
 \begin{equation}
-    \operatorname{Corr}(E_{z_a}, E_{z_b}) = 1 
+    \operatorname{Corr}(E_{z_a},\, E_{z_b}) = 1 
     \quad \Rightarrow \quad
     \operatorname{Var}[E_f] = 0
     \text{;}
@@ -598,7 +626,9 @@ then
 \begin{equation}
     \operatorname{Corr}(E_{z_a}, E_{z_b}) = 0
     \quad \Rightarrow \quad
-    \operatorname{Var}[E_f] = 2 \sigma^2_r
+    \operatorname{Var}[E_f]
+    = \operatorname{Var}[E^r_b] + \operatorname{Var}[E^r_a]
+    = 2 \sigma^2_r
     \text{.}
 \end{equation}
 
@@ -606,30 +636,38 @@ then
 
 For a calibration check, we assume the standard and measurement device have known precisions
 $\sigma_s$ and $\sigma_p$, respectively,
-and are independent,
+and their errors are normally distributed and independent,
 %
 \begin{equation}
-    E_{s} \sim \mathcal{N}\left(0, \sigma^2_s \right)
+    E^{s} \sim \mathcal{N}\left(0, \sigma^2_s \right)
     \text{,} \qquad
-    E_{p} \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    E^{m} \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    \text{,} \qquad
+    E^{s} \perp E^{m}
     \text{.}
 \end{equation}
 %
+Let $Y_s$ and $Z_s$ denote the measurement and standard values,
 \begin{equation}
-    E_d = (Y_s + E_{y_{s}}) - (Z_s + E_{z_{s}})
+    Y_s = X_s + E^{m}
+    \text{,} \qquad
+    Z_s = X_s + E^{s}
 \end{equation}
-Then
-\begin{align}
-    \mathbb{E}[E_d] &= y_s - z_s \\ % EQUATION XXX
-    \operatorname{Var}[E_d]
-        &= \sigma^2_p + \sigma^2_s
-\end{align}
-
 %
-Substituting into equation X
+and substitute terms back into the drift error (Equation~\ref{eq:drift_error})
 %
 \begin{equation}
-    v_c(t) := (1 - \lambda^+_k(t))^2 (\sigma^2_p + \sigma^2_s)
+    E_d = (X_s + E^m) - (Z_s + E^s)
+    \text{.}
+\end{equation}
+%
+By independence ($E^{m} \perp E^{s}$), the variance is
+%
+\begin{equation}
+    \operatorname{Var}[E_d]
+        = \operatorname{Var}[E^m] + \operatorname{Var}[E^s]
+        = \sigma^2_p + \sigma^2_s
+    \text{.}
 \end{equation}
 %
 
@@ -993,29 +1031,34 @@ TEXT
 
 \appendix
 \section{Theorems}
+
 \subsection{Variance of a Linear Combination}
+
 For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments, and any constants $a_1, a_2, \ldots, a_n$,
+%
 \begin{equation}
     Y = a_1 X_1 + a_2 X_2 + \ldots + a_n X_n
 \end{equation}
+%
 the variance is given by
+%
 \begin{equation}
     \operatorname{Var}(Y)
     =
     \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j \operatorname{Cov}(X_i, X_j)
 \end{equation}
-
-For two-variable case, if
+%
+In the two-variable case,
 \begin{equation}
     Y = a X + b Z
 \end{equation}
-then
+then the variance is
 \begin{equation}
     \operatorname{Var}(Y) = a^2 \operatorname{Var}(X) + b^2 \operatorname{Var}(Z) + 2ab \operatorname{Cov}(X, Z)
 \end{equation}
 
 \section{Proofs}    %% Appendix A
-\subsection{}
+
 \section{SCRATCH}
 \subsection{Precision model}
 %\end{align}
