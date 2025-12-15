@@ -358,6 +358,7 @@ the conditional distribution of the Wiener-process error is
 %\end{equation}
 %
 with conditional mean and variance given by
+%
 \begin{align}
     m^o(t) &:=
         \mathbb{E}\left[E_t \mid E_{k-1} = e_{k-1} \right]
@@ -373,6 +374,7 @@ with conditional mean and variance given by
 %
 where $\delta_{k-1}$ indicates whether the error process has been reset
 due to cleaning or recalibration,
+%
 \begin{equation}
     \delta_{k-1} =
     \begin{cases}
@@ -381,6 +383,7 @@ due to cleaning or recalibration,
     \end{cases}
     \text{,}
 \end{equation}
+%
 $e_{k-1}$ is the error at time $t_{k-1}$,
 %$\mathcal{N}$ is the normal distribution
 %specified by its mean and variance,
@@ -693,14 +696,26 @@ In that case, the expected drift-correction for a measurement is
 a linear interpolation between
 the corrections for the two nearest standards \citep{Wagner_2006}.
 
-Let $z_s$ be the standard values for $s = 1, 2, \ldots, S$,
-% end point condition
+Let $z_s$ denote the standard values for $s = 1, 2, \ldots, S$.
+For a given check time $t_k$,
+the error is determined at each standard value,
+%
 \begin{equation}
-    E_{k-1}(y) := E(y, t_{k-1})
-    \text{,}
+    E_{k,s} := E(t_k, z_s) = e_{k,s}
+    \text{,} \qquad
+    \forall s \in \{1, 2, \ldots, S\}
+    \text{.}
 \end{equation}
 %
-the conditional mean at time $t_{k-1}$ given the check measurements is
+First, we consider the conditional distrubtion at time $t_{k-1}$,
+which forms a bridge in the $y$ dimension.
+In the multi-point calibration,
+we will use that first bridge as the boundary condition
+for constructing a second bridge in the time dimension.
+
+First, $y$-bridge at time $t_{k-1}$.
+Given check-measurement errors $e_{k-1,s-1}$ and $e_{k-1,s}$,
+the conditional mean of the $y$-bridge is given by
 %
 \begin{align}
 m_{k-1}(y) &:= \mathbb{E} \left[
@@ -714,10 +729,11 @@ m_{k-1}(y) &:= \mathbb{E} \left[
              + \lambda^+_s(y) \, \mathbb{E} [E_{k-1,s}] \notag \\
             &= (1 - \lambda^+_s(y)) e_{k-1,s-1}
              + \lambda^+_s(y) e_{k-1,s}
-%\operatorname{Var} = (1-)
+\label{eq:y_bridge_mean}
+\text{,}
 \end{align}
 %
-and the conditional variance is
+and the conditional variance of the $y$-bridge is
 %
 \begin{align}
     v_{k-1}(y) &:= \operatorname{Var} \left[
@@ -729,13 +745,15 @@ and the conditional variance is
                &= (1 - \lambda^+_s(y))^2 \operatorname{Var}[E_{k-1,s-1}]
                 + \lambda^+_s(y)^2 \operatorname{Var}[E_{k-1,s}]
                 + \eta^2 \phi^+_{s}(m_{k-1}(y))
+    \label{eq:y_bridge_variance}
+    \text{,}
 \end{align}
 %
 where $\eta^2$ is the diffusion rate in the $y$ dimension.
 
-The mean and variance during the check become the
-boundary conditions for the bridge in the time dimension,
-thus the conditional mean is a bilinear interpolation between four points,
+Next, let these mean and variance define the boundary conditions
+(end points) for the time-bridge.
+The conditional mean is a bilinear interpolation between four courner points,
 $e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$,
 denoted as the set
 $\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
@@ -756,7 +774,9 @@ $\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
     \begin{bmatrix}
         1-\lambda^+_s(y) \\
         \lambda^+_s(y)
-    \end{bmatrix}.
+    \end{bmatrix}
+    \label{eq:multi_point_mean}
+    \text{.}
 \end{align}
 Expanding the right-hand side yields
 \begin{align}
@@ -779,7 +799,21 @@ which satisfies the conditions for the four corner points,
     m(t_{k}, y_{s})     &=  e_{k,s} \text{.}
 \end{align}
 %
-The conditional variance is given by
+% TODO
+The conditional variance is given by plugging the variance of the y-bridge
+\ref{eq:y_bridge_variance}
+into the equation for a time bridge with uncertain endpoints
+\ref{eq:check_variance}.
+% TODO name v_k-1(y)
+\begin{equation}
+    \tilde{v}_k(t) = \left(
+                        (1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2
+                      \right) \operatorname{Var}[E_{k,y}]
+    %\label{eq:check_constant_variance}
+    \text{,}
+\end{equation}
+%
+
 %
 \begin{align}
     v(t, y)
@@ -807,17 +841,16 @@ The conditional variance is given by
     \phi^+_k(t)
     \label{eq:multi_point_variance}
 \end{align}
-% TODO need to verify closed-interval variance
+%
 Here, we might reasonably assume
+%
 \begin{equation}
     v(t, y) = \sigma^2 \phi^+_k(t)
 \end{equation}
-
-% discuss imputation of missing standards here
-% specifically, by using the v_c term
+%
 
 \subsection{Combined Error}
-% TODO change superscript notations to $o$ and $b$ for bridge
+
 The conditional mean and variance given by the sum of the individual components,
 %
 \begin{align}
@@ -842,20 +875,27 @@ v(t) &=
     \text{,}
 \end{align}
 %
-where $f$, $d$, and $p$ denote the fouling, drift, and precision, respectively
-(Equations~\ref{eq:unified_wiener_variance},
-           \ref{eq:check_variance},
-           \ref{eq:multi_point_variance},
-           \ref{eq:precision_variance},
-TODOXXX (There will be 5)).
+where $f$, $d$, and $p$ denote the fouling, drift, and precision components, respectively.
+For the means,
+these are given by Equations~
+\ref{eq:unified_wiener_mean},
+\ref{eq:multi_point_mean}
+; and for the variances,
+by Equations~
+\ref{eq:unified_wiener_variance},
+\ref{eq:check_variance},
+\ref{eq:multi_point_variance},
+\ref{eq:precision_variance}
+.
+% TODO THERE ARE 5 EQUATIONS TO CITE HERE
 
-FIGURE HERE
+% TODO DESCRIBE FIGURE HERE
 
-\begin{figure*}[t]
+%\begin{figure*}[t]
 %\includegraphics[width=12cm]{FILE NAME}
-\caption{TEXT}
-\label{fig:}
-\end{figure*}
+%\caption{TEXT}
+%\label{fig:}
+%\end{figure*}
 %
 
 
