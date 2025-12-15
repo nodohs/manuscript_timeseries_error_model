@@ -150,12 +150,12 @@ Later on, these
 
 \subsection{Preliminaries}
 %
-Let $x$ denote the true value of some variable
-and let $y$ denote its measured value.
-The absolute error $e$ and percent error $\%e$ are given by
+Let $X$ denote the true value of some variable
+and let $Y$ denote its measured value.
+The absolute error $E$ and percent error $\%E$ are given by
 %
 \begin{equation}
-    e = y - x
+    E = Y - X
     \label{eq:absolute_error}
     \text{,}
 \end{equation}
@@ -163,16 +163,16 @@ The absolute error $e$ and percent error $\%e$ are given by
 and
 %
 \begin{equation}
-    \%e = 100 \times \frac{y - x}{y}
+    \%E = 100 \times \frac{Y - X}{Y}
     \label{eq:percent_error}
     \text{,}
 \end{equation}
 %
-so that $\%e$ is expressed as a percentage of the measured value.
+so that $\%E$ is expressed as a percentage of the measured value.
 For simplicity, we will instead work in terms of the fractional error
 %
 \begin{equation}
-    \varepsilon = \frac{y - x}{y} = \frac{\%e}{100}
+    \mathcal{E} = \frac{Y - X}{Y} = \frac{\%E}{100}
     \label{eq:fractional_error}
     \text{,}
 \end{equation}
@@ -182,19 +182,19 @@ Either scale (absolute or relative) may be used for uncertainty quantification,
 depending on the characteristics of the measurement device.
 
 We assume that the measurement error has three components---
-fouling $e_f$, calibration-drift $e_d$,
-and instrument precision $e_p$---
+fouling $E_f$, calibration-drift $E_d$,
+and instrument precision $E_p$---
 that add on the absolute scale,
 %
 \begin{equation}
-    e = e_f + e_d + e_p
+    E = E_f + E_d + E_p
     \text{.}
 \end{equation}
 %
 On the relative scale, these components combine multiplicatively,
 %
 \begin{equation}
-    1 + \varepsilon = (1 + \varepsilon_f)(1 + \varepsilon_d)(1 + \varepsilon_p)
+    1 + \mathcal{E} = (1 + \mathcal{E}_f)(1 + \mathcal{E}_d)(1 + \mathcal{E}_p)
     \text{,}
 \end{equation}
 %
@@ -202,7 +202,7 @@ but for small errors (less than a few percent),
 the relation is approximately additive,
 %
 \begin{equation}
-    \varepsilon \approx \varepsilon_f + \varepsilon_d + \varepsilon_p
+    \mathcal{E} \approx \mathcal{E}_f + \mathcal{E}_d + \mathcal{E}_p
     \text{.}
 \end{equation}
 %
@@ -214,58 +214,67 @@ Under steady conditions,
 the fouling error is given by
 %
 \begin{equation}
-    e_f = y_b - y_a
+    E_f = Y_b - Y_a
     \text{,}
 \end{equation}
 %
-where $y_b$ and $y_a$ are the measurements before and after cleaning, respectively.
+where $Y_b$ and $Y_a$ are the measurements before and after cleaning, respectively.
 If the environment changes during the cleaning,
 then the fouling check must account for that change by using a reference device,
 which measures the same environment during the cleaning period,
 %
 \begin{equation}
-    e_f = (y_b - y_a) - (z_b - z_a)
+    E_f = (Y_b - Y_a) - (Z_b - Z_a)
     \qquad \text{or} \qquad
-    \varepsilon_f = \frac{(y_b - y_a) - (z_b - z_a)}{y_b}
+    \mathcal{E}_f = \frac{(Y_b - Y_a) - (Z_b - Z_a)}{Y_b}
     \label{eq:fouling_error}
     \text{,}
 \end{equation}
 %
-where $z_b$ and $z_a$ are the before-and-after reference measurements
+where $Z_b$ and $Z_a$ are the before-and-after reference measurements
 \citep[][noting they flip the sign of the error]{Wagner_2006}.
 
 The calibration-drift represents any residual bias after cleaning the device,
 which is measured by comparing a clean measurement against a known standard.
-Let $z_s$ be the standard value and let $y_s$ be the clean measurement of $z_s$.
+Let $Z_s$ be the standard value and let $Y_s$ be the clean measurement of $Z_s$.
 Then the calibration-drift error is given by
 %
 \begin{equation}
-    e_d = y_s - z_s
+    E_d = Y_s - Z_s
     \qquad \text{or} \qquad
-    \varepsilon_{d} = \frac{y_s - z_s}{y_s}
+    \mathcal{E}_{d} = \frac{Y_s - Z_s}{Y_s}
     \label{eq:drift_error}
     \qquad \text{\citep{Wagner_2006}.}
 \end{equation}
 %
 
-Lastly, precision error $e_p$ represents irreducible measurement noise,
+Lastly, precision error $E_p$ represents irreducible measurement noise,
 which is modeled using a Gaussian distribution,
 %
 \begin{equation}
-    e_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
+    E_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
     \qquad \text{or} \qquad
-    \varepsilon_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
+    \mathcal{E}_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
     \text{,} \quad \text{where} \quad
     \sigma_p := \frac{\sigma_{\%p}}{100}
-    \quad \text{for} \quad \varepsilon_p
+    \quad \text{for} \quad \mathcal{E}_p
     \label{eq:precision_error}
+    \text{,}
+\end{equation}
+%
+with variance given by
+%
+\begin{equation}
+    v_p :=
+    \operatorname{Var}[E_p] = \sigma_p^2
+    \label{eq:precision_variance}
     \text{.}
 \end{equation}
 %
-In practice, the precision is determined under controlled conditions,
+In practice, the precision is determined under controlled conditions
 and reported in the device specifications
 (sometimes called the "accuracy")
-as a $2\sigma$ (approximately 95\%) confidence interval.
+as the $2\sigma_p$ or 95\% confidence interval.
 We typically assume fouling and drift errors have the same scale (absolute or relative)
 as the precision, but this is not a requirement.
 
@@ -464,8 +473,10 @@ the open and closed forms become equivalent,
 %
 \begin{align}
     m_k(t) &= \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1} + \lambda^+_k(t) e_k
+    \label{eq:unified_wiener_mean}
     \qquad \text{and} \qquad \\
     v_k(t) &= \sigma^2 \phi^+_k(t)
+    \label{eq:unified_wiener_variance}
     \text{,}
 \end{align}
 %
@@ -556,7 +567,8 @@ which simplifies to $ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$
 during open intervals.
 The following sections derive expressions for
 $\operatorname{Var}[E_f]$ and $\operatorname{Var}[E_d]$,
-which are substituted into Equation~\ref{eq:check_constant_variance}.
+which substite in the $\operatorname{Var}[E_k]$ term
+of Equation~\ref{eq:check_constant_variance}.
 Later, we will relax the constant-variance assumption,
 and refer back to the full expression for the check variance
 (Equation~\ref{eq:check_variance}).
@@ -652,9 +664,11 @@ Let $Y_s$ and $Z_s$ denote the measurement and standard values,
     Y_s = X_s + E^{m}
     \text{,} \qquad
     Z_s = X_s + E^{s}
+    \text{.}
 \end{equation}
 %
-and substitute terms back into the drift error (Equation~\ref{eq:drift_error})
+Substituting these variables into the drift error
+(Equation~\ref{eq:drift_error}) yields
 %
 \begin{equation}
     E_d = (X_s + E^m) - (Z_s + E^s)
@@ -753,6 +767,7 @@ The conditional variance is given by
     \lambda^+_s(y)^2 \sigma^2_{s}
     \right]
     \phi^+_k(t)
+    \label{eq:multi_point_variance}
 \end{align}
 % TODO need to verify closed-interval variance
 Here, we might reasonably assume
@@ -779,15 +794,22 @@ m(t) &=
 v(t) &=
     v_{f}(t)
     +
+    \tilde{v}_{f}(t)
+    +
     v_{d}(t, y)
     +
-    v_{c}(t, y)
+    \tilde{v}_{d}(t, y)
     +
     v_{p}(t)
     \text{,}
 \end{align}
 %
-where $f$, $d$, $c$, and $p$ denote the fouling, drift, calibration, and precision, respectively.
+where $f$, $d$, and $p$ denote the fouling, drift, and precision, respectively
+(Equations~\ref{eq:unified_wiener_variance},
+           \ref{eq:check_variance},
+           \ref{eq:multi_point_variance},
+           \ref{eq:precision_variance},
+TODOXXX (There will be 5)).
 
 FIGURE HERE
 
