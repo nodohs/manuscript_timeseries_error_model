@@ -517,8 +517,8 @@ The Gaussian bridge is given by
 By linearity of expectation,
 %
 \begin{align}
-    \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \mathbb{E}[E_{k-1}]
-                        + \lambda^+_k(t) \mathbb{E}[E_k] + \mathbb{E}[W_t]
+    \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \, \mathbb{E}[E_{k-1}]
+                        + \lambda^+_k(t) \, \mathbb{E}[E_k] + \mathbb{E}[W_t]
                         \notag \\
                     &= (1 - \lambda^+_k(t)) m_{k-1} + \lambda^+_k(t) m_{k}
 \end{align}
@@ -530,26 +530,27 @@ Applying the variance formula for a linear combination yields
 \begin{align}
     \operatorname{Var}[E_t]
         &= \operatorname{Var}[
-            (1 - \lambda^+_k(t)) E_{k-1}
+            (1 - \lambda^+_k(t)) \, E_{k-1}
             +
-            \lambda^+_k(t) E_{k}
+            \lambda^+_k(t) \, E_{k}
             ]
             + \operatorname{Var}[W_t]
             \notag \\
         &=  \underbrace{
-            (1 - \lambda^+_k(t))^2 \operatorname{Var}[E_{k-1}]
-            + \lambda^+_k(t)^2 \operatorname{Var}[E_{k}]
+            (1 - \lambda^+_k(t))^2 \, \operatorname{Var}[E_{k-1}]
+            + \lambda^+_k(t)^2 \, \operatorname{Var}[E_{k}]
             }_{\tilde{v}_k(t)}
             + 
             \underbrace{\sigma^2 \phi^+_k(t)}_{v_k(t)}
+    \label{eq:variance_uncertain_bridge}
     \text{,}
 \end{align}
 %
 where $\tilde{v}_k(t)$ represents the contribution from check-measurement uncertainty,
 \begin{equation}
     \tilde{v}_k(t) := 
-        (1 - \lambda^+_k(t))^2 \operatorname{Var}[E_{k-1}]
-        + \lambda^+_k(t)^2 \operatorname{Var}[E_{k}]
+        (1 - \lambda^+_k(t))^2 \, \operatorname{Var}[E_{k-1}]
+        + \lambda^+_k(t)^2 \, \operatorname{Var}[E_{k}]
     \label{eq:check_variance}
     \text{.}
 \end{equation}
@@ -561,13 +562,13 @@ the conditional variance at time $t$ is
 \begin{equation}
     \tilde{v}_k(t) = \left(
                         (1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2
-                      \right) \operatorname{Var}[E_k]
+                      \right) \, \operatorname{Var}[E_k]
     \label{eq:check_constant_variance}
     \text{,}
 \end{equation}
 %
-which simplifies to $ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$
-during open intervals.
+which simplifies, during open intervals,
+to $ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$.
 The following sections derive expressions for
 $\operatorname{Var}[E_f]$ and $\operatorname{Var}[E_d]$,
 which substite in the $\operatorname{Var}[E_k]$ term
@@ -582,9 +583,9 @@ For a fouling check, we assume the measuring $m$ and reference $r$
 devices have known precisions $\sigma_p$ and $\sigma_r$, respectively,
 and their errors are normally distributed and independent,
 \begin{equation}
-    E^{m} \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_p \right)
     \text{,} \qquad
-    E^{r} \sim \mathcal{N}\left(0, \sigma^2_r \right)
+    E^{r} \sim \mathcal{N}\left(0,\, \sigma^2_r \right)
     \text{,} \qquad
     E^{m} \perp E^{r}
     \text{.}
@@ -639,7 +640,7 @@ then
 otherwise, if its errors are independent,
 then
 \begin{equation}
-    \operatorname{Corr}(E_{z_a}, E_{z_b}) = 0
+    \operatorname{Corr}(E_{z_a},\, E_{z_b}) = 0
     \quad \Rightarrow \quad
     \operatorname{Var}[E_f]
     = \operatorname{Var}[E^r_b] + \operatorname{Var}[E^r_a]
@@ -654,9 +655,9 @@ $\sigma_s$ and $\sigma_p$, respectively,
 and their errors are normally distributed and independent,
 %
 \begin{equation}
-    E^{s} \sim \mathcal{N}\left(0, \sigma^2_s \right)
+    E^{s} \sim \mathcal{N}\left(0,\, \sigma^2_s \right)
     \text{,} \qquad
-    E^{m} \sim \mathcal{N}\left(0, \sigma^2_p \right)
+    E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_p \right)
     \text{,} \qquad
     E^{s} \perp E^{m}
     \text{.}
@@ -701,50 +702,51 @@ For a given check time $t_k$,
 the error is determined at each standard value,
 %
 \begin{equation}
-    E_{k,s} := E(t_k, z_s) = e_{k,s}
+    E_{k,s} := E(t_k,\, z_s) = e_{k,s}
     \text{,} \qquad
     \forall s \in \{1, 2, \ldots, S\}
     \text{.}
 \end{equation}
 %
-First, we consider the conditional distrubtion at time $t_{k-1}$,
+First, we consider the conditional distrubtion at the check time $t_{k}$,
 which forms a bridge in the $y$ dimension.
-In the multi-point calibration,
-we will use that first bridge as the boundary condition
-for constructing a second bridge in the time dimension.
+%In the multi-point calibration,
+Next, we will use that first bridge as the uncertain boundary condition
+for the bridge in the time dimension.
 
-First, $y$-bridge at time $t_{k-1}$.
-Given check-measurement errors $e_{k-1,s-1}$ and $e_{k-1,s}$,
-the conditional mean of the $y$-bridge is given by
+Given check-measurement errors $e_{k,s-1}$ and $e_{k,s}$,
+the conditional mean of the $y$-bridge at time $t_k$ is given by
 %
 \begin{align}
-m_{k-1}(y) &:= \mathbb{E} \left[
-                            E_{k-1,y}
+m_{k}(y) &:= \mathbb{E} \left[
+                            E_{k,y}
                             \mid
-                            E_{k-1,s-1} = e_{k-1,s-1},\,
-                            E_{k-1,s} = e_{k-1,s}
+                            E_{k,s-1} = e_{k,s-1},\,
+                            E_{k,s} = e_{k,s}
                            \right]
             \notag \\
-            &= (1 - \lambda^+_s(y)) \, \mathbb{E} [E_{k-1,s-1}]
-             + \lambda^+_s(y) \, \mathbb{E} [E_{k-1,s}] \notag \\
-            &= (1 - \lambda^+_s(y)) e_{k-1,s-1}
-             + \lambda^+_s(y) e_{k-1,s}
+            &= (1 - \lambda^+_s(y)) \, \mathbb{E} [E_{k,s-1}]
+             + \lambda^+_s(y) \, \mathbb{E} [E_{k,s}] \notag \\
+            &= (1 - \lambda^+_s(y)) e_{k,s-1}
+             + \lambda^+_s(y) e_{k,s}
 \label{eq:y_bridge_mean}
 \text{,}
 \end{align}
 %
-and the conditional variance of the $y$-bridge is
+which is a linear interpolation between the check-measurement errors.
+%
+The conditional variance of the $y$-bridge at time $t_k$ is
 %
 \begin{align}
-    v_{k-1}(y) &:= \operatorname{Var} \left[
-                            E_{k-1,y}
+    v_{k}(y) &:= \operatorname{Var} \left[
+                            E_{k,y}
                             \mid
-                            E_{k-1,s-1} = e_{k-1,s-1},\,
-                            E_{k-1,s} = e_{k-1,s}
+                            E_{k,s-1} = e_{k,s-1},\,
+                            E_{k,s} = e_{k,s}
                             \right] \notag \\
-               &= (1 - \lambda^+_s(y))^2 \operatorname{Var}[E_{k-1,s-1}]
-                + \lambda^+_s(y)^2 \operatorname{Var}[E_{k-1,s}]
-                + \eta^2 \phi^+_{s}(m_{k-1}(y))
+               &= (1 - \lambda^+_s(y))^2 \, \operatorname{Var}[E_{k,s-1}]
+                 + \lambda^+_s(y)^2 \, \operatorname{Var}[E_{k,s}]
+                + \eta^2 \phi^+_{s}(y)
     \label{eq:y_bridge_variance}
     \text{,}
 \end{align}
@@ -753,13 +755,14 @@ where $\eta^2$ is the diffusion rate in the $y$ dimension.
 
 Next, let these mean and variance define the boundary conditions
 (end points) for the time-bridge.
-The conditional mean is a bilinear interpolation between four courner points,
+The conditional mean is given by
+the bilinear interpolation between four check points,
 $e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$,
 denoted as the set
 $\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
 %
 \begin{align}
-    m(t, y)
+    m_k(t, y)
     &:=
     \mathbb{E}\left[
         E_{t,y}\,\mid\,
@@ -775,12 +778,14 @@ $\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
         1-\lambda^+_s(y) \\
         \lambda^+_s(y)
     \end{bmatrix}
-    \label{eq:multi_point_mean}
+    \label{eq:multi_check_mean}
     \text{.}
 \end{align}
+%
 Expanding the right-hand side yields
+%
 \begin{align}
-    m(t,y)
+    m_k(t,y)
     &=
     (1 - \lambda_k(t))(1 - \lambda_s(y)) \delta_{k-1} e_{k-1,s-1} \notag \\
     &\quad
@@ -791,75 +796,64 @@ Expanding the right-hand side yields
     + \lambda_k(t) \lambda_s(y) e_{k,s}
     \text{,}
 \end{align}
-which satisfies the conditions for the four corner points,
+%
+which satisfies the conditions for the four check points,
+%
 \begin{align}
-    m(t_{k-1}, y_{s-1}) &=  \delta_{k-1}e_{k-1,s-1} \text{,} \notag \\
-    m(t_{k-1}, y_{s})   &=  \delta_{k-1}e_{k-1,s} \text{,} \notag \\
-    m(t_{k}, y_{s-1})   &=  e_{k,s-1} \text{,} \notag \\
-    m(t_{k}, y_{s})     &=  e_{k,s} \text{.}
+    m_k(t_{k-1}, y_{s-1}) &=  \delta_{k-1}e_{k-1,s-1} \text{,} \notag \\
+    m_k(t_{k-1}, y_{s})   &=  \delta_{k-1}e_{k-1,s} \text{,} \notag \\
+    m_k(t_{k}, y_{s-1})   &=  e_{k,s-1} \text{,} \notag \\
+    m_k(t_{k}, y_{s})     &=  e_{k,s} \text{.}
 \end{align}
 %
-% TODO
-The conditional variance is given by plugging the variance of the y-bridge
-\ref{eq:y_bridge_variance}
+To derive the conditional variance,
+substitute the variance of the $y$-bridge
+(Equation~\ref{eq:y_bridge_variance})
 into the equation for a time bridge with uncertain endpoints
-\ref{eq:check_variance}.
-% TODO name v_k-1(y)
-\begin{equation}
-    \tilde{v}_k(t) = \left(
-                        (1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2
-                      \right) \operatorname{Var}[E_{k,y}]
-    %\label{eq:check_constant_variance}
-    \text{,}
-\end{equation}
-%
-
-%
+(Equation~\ref{eq:variance_uncertain_bridge})
 \begin{align}
-    v(t, y)
-    &:=
     \operatorname{Var}\left[
         E_{t,y}\,\mid\,
         \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
-        \right] \notag \\
-    &=
-    \left[
-        \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
-        +
-        \lambda^+_s(y)^2 \sigma^2_{s}
-    \right]
+        \right]
+    =  
     \underbrace{
-        \frac{\left(t - t_{k-1}\right) \left(t_{k} - t\right)}
-        {\left(t_{k} - t_{k-1}\right)}
-    }_{\text{time-variance factor}} \notag \\
-    &=
-    \left[
-    \left(1 - \lambda^+_s(y)\right)^2 \sigma^2_{s-1}
-    +
-    \lambda^+_s(y)^2 \sigma^2_{s}
-    \right]
-    \phi^+_k(t)
-    \label{eq:multi_point_variance}
+        (1 - \lambda^+_k(t))^2 v_{k-1}(y)
+        + \lambda^+_k(t)^2 v_k(y)
+    }_{\tilde{v}_k(t,y)}
+    + 
+    \underbrace{\sigma^2 \phi^+_k(t)}_{v_k(t)}
 \end{align}
 %
-Here, we might reasonably assume
+where $\tilde{v}_k(t,y)$ represents the contribution from check-measurement uncertainty,
 %
 \begin{equation}
-    v(t, y) = \sigma^2 \phi^+_k(t)
+    \tilde{v}_k(t,y) :=
+        \left((1 - \lambda^+_k(t))^2,\; \lambda^+_k(t)^2\right)
+        \begin{bmatrix}
+            \operatorname{Var}[E_{k-1,s-1}] & \operatorname{Var}[E_{k-1,s}] \\
+            \operatorname{Var}[E_{k,s-1}]   & \operatorname{Var}[E_{k,s}]
+        \end{bmatrix}
+        \begin{bmatrix}
+            (1 - \lambda^+_s(y))^2 \\
+            \lambda^+_s(y)^2
+        \end{bmatrix}
+        + \left((1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2\right)\eta^2 \phi^+_s(y)
+    \label{eq:multi_check_variance}
+    \text{.}
 \end{equation}
 %
 
 \subsection{Combined Error}
 
-The conditional mean and variance given by the sum of the individual components,
+For absolute errors,
+the conditional mean and variance given by the sum of the individual components,
 %
 \begin{align}
 m(t) &=
     m_{f}(t)
     +
     m_{d}(t, y)
-    +
-    m_{c}(t, y)
     \qquad \text{and}
     \label{eq:total_mean_open} \\
 v(t) &=
@@ -867,27 +861,41 @@ v(t) &=
     +
     \tilde{v}_{f}(t)
     +
-    v_{d}(t, y)
+    v_{d}(t)
     +
     \tilde{v}_{d}(t, y)
     +
-    v_{p}(t)
+    v_{p}
     \text{,}
 \end{align}
 %
-where $f$, $d$, and $p$ denote the fouling, drift, and precision components, respectively.
-For the means,
-these are given by Equations~
-\ref{eq:unified_wiener_mean},
-\ref{eq:multi_point_mean}
-; and for the variances,
-by Equations~
+where $f$, $d$, and $p$ denote the fouling, drift, and precision components, respectively;
+the means are given by Equations~
+\ref{eq:unified_wiener_mean}
+and
+\ref{eq:multi_check_mean};
+and the variances by Equations
+\ref{eq:precision_variance},
 \ref{eq:unified_wiener_variance},
 \ref{eq:check_variance},
-\ref{eq:multi_point_variance},
-\ref{eq:precision_variance}
-.
-% TODO THERE ARE 5 EQUATIONS TO CITE HERE
+and
+\ref{eq:multi_check_variance}.
+
+For fractional errors,
+the combined mean and variance are
+% TODO CHECK THESE FORMULAS
+%
+\begin{align}
+    m(t) &= (1+m_f)(1+m_d) - 1
+    \qquad \text{and} \\
+    v(t) &=
+        \left(v_f + (1+m_f)^2\right)
+        \left(v_d + (1+m_d)^2\right)
+        \left(v_p + 1\right)
+        - \left((1+m_f)(1+m_d)\right)^2
+    \text{.}
+\end{align}
+%
 
 % TODO DESCRIBE FIGURE HERE
 
@@ -897,8 +905,6 @@ by Equations~
 %\label{fig:}
 %\end{figure*}
 %
-
-
 
 \subsection{Corrected Measurement and Confidence Interval}
 
