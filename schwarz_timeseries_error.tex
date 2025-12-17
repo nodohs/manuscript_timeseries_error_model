@@ -204,7 +204,7 @@ For simplicity, we will instead work in terms of the fractional error
 \end{equation}
 %
 and only convert back to a percentage when needed.
-Either scale (absolute or relative) may be used for uncertainty quantification,
+Either scale (absolute or fractional) may be used for uncertainty quantification,
 depending on the characteristics of the measurement device.
 
 We assume that the measurement error has three components---
@@ -217,7 +217,7 @@ that add on the absolute scale,
     \text{.}
 \end{equation}
 %
-On the relative scale, these components combine multiplicatively,
+On the fractional scale, these components combine multiplicatively,
 %
 \begin{equation}
     1 + \mathcal{E} = (1 + \mathcal{E}_f)(1 + \mathcal{E}_d)(1 + \mathcal{E}_p)
@@ -878,8 +878,8 @@ m(t) &=
     m_{f}(t)
     +
     m_{d}(t, y)
-    \qquad \text{and}
-    \label{eq:total_mean_open} \\
+    \label{eq:total_mean}
+    \qquad \text{and} \\
 v(t) &=
     v_{f}(t)
     +
@@ -890,6 +890,7 @@ v(t) &=
     \tilde{v}_{d}(t, y)
     +
     v_{p}
+    \label{eq:total_variance}
     \text{,}
 \end{align}
 %
@@ -932,39 +933,39 @@ the combined mean and variance are
 
 \subsection{Corrected Measurement and Confidence Interval}
 
-For absolute errors, recall the observation model $Y_t = X_t + E_t$.
-Let $m(t)$ and $v(t)$ denote the mean and variance of $E_t$ at time $t$.
-Treating $X_t$ as fixed and $E_t$ as independent measurement error,
-the bias-corrected estimate of $X_t$ is
+At a fixed time $t$, recall the observation model $Y = X + E$.
+Let $m(t)$ and $v(t)$ denote the mean and variance of $E$ at time $t$.
+Treating $X$ as fixed and $E$ as independent measurement error,
+the bias-corrected estimate of $X$ is
 \begin{equation}
-    x(t) := y_t - m(t),
+    x(t) := y - m(t),
 \end{equation}
 with an approximate $(1-\alpha)$ confidence interval
 \begin{equation}
-    \text{CI} = x(t) \pm q_{1-\alpha/2}\sqrt{v(t)}.
+    \mathrm{CI} = x(t) \pm q_{1-\alpha/2}\sqrt{v(t)}.
 \end{equation}
 
-For fractional errors $\mathcal{E}_t$ with $|\mathcal{E}_t|\ll 1$, 
-we use the observation model $Y_t = X_t(1+\mathcal{E}_t)$.
-Assuming $\mathcal{E}_t$ is independent of $Y_t$
+For fractional errors $\mathcal{E}$ with $|\mathcal{E}|\ll 1$,
+we use the observation model $Y = X(1+\mathcal{E})$.
+Assuming $\mathcal{E}$ is independent of $Y$
 with mean $m(t)$ and variance $v(t)$,
 a bias-corrected estimate is
 \begin{equation}
-x(t) := y_t\bigl(1-m(t)\bigr)
+x(t) := y\bigl(1-m(t)\bigr)
 \text{,}
 \end{equation}
 %
 with approximate confidence interval
 %
 \begin{equation}
-\text{CI} = x(t) \pm q_{1-\alpha/2}\,y_t\sqrt{v(t)}
+\mathrm{CI} = x(t) \pm q_{1-\alpha/2}\,y\sqrt{v(t)}
 \text{.}
 \end{equation}
 %
 
 When measurement errors exceed 100\% and the measurand is strictly positive,
-we may use a log-multiplicitive error model,
-described in Appendix~\ref{sec:log_multiplicative_error}.
+we also provide the log-multiplicitive error model
+in Appendix~\ref{sec:log_multiplicative_error}.
 
 \section{Parameter Estimation}
 %
@@ -999,13 +1000,14 @@ then we can estimate $\mu$ and $\sigma^2_k$ by maximizing the log-likelihood fun
     \right]
 \end{equation}
 %
+
 \subsection{Multi-point in matrix form}
+%
 Let the calibration error be
 %
 \begin{equation}
     e_{t,y} = m(t,y) +
 \end{equation}
-%
 %
 Let
 %
@@ -1157,57 +1159,69 @@ TEXT
 
 For strictly positive variables,
 we adopt a log-multiplicative error model.
-Let $\varepsilon_t$ denote the measurement error
+Let $\varepsilon$ denote the measurement error
 on the logarithmic scale, and assume the observation model
 %
 \begin{equation}
-    Y_t = X_t \exp(\varepsilon_t),
+    Y = X \exp(\varepsilon),
 \end{equation}
 %
 so that
 %
 \begin{equation}
-    \log Y_t = \log X_t + \varepsilon_t.
+    \log Y = \log X + \varepsilon.
 \end{equation}
 %
-Here, $\varepsilon_t$ is dimensionless and represents error on the log scale.
-As in the additive case, we model $\varepsilon_t$ as a continuous-time stochastic
-process and let $m(t)$ and $v(t)$ denote its conditional mean and variance at
-time~$t$, as derived above.
+Here, $\varepsilon$ is dimensionless and represents the log-scale error,
+given by
+\begin{equation}
+    \varepsilon_d = \log Y_s - \log Z_s = \log\!\left( \frac{Y_s}{Z_s} \right)
+\end{equation}
+for the drift and similarly, for the fouling,
+\begin{equation}
+    \varepsilon_f = \left( \log Y_b - \log Y_a \right) - \left( \log Z_b - \log Z_a \right)
+    = \log\!\left( \frac{Y_b / Y_a}{Z_b / Z_a} \right)
+\end{equation}
 
-Conditioning on the observation $Y_t = y_t$ and treating $X_t$ as fixed,
-the conditional distribution of $\log X_t$ is
+As before, the log-scale error $\varepsilon_t$ is modeled as a continuous-time
+stochastic process with $m(t)$ and $v(t)$
+denoting its conditional mean and variance,
+except their components are additive in logarithmic space
+(Equations~\ref{eq:total_mean} and \ref{eq:total_variance}).
+
+Conditioning on the observation $Y = y$ and treating $X$ as fixed,
+the conditional distribution of $\log X$ is
 %
 \begin{equation}
-    \log X_t \mid Y_t = y_t
+    \log X \mid Y = y
     \sim
-    \mathcal{N}\!\left( \log y_t - m(t),\; v(t) \right).
+    \mathcal{N}\!\left( \log y - m(t),\; v(t) \right).
 \end{equation}
 %
 
-A bias-corrected point estimate of $X_t$ may be defined in two common ways.
+A bias-corrected point estimate of $X$ may be defined in two common ways.
 First, the median of the implied lognormal distribution,
 which is unbiased on the logarithmic scale, is given by
 %
 \begin{equation}
     x_{\mathrm{med}}(t)
-    := \exp\!\left( \mathbb{E}\!\left[ \log X_t \mid Y_t = y_t \right] \right)
-    = y_t \exp\!\bigl( -m(t) \bigr).
+    := \exp\!\left( \mathbb{E}\!\left[ \log X \mid Y = y \right] \right)
+    = y \exp\!\bigl( -m(t) \bigr).
 \end{equation}
 %
-Alternatively, the conditional mean of $X_t$ on the original scale is
+Alternatively, the conditional mean of $X$ on the original scale is
 %
 \begin{equation}
     x_{\mathrm{mean}}(t)
-    := \mathbb{E}\!\left[ X_t \mid Y_t = y_t \right]
-    = y_t \exp\!\left( -m(t) + \tfrac{1}{2} v(t) \right),
+    := \mathbb{E}\!\left[ X \mid Y = y \right]
+    = y \exp\!\left( -m(t) + \tfrac{1}{2} v(t) \right),
 \end{equation}
 %
 which includes the standard lognormal bias-correction term
 $\tfrac{1}{2}v(t)$.
 
-Under the Gaussian assumption for $\varepsilon_t$, an approximate
-$(1-\alpha)$ confidence interval for $X_t$ is obtained from the quantiles of
+Under the Gaussian assumption for $\varepsilon$, an approximate
+$(1-\alpha)$ confidence interval for $X$ is obtained from the quantiles of
 the lognormal distribution,
 %
 \begin{equation}
@@ -1229,7 +1243,8 @@ distribution.
 
 \subsection{Variance of a Linear Combination}
 
-For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments, and any constants $a_1, a_2, \ldots, a_n$,
+For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments,
+and any constants $a_1, a_2, \ldots, a_n$,
 %
 \begin{equation}
     Y = a_1 X_1 + a_2 X_2 + \ldots + a_n X_n
