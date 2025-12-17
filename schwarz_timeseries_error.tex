@@ -81,14 +81,14 @@
 \begin{document}
 
 %\title{Time-series uncertainty with Wiener fouling and drift}
-\title{Uncertainty of time-series measurements subject to Wiener fouling and calibration-drift}
+\title{Uncertainty of time-series measurements subject to fouling and calibration-drift}
 
 
 
 % \Author[affil]{given_name}{surname}
 
-\Author[1]{Gregory}{Schwarz}
 \Author[1][thodson@usgs.gov]{Timothy O.}{Hodson} %% correspondence author
+\Author[1]{Gregory E.}{Schwarz}
 
 \affil[1]{U.S. Geological Survey Water Resources Mission Area}
 
@@ -104,7 +104,7 @@
 
 \runningtitle{Wiener Error}
 
-\runningauthor{Schwarz and Hodson}
+\runningauthor{Hodson and Schwarz}
 
 
 
@@ -126,27 +126,53 @@
 
 
 \begin{abstract}
-Test
+    Environmental time-series measurements are affected by time-varying errors
+    arising from fouling, calibration drift, and instrument precision.
+    We represent these errors as a continuous-time stochastic processes
+    that evolves between maintenance events,
+    during which the measurement device is checked, cleaned, and recalibrated.
+    Conditioning on these check measurements yields
+    closed-form estimates of the expected error and its uncertainty,
+    which can be used to compute bias-corrections and confidence intervals
+    for the time-series.
 \end{abstract}
 
 
-\copyrightstatement{TEXT} %% This section is optional and can be used for copyright transfers.
+% \copyrightstatement{TEXT} %% This section is optional and can be used for copyright transfers.
 
 
 \introduction  %% \introduction[modified heading if necessary]
 %
-TEXT
+Environmental monitoring relies increasingly on in situ measurements 
+collected at high temporal resolution over extended deployment periods.
+In practice, these measurements are affected by time-varying error
+that arise from fouling, calibration drift, as well as the inherent
+precision of the measurement device.
+The device precision represents the irreducible noise that is present 
+even under ideal conditions, when the device is clean and properly calibrated.
+Once a clean, and calibrated device is deployed into the environment,
+fouling and calibration-drift may accumulate over time and
+bias the raw measurements.
+To correct this bias, fouling and calibration are checked periodically
+by comparing the device against known references.
+Each check may quantify one or both error components
+and may involve cleaning or recalibration,
+which resets the corresponding error to zero.
 
-%TODO transition here
-In a measuring device 
-In practice, determination of these errors is used to correct the raw measurements
-Later on, these 
+In this paper, we represent fouling and calibration-drift errors as
+continuous-time stochastic processes that evolve gradually between checks.
+Conditioning these processes on discrete check measurements yields simple
+expressions for the expected error and its uncertainty during a deployment.
+The proposed error model is equivalent to a linear Gaussian state-space model,
+with Wiener-process evolution between noisy observations,
+and the resulting expressions for conditional means and variances
+correspond to the closed-form Kalman filtering and smoothing solutions for this system.
 
-% USGS operates a network of several thousands of such devices
-% so a flexible approach
-% Introduce Wagner here as the standard USGS methodology for correcting
-% time-series measurements for drift and fouling,
-% which is why we reference instead of more standard texts on measurement error.
+The framework extends naturally to multi-point calibration procedures and to
+networks comprising multiple measurement devices with shared parameters.
+The resulting methods provide transparent, analytically tractable
+estimates of corrected measurements and associated confidence intervals, while
+remaining consistent with field practices for deploying environmental sensors.
 
 \subsection{Preliminaries}
 %
@@ -278,23 +304,6 @@ as the $2\sigma_p$ or 95\% confidence interval.
 We typically assume fouling and drift errors have the same scale (absolute or relative)
 as the precision, but this is not a requirement.
 
-\subsection{The Measurement Procedure}
-
-A clean, calibrated device is deployed into the environment
-to measure a variable of interest.
-Over time, fouling and calibration-drift errors accumulate
-and bias the raw measurements.
-To correct this bias, fouling and calibration are checked periodically.
-Each check may quantify one or both components
-and may involve cleaning or recalibration,
-which resets the corresponding error to zero.
-After each check, the raw time-series measurements are corrected
-for any observed fouling and calibration-drift,
-and these corrections are propagated between check points.
-The uncertainty of the corrected measurements therefore includes uncertainty
-from the check measurements as well as uncertainty about the accumulation of
-error through time.
-
 \subsection{Wiener-Process Error Model}
 
 We model drift and fouling errors as a Wiener process
@@ -321,24 +330,30 @@ such as a device that gradually loses responsiveness
 due to the degradation of a consumable component,
 like a reagent in a colorimetric analyzer.
 
-Let $E_t$ be a random variable representing the error at time $t$,
-and $e_t$ be its realization (observed value).
-Suppose we observe the error at times $0 = t_0 < t_1 < t_2 < \cdots < t_K = T$.
-To simplify notation, we write $e_k := e_{t_k}$,
-such that $E_{t_k} = e_k$ for $k = 0, 1, \ldots, K$.
-Thus, $t_k - t_{k-1}$ represents the time elapsed between subsequent observations
-$e_{k-1}$ and $e_k$,
-and the subscript $k$ serves as a placeholder for either fouling $f$ or drift $d$ terms,
-$k \in \{f, d\}$.
+Let $E(t)$ denote the measurement error at time $t$,
+modeled as a continuous-time stochastic process,
+and let $e(t)$ denote a realization of this process.
+Observations are available only at a finite set times
+when fouling or calibration checks are performed,
+$0 = t_0 < t_1 < \cdots < t_K = T$.
+For notational convenience, we define
+\begin{equation}
+E_k := E(t_k),
+\qquad
+e_k := e(t_k).
+\end{equation}
+Thus, $t_k - t_{k-1}$ denotes the elapsed time between successive error
+observations $e_{k-1}$ and $e_k$.
+Throughout, the subscript $k$ is used to index the error component—fouling
+($f$) or calibration drift ($d$)—with $k \in \{f,d\}$.
 
-First, consider the case after observing the error at time $t_{k-1}$,
+We first consider the period after observing the error at time $t_{k-1}$
 but before observing the error at time $t_k$.
-We refer to this as an open interval,
-which occurs during real-time uncertainty estimation.
-In contrast, a closed interval is bracketed by
-observations at both $t_{k-1}$ and $t_k$,
-and the conditional mean and variance are revised after
-accounting for the observation at $t_k$.
+We refer to this as an \emph{open interval}, which arises during real-time
+uncertainty estimation.
+In contrast, a \emph{closed interval} is bracketed by observations at both
+$t_{k-1}$ and $t_k$; in this case, the conditional mean and variance are
+updated after incorporating the observation at $t_k$.
 
 For an open interval,
 the conditional distribution of the Wiener-process error is
@@ -351,11 +366,6 @@ the conditional distribution of the Wiener-process error is
     t > t_{k-1}
     %\mathcal{N}(\delta_{k-1}  e_{k-1} + \mu t ,\, \sigma^2 t)
 \end{equation}
-%
-%\begin{equation}
-%    E_{t} \mid E_0 = e_0 \sim \mathcal{N}(e_0 + \mu t ,\; \sigma^2 t) \text{,}
-%    \label{eq:wiener_process}
-%\end{equation}
 %
 with conditional mean and variance given by
 %
@@ -571,7 +581,7 @@ which simplifies, during open intervals,
 to $ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$.
 The following sections derive expressions for
 $\operatorname{Var}[E_f]$ and $\operatorname{Var}[E_d]$,
-which substite in the $\operatorname{Var}[E_k]$ term
+which substitute in the $\operatorname{Var}[E_k]$ term
 of Equation~\ref{eq:check_constant_variance}.
 Later, we will relax the constant-variance assumption,
 and refer back to the full expression for the check variance
@@ -675,7 +685,7 @@ Substituting these variables into the drift error
 (Equation~\ref{eq:drift_error}) yields
 %
 \begin{equation}
-    E_d = (X_s + E^m) - (Z_s + E^s)
+    E_d = (X_s + E^m) - (X_s + E^s)
     \text{.}
 \end{equation}
 %
@@ -708,7 +718,7 @@ the error is determined at each standard value,
     \text{.}
 \end{equation}
 %
-First, we consider the conditional distrubtion at the check time $t_{k}$,
+First, we consider the conditional distribution at the check time $t_{k}$,
 which forms a bridge in the $y$ dimension.
 %In the multi-point calibration,
 Next, we will use that first bridge as the uncertain boundary condition
@@ -846,8 +856,23 @@ where $\tilde{v}_k(t,y)$ represents the contribution from check-measurement unce
 
 \subsection{Combined Error}
 
+For each component $k\in\{f,d\}$,
+we decompose the conditional variance into a process term
+(bridge uncertainty) and a check-measurement term:
+\begin{equation}
+\operatorname{Var}\!\left[E_k\right] = v_k(t) + \tilde v_k(t),
+\end{equation}
+where the process-only variance is
+\begin{equation}
+v_k(t) := \sigma_k^2\,\phi_k^+(t),
+\end{equation}
+where $\tilde v_k(t)$ denotes the variance contribution
+from the check measurements propagated to time $t$
+(Equations~\ref{eq:check_variance} or \ref{eq:multi_check_variance}).
+% XXX
+
 For absolute errors,
-the conditional mean and variance given by the sum of the individual components,
+the combined conditional mean and variance are
 %
 \begin{align}
 m(t) &=
@@ -1179,16 +1204,26 @@ then the variance is
 
 %% Please add \clearpage between each table and/or figure. Further guidelines on figures and tables can be found below.
 
+\authorcontribution{
+    Both authors contributed equally.
+} %% this section is mandatory
 
+\competinginterests{
+    Authors T.O.H. and G.S. are employees of the U.S. Geological Survey.
+    } %% this section is mandatory even if you declare that no competing interests are present
 
-\authorcontribution{TEXT} %% this section is mandatory
+\disclaimer{
+    Any use of trade, firm, or product names is for descriptive purposes
+    only and does not imply endorsement by the U.S. Government.
+} %% optional section
 
-\competinginterests{TEXT} %% this section is mandatory even if you declare that no competing interests are present
-
-\disclaimer{TEXT} %% optional section
 
 \begin{acknowledgements}
-TEXT
+    This work was supported by the
+    % National Hydrologic Monitoring Program
+    % TODO
+    Groundwater and Streamflow Information Program
+    of the U.S. Geological Survey.
 \end{acknowledgements}
 
 
