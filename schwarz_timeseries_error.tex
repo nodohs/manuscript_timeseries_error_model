@@ -863,11 +863,10 @@ we decompose the conditional variance into a process term
 \operatorname{Var}\!\left[E_k\right] = v_k(t) + \tilde v_k(t),
 \end{equation}
 where the process-only variance is
-\begin{equation}
+$
 v_k(t) := \sigma_k^2\,\phi_k^+(t),
-\end{equation}
-where $\tilde v_k(t)$ denotes the variance contribution
-from the check measurements propagated to time $t$
+$
+and $\tilde v_k(t)$ is the variance from the check measurements propagated to time $t$
 (Equations~\ref{eq:check_variance} or \ref{eq:multi_check_variance}).
 % XXX
 
@@ -933,50 +932,42 @@ the combined mean and variance are
 
 \subsection{Corrected Measurement and Confidence Interval}
 
-Let $X_t$ denote the true value at time $t$,
-and let $E_t$ denote the measurement error so that $Y_t = X_t + E_t$.
-%Define $m(t) := \mathbb{E}[E_t]$ and $v(t) := \operatorname{Var}(E_t)$.
-Then the bias-corrected estimate of $X_t$ is
-%
+For absolute errors, recall the observation model $Y_t = X_t + E_t$.
+Let $m(t)$ and $v(t)$ denote the mean and variance of $E_t$ at time $t$.
+Treating $X_t$ as fixed and $E_t$ as independent measurement error,
+the bias-corrected estimate of $X_t$ is
 \begin{equation}
-    x(t) := \mathbb{E}\!\left[X_t \mid Y_t = y_t\right]
-        = y_t - m(t)
-        \text{,}
+    x(t) := y_t - m(t),
+\end{equation}
+with an approximate $(1-\alpha)$ confidence interval
+\begin{equation}
+    \text{CI} = x(t) \pm q_{1-\alpha/2}\sqrt{v(t)}.
+\end{equation}
+
+For fractional errors $\mathcal{E}_t$ with $|\mathcal{E}_t|\ll 1$, 
+we use the observation model $Y_t = X_t(1+\mathcal{E}_t)$.
+Assuming $\mathcal{E}_t$ is independent of $Y_t$
+with mean $m(t)$ and variance $v(t)$,
+a bias-corrected estimate is
+\begin{equation}
+x(t) := y_t\bigl(1-m(t)\bigr)
+\text{,}
 \end{equation}
 %
 with approximate confidence interval
 %
 \begin{equation}
-    \text{CI} = x(t) \pm q_{1-\alpha/2} \sqrt{v(t)}
-    \text{, }
-\end{equation}
-%
-where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal distribution
-(e.g., $q_{0.975} = 1.96$ for a 95\% confidence interval).
-Alternatively, for percent error $\%E_{t}$, the measured value is
-%
-\begin{equation}
-    Y_t = \frac{X_t}{1 - \%E_{t}/100}
-    % removing the 100x from the error simplifies here
-\end{equation}
-%
-Then, on the original scale, the bias-corrected estimate of $X_t$ is
-%
-\begin{equation}
-    x(t) := \mathbb{E}[X_t \mid Y_t = y_t]
-        = y_t \left( 1 - \frac{\%m(t)}{100} \right)
-        \text{.}
-\end{equation}
-%
-and the confidence interval is
-%
-\begin{equation}
-    \text{CI} = x(t) \pm q_{1-\alpha/2} \, \frac{y_t}{100} \sqrt{\%v(t)}
+\text{CI} = x(t) \pm q_{1-\alpha/2}\,y_t\sqrt{v(t)}
 \text{.}
 \end{equation}
+%
+
+When measurement errors exceed 100\% and the measurand is strictly positive,
+we may use a log-multiplicitive error model,
+described in Appendix~\ref{sec:log_multiplicative_error}.
 
 \section{Parameter Estimation}
-
+%
 Letting
 %
 \begin{align}
@@ -1161,6 +1152,79 @@ TEXT
 
 
 \appendix
+\section{Log-multiplicative error model}
+\label{sec:log_multiplicative_error}
+
+For strictly positive variables,
+we adopt a log-multiplicative error model.
+Let $\varepsilon_t$ denote the measurement error
+on the logarithmic scale, and assume the observation model
+%
+\begin{equation}
+    Y_t = X_t \exp(\varepsilon_t),
+\end{equation}
+%
+so that
+%
+\begin{equation}
+    \log Y_t = \log X_t + \varepsilon_t.
+\end{equation}
+%
+Here, $\varepsilon_t$ is dimensionless and represents error on the log scale.
+As in the additive case, we model $\varepsilon_t$ as a continuous-time stochastic
+process and let $m(t)$ and $v(t)$ denote its conditional mean and variance at
+time~$t$, as derived above.
+
+Conditioning on the observation $Y_t = y_t$ and treating $X_t$ as fixed,
+the conditional distribution of $\log X_t$ is
+%
+\begin{equation}
+    \log X_t \mid Y_t = y_t
+    \sim
+    \mathcal{N}\!\left( \log y_t - m(t),\; v(t) \right).
+\end{equation}
+%
+
+A bias-corrected point estimate of $X_t$ may be defined in two common ways.
+First, the median of the implied lognormal distribution,
+which is unbiased on the logarithmic scale, is given by
+%
+\begin{equation}
+    x_{\mathrm{med}}(t)
+    := \exp\!\left( \mathbb{E}\!\left[ \log X_t \mid Y_t = y_t \right] \right)
+    = y_t \exp\!\bigl( -m(t) \bigr).
+\end{equation}
+%
+Alternatively, the conditional mean of $X_t$ on the original scale is
+%
+\begin{equation}
+    x_{\mathrm{mean}}(t)
+    := \mathbb{E}\!\left[ X_t \mid Y_t = y_t \right]
+    = y_t \exp\!\left( -m(t) + \tfrac{1}{2} v(t) \right),
+\end{equation}
+%
+which includes the standard lognormal bias-correction term
+$\tfrac{1}{2}v(t)$.
+
+Under the Gaussian assumption for $\varepsilon_t$, an approximate
+$(1-\alpha)$ confidence interval for $X_t$ is obtained from the quantiles of
+the lognormal distribution,
+%
+\begin{equation}
+    \mathrm{CI}
+    =
+    \left[
+        x_{\mathrm{med}}(t)
+        \exp\!\left( -q_{1-\alpha/2} \sqrt{v(t)} \right),
+        \;
+        x_{\mathrm{med}}(t)
+        \exp\!\left(  q_{1-\alpha/2} \sqrt{v(t)} \right)
+    \right],
+\end{equation}
+%
+where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal
+distribution.
+
 \section{Theorems}
 
 \subsection{Variance of a Linear Combination}
