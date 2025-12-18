@@ -312,7 +312,7 @@ A Wiener process is a continuous-time stochastic process
 with independent, normally distributed increments
 whose variance grows linearly with elapsed time.
 In particular, for a process $\{X_t\}_{t \ge 0}$
-with drift $\mu$ and diffusion rate $\sigma^2$,
+with drift $\mu$ and diffusion coefficient $\sigma$,
 the increment over time $t$ satisfies
 %
 \begin{equation}
@@ -337,21 +337,19 @@ Observations are available only at a finite set times
 when fouling or calibration checks are performed,
 $0 = t_0 < t_1 < \cdots < t_K = T$.
 For notational convenience, we define
-\begin{equation}
-E_k := E(t_k),
-\qquad
-e_k := e(t_k).
-\end{equation}
+$E_k := E(t_k)$
+and
+$e_k := e(t_k)$.
 Thus, $t_k - t_{k-1}$ denotes the elapsed time between successive error
 observations $e_{k-1}$ and $e_k$.
-Throughout, the subscript $k$ is used to index the error component—fouling
-($f$) or calibration drift ($d$)—with $k \in \{f,d\}$.
+Throughout, the subscript $k$ is used to index the error component---fouling
+($f$) or calibration drift ($d$).
 
 We first consider the period after observing the error at time $t_{k-1}$
 but before observing the error at time $t_k$.
-We refer to this as an \emph{open interval}, which arises during real-time
+We refer to this as an ``open interval,'' which arises during real-time
 uncertainty estimation.
-In contrast, a \emph{closed interval} is bracketed by observations at both
+In contrast, a ``closed interval'' is bracketed by observations at both
 $t_{k-1}$ and $t_k$; in this case, the conditional mean and variance are
 updated after incorporating the observation at $t_k$.
 
@@ -545,6 +543,7 @@ Applying the variance formula for a linear combination yields
             \lambda^+_k(t) \, E_{k}
             ]
             + \operatorname{Var}[W_t]
+            &\text{(Appendix~\ref{sec:variance_linear_combination})}
             \notag \\
         &=  \underbrace{
             (1 - \lambda^+_k(t))^2 \, \operatorname{Var}[E_{k-1}]
@@ -761,7 +760,7 @@ The conditional variance of the $y$-bridge at time $t_k$ is
     \text{,}
 \end{align}
 %
-where $\eta^2$ is the diffusion rate in the $y$ dimension.
+where $\eta$ is the diffusion coefficient in the $y$ dimension.
 
 Next, let these mean and variance define the boundary conditions
 (end points) for the time-bridge.
@@ -908,7 +907,6 @@ and
 
 For fractional errors,
 the combined mean and variance are
-% TODO CHECK THESE FORMULAS
 %
 \begin{align}
     m(t) &= (1+m_f)(1+m_d) - 1
@@ -918,7 +916,7 @@ the combined mean and variance are
         \left(v_d + (1+m_d)^2\right)
         \left(v_p + 1\right)
         - \left((1+m_f)(1+m_d)\right)^2
-    \text{.}
+    \qquad \text{(Appendix~\ref{sec:combined_fractional_proof}).}
 \end{align}
 %
 
@@ -945,11 +943,11 @@ with an approximate $(1-\alpha)$ confidence interval
     \mathrm{CI} = x(t) \pm q_{1-\alpha/2}\sqrt{v(t)}.
 \end{equation}
 
-For fractional errors $\mathcal{E}$ with $|\mathcal{E}|\ll 1$,
+For fractional errors $\mathcal{E}$,
 we use the observation model $Y = X(1+\mathcal{E})$.
 Assuming $\mathcal{E}$ is independent of $Y$
 with mean $m(t)$ and variance $v(t)$,
-a bias-corrected estimate is
+a bias-corrected estimate of $X$ is
 \begin{equation}
 x(t) := y\bigl(1-m(t)\bigr)
 \text{,}
@@ -969,119 +967,35 @@ in Appendix~\ref{sec:log_multiplicative_error}.
 
 \section{Parameter Estimation}
 %
-Letting
-%
+%Recalling that
+%\begin{align}
+%    m^o_k(t) &:= \delta_{k-1} e_{k-1} + \mu_k (t - t_{k-1}) \\
+%    v^o_k(t) &:= \sigma^2_k (t - t_{k-1})
+%\end{align}
+%and $\tilde{v}_k(t)$ is the additional variance from the check measurements.
+By defining the residual and variance terms as
 \begin{align}
-    r(\mu_k) &:= e_k - \delta_{k-1} e_{k-1} - \mu_k (t - t_{k-1}) \\
-    u(\sigma^2_k) &:= \sigma^2_k (t - t_{k-1}) + \sigma^2_p
+    r_k &:= e_k - m^o_k(t) \\
+    u_k &:= v^o_k(t) + \tilde{v}^o_k(t)
+    \text{,}
 \end{align}
-%
-and assuming the residuals are independent and identically distributed (i.i.d),
-%
-\begin{equation}
-    e_k \mid \mu, \sigma^2
-    \sim \mathcal{N}(
-        \delta_{k-1} e_{k-1} + \mu_k (t - t_{k-1}),\;
-        \sigma^2_k (t - t_{k-1}) + \sigma^2_p
-    )
-\end{equation}
-%
-then we can estimate $\mu$ and $\sigma^2_k$ by maximizing the log-likelihood function,
+the drift rate $\mu_k$ and diffusion coefficient $\sigma_k$
+can be estimated by maximizing the log-likelihood function,
 %
 \begin{equation}
-    \ell(\mu, \sigma^2)
+    \ell(\mu_k, \sigma_k^2)
     =
     %-\frac{K_i}{2} \ln(2 \pi)
     - \frac{1}{2} \sum_{k=1}^{K_i}
     \left[
-        \log \left( u(\sigma^2_k) \right)
+        \log \left( u_k \right)
         +
-        \frac{r(\mu_k)^2}{u(\sigma^2_k)}
+        \frac{r_k^2}{u_k}
     \right]
 \end{equation}
 %
 
-\subsection{Multi-point in matrix form}
-%
-Let the calibration error be
-%
-\begin{equation}
-    e_{t,y} = m(t,y) +
-\end{equation}
-%
-Let
-%
-\begin{equation}
-    \vec{e} :=
-    \begin{bmatrix}
-        e_{t_1,y_1} \\
-        \vdots \\
-        e_{t_N,y_N}
-    \end{bmatrix}
-    \text{,} \qquad
-    \vec{m} :=
-    \begin{bmatrix}
-        m(t_1,y_1) \\
-        \vdots \\
-        m(t_N,y_N)
-    \end{bmatrix}
-    \text{,} \qquad
-    \vec{F} :=
-    \begin{bmatrix}
-        \phi_k(t_1) & \phi_s(t_1) \\
-        \vdots & \vdots \\
-        \phi_k(t_N) & \phi_s(t_N)
-    \end{bmatrix}
-    \text{,} \qquad
-    \vec{\Sigma}_k :=
-    \begin{bmatrix}
-        \sigma^2_{t} & \sigma_{tk} \\
-        \sigma_{kt} & \sigma^2_{k}
-    \end{bmatrix}
-\end{equation}
-%
-\begin{equation}
-    \vec{e} \sim \mathcal{N}(\vec{m}, \vec{\Sigma})
-\end{equation}
-%
-with conditional variance given by
-%
-\begin{equation}
-    \vec{\Sigma} =
-    \vec{F} \vec{\Sigma}_v \vec{F}^T
-    +
-    \vec{\sigma}_{\varepsilon} \vec{I}_N
-    +
-    \vec{\sigma}_{p} \vec{I}_N
-\end{equation}
-
-The Gaussian log-likelihood function is
-%
-\begin{equation}
-    \ell(\mu_k, \vec{\Sigma}^2_k, \sigma^2_{\varepsilon})
-    =
-    -\frac{1}{2}
-    \left[
-        N \log (2\pi) 
-        +
-        \log \det( \vec{\Sigma} )
-        +
-        (\vec{e} - \vec{m})^T \vec{\Sigma}^{-1} (\vec{e} - \vec{m})
-    \right]
-\end{equation}
-
-Ignoring the covariance term, allows us to avoid the matrix inversion and determinant,
-\begin{equation}
-    \ell(\mu_k, \sigma^2_k, \sigma^2_{\varepsilon})
-    =
-    -\frac{N}{2} \log(2\pi)
-    -\frac{1}{2} \sum_{i=1}^{N}
-    \left[
-        \log(u(\sigma^2_k)) + \frac{r(\mu_k)^2}{u(\sigma^2_k)}
-    \right]
-\end{equation}
-
-
+% TODO For the multi-point calibration, ...
 \section{Hierarchical Modeling}
 % \sigma_ij (site i and bin j )
 The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site $i$ is given by
@@ -1123,6 +1037,7 @@ Inverse gamma distribution prior
 \end{equation}
 
 The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site $j$ is given by
+%
 \begin{equation}
     \hat{\sigma}^2_j
     =
@@ -1135,18 +1050,13 @@ where
     \frac{N_j}{N_j + 2 (\hat{a} - 1)}
 \end{equation}
 
-\subsection{Simulation Experiments}
-TEXT
-
-
 \conclusions  %% \conclusions[modified heading if necessary]
 TEXT
 
 %% The following commands are for the statements about the availability of data sets and/or software code corresponding to the manuscript.
 %% It is strongly recommended to make use of these sections in case data sets and/or software code have been part of your research the article is based on.
 
-\codeavailability{TEXT} %% use this section when having only software code available
-
+% \codeavailability{TEXT} %% use this section when having only software code available
 % \dataavailability{TEXT} %% use this section when having only data sets available
 % \codedataavailability{TEXT} %% use this section when having data sets and software code available
 % \sampleavailability{TEXT} %% use this section when having geoscientific samples available
@@ -1154,6 +1064,61 @@ TEXT
 
 
 \appendix
+
+\section{Combined mean and variance for independent fractional errors}
+\label{sec:combined_fractional_proof}
+
+Let $E_f$, $E_d$, and $E_p$ denote independent fractional-error components with
+means $m_f,m_d,0$ and variances $v_f,v_d,v_p$, respectively, and define the
+combined fractional error $E$ by
+%
+\begin{equation}
+    1+E := (1+E_f)(1+E_d)(1+E_p).
+\end{equation}
+%
+Then
+%
+\begin{equation}
+    m := \mathbb{E}[E] = (1+m_f)(1+m_d)-1,
+\end{equation}    
+%
+and
+%
+\begin{equation}
+    v := \operatorname{Var}(E)
+        =
+        \left(v_f+(1+m_f)^2\right)
+        \left(v_d+(1+m_d)^2\right)
+        \left(v_p+1\right)
+        -\left((1+m_f)(1+m_d)\right)^2.
+\end{equation}
+%
+
+\paragraph{Proof.}
+%
+Let $A=1+E_f$, $B=1+E_d$, and $C=1+E_p$, so that $1+E=ABC$.
+By independence,
+%
+\begin{equation}
+    \mathbb{E}[ABC]=\mathbb{E}[A]\mathbb{E}[B]\mathbb{E}[C]
+                   = (1+m_f)(1+m_d)\cdot 1,
+\end{equation}
+%
+which implies $m=\mathbb{E}[E]=\mathbb{E}[ABC]-1=(1+m_f)(1+m_d)-1$.
+%
+Also by independence,
+%
+\begin{equation}
+    \operatorname{Var}(ABC)=\mathbb{E}[A^2B^2C^2]-\mathbb{E}[ABC]^2
+    =\mathbb{E}[A^2]\mathbb{E}[B^2]\mathbb{E}[C^2]-\mathbb{E}[ABC]^2
+    \text{.}
+\end{equation}
+%
+Using $\mathbb{E}[A^2]=\operatorname{Var}(A)+\mathbb{E}[A]^2=v_f+(1+m_f)^2$,
+$\mathbb{E}[B^2]=v_d+(1+m_d)^2$, and $\mathbb{E}[C^2]=v_p+1$ (since
+$\mathbb{E}[C]=1$), we obtain the stated expression for $v$.
+
+
 \section{Log-multiplicative error model}
 \label{sec:log_multiplicative_error}
 
@@ -1174,13 +1139,16 @@ so that
 %
 Here, $\varepsilon$ is dimensionless and represents the log-scale error,
 given by
+%
 \begin{equation}
     \varepsilon_d = \log Y_s - \log Z_s = \log\!\left( \frac{Y_s}{Z_s} \right)
 \end{equation}
+%
 for the drift and similarly, for the fouling,
+%
 \begin{equation}
     \varepsilon_f = \left( \log Y_b - \log Y_a \right) - \left( \log Z_b - \log Z_a \right)
-    = \log\!\left( \frac{Y_b / Y_a}{Z_b / Z_a} \right)
+    = \log\left( \frac{Y_b}{Y_a} \right) - \log\left( \frac{Z_b}{Z_a} \right)
 \end{equation}
 
 As before, the log-scale error $\varepsilon_t$ is modeled as a continuous-time
@@ -1239,9 +1207,8 @@ the lognormal distribution,
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal
 distribution.
 
-\section{Theorems}
-
-\subsection{Variance of a Linear Combination}
+\section{Variance of a Linear Combination}
+\label{sec:variance_linear_combination}
 
 For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments,
 and any constants $a_1, a_2, \ldots, a_n$,
@@ -1259,10 +1226,13 @@ the variance is given by
 \end{equation}
 %
 In the two-variable case,
+%
 \begin{equation}
     Y = a X + b Z
 \end{equation}
+%
 then the variance is
+%
 \begin{equation}
     \operatorname{Var}(Y) = a^2 \operatorname{Var}(X) + b^2 \operatorname{Var}(Z) + 2ab \operatorname{Cov}(X, Z)
 \end{equation}
