@@ -576,7 +576,7 @@ the conditional variance at time $t$ is
     \text{,}
 \end{equation}
 %
-which simplifies, during open intervals,
+which simplifies further for the open interval
 to $ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$.
 The following sections derive expressions for
 $\operatorname{Var}[E_f]$ and $\operatorname{Var}[E_d]$,
@@ -967,16 +967,25 @@ in Appendix~\ref{sec:log_multiplicative_error}.
 
 \section{Parameter Estimation}
 %
-%Recalling that
-%\begin{align}
-%    m^o_k(t) &:= \delta_{k-1} e_{k-1} + \mu_k (t - t_{k-1}) \\
-%    v^o_k(t) &:= \sigma^2_k (t - t_{k-1})
-%\end{align}
-%and $\tilde{v}_k(t)$ is the additional variance from the check measurements.
+\begin{equation}
+    e_k \mid e_{k-1}
+    \sim
+    \mathcal{N}\left(
+        m^o_k(t_k)
+        ,\,
+        v^o_k(t_k) + v_k + v_r
+    \right)
+    \label{eq:error_transition}
+    \text{,}
+\end{equation}
+where $v_k$ is the observational variance,
+and $v_r$ is the observational variance at the last reset event (cleaning or recalibration).
+
+
 By defining the residual and variance terms as
 \begin{align}
     r_k &:= e_k - m^o_k(t) \\
-    u_k &:= v^o_k(t) + \tilde{v}^o_k(t)
+    u_k &:= v^o_k(t) + v_k + v_r
     \text{,}
 \end{align}
 the drift rate $\mu_k$ and diffusion coefficient $\sigma_k$
@@ -994,15 +1003,20 @@ can be estimated by maximizing the log-likelihood function,
     \right]
 \end{equation}
 %
+Special case with no observational uncertainty,
+then the parameters have closed-form estimators
+\begin{equation}
+    \hat{\mu}_k = \frac{\sum_{k=1}^{K} e_k - \delta_{k-1} e_{k-1}}
+                       {\sum_{k=1}^{K} (t_k - t_{k-1})}
+\end{equation}
+and 
+\begin{equation}
+    \hat{\sigma}_k^2 = \frac{1}{K}{\sum_{k=1}^{K} \frac{r_k^2}{t_k - t_{k-1}}}
+\end{equation}
 
 % TODO For the multi-point calibration, ...
 \section{Hierarchical Modeling}
 % \sigma_ij (site i and bin j )
-The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site $i$ is given by
-%
-\begin{equation}
-    \hat{\sigma}^2_i = X
-\end{equation}
 %
 Inverse gamma distribution prior
 %
@@ -1064,6 +1078,38 @@ TEXT
 
 
 \appendix
+
+\section{Variance of a Linear Combination}
+\label{sec:variance_linear_combination}
+
+For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments,
+and any constants $a_1, a_2, \ldots, a_n$,
+%
+\begin{equation}
+    Y = a_1 X_1 + a_2 X_2 + \ldots + a_n X_n
+\end{equation}
+%
+the variance is given by
+%
+\begin{equation}
+    \operatorname{Var}(Y)
+    =
+    \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j \operatorname{Cov}(X_i, X_j)
+\end{equation}
+%
+In the two-variable case,
+%
+\begin{equation}
+    Y = a X + b Z
+\end{equation}
+%
+then the variance is
+%
+\begin{equation}
+    \operatorname{Var}(Y) = a^2 \operatorname{Var}(X) + b^2 \operatorname{Var}(Z) + 2ab \operatorname{Cov}(X, Z)
+\end{equation}
+
+
 
 \section{Combined mean and variance for independent fractional errors}
 \label{sec:combined_fractional_proof}
@@ -1207,36 +1253,6 @@ the lognormal distribution,
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal
 distribution.
 
-\section{Variance of a Linear Combination}
-\label{sec:variance_linear_combination}
-
-For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments,
-and any constants $a_1, a_2, \ldots, a_n$,
-%
-\begin{equation}
-    Y = a_1 X_1 + a_2 X_2 + \ldots + a_n X_n
-\end{equation}
-%
-the variance is given by
-%
-\begin{equation}
-    \operatorname{Var}(Y)
-    =
-    \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j \operatorname{Cov}(X_i, X_j)
-\end{equation}
-%
-In the two-variable case,
-%
-\begin{equation}
-    Y = a X + b Z
-\end{equation}
-%
-then the variance is
-%
-\begin{equation}
-    \operatorname{Var}(Y) = a^2 \operatorname{Var}(X) + b^2 \operatorname{Var}(Z) + 2ab \operatorname{Cov}(X, Z)
-\end{equation}
-
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
 %% Regarding figures and tables in appendices, the following two options are possible depending on your general handling of figures and tables in the manuscript environment:
@@ -1296,7 +1312,7 @@ then the variance is
 %% authors experienced with BibTeX only have to include the following two lines:
 %%
 \bibliographystyle{copernicus}
-\bibliography{schwarz_timeseries.bib}
+\bibliography{timeseries_error_model.bib}
 %%
 %% URLs and DOIs can be entered in your BibTeX file as:
 %%
