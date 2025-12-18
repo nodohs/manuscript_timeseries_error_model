@@ -131,8 +131,8 @@
     We represent these errors as a continuous-time stochastic processes
     that evolves between maintenance events,
     during which the measurement device is checked, cleaned, and recalibrated.
-    Conditioning on these check measurements yields
-    closed-form estimates of the expected error and its uncertainty,
+    Conditioning on these check measurements
+    allows us to estimate the expected error and its uncertainty,
     which can be used to compute bias-corrections and confidence intervals
     for the time-series.
 \end{abstract}
@@ -1001,18 +1001,76 @@ can be estimated by maximizing the log-likelihood function,
         +
         \frac{r_k^2}{u_k}
     \right]
+    \text{.}
 \end{equation}
 %
-Special case with no observational uncertainty,
-then the parameters have closed-form estimators
+
+For the special case of no observational uncertainty,
+$v_k = v_r \equiv 0$,
+the drift and diffusion parameters have closed-form maximum-likelihood estimators.
+Specifically,
+%
 \begin{equation}
     \hat{\mu}_k = \frac{\sum_{k=1}^{K} e_k - \delta_{k-1} e_{k-1}}
                        {\sum_{k=1}^{K} (t_k - t_{k-1})}
 \end{equation}
-and 
+%
+and
+%
 \begin{equation}
     \hat{\sigma}_k^2 = \frac{1}{K}{\sum_{k=1}^{K} \frac{r_k^2}{t_k - t_{k-1}}}
+    \text{.}
 \end{equation}
+%
+Beware that when observational uncertainty is ignored,
+these estimators become ill-conditioned for short intervals,
+because the denominator goes to zero
+but the numerator does not when $t_k - t_{k-1} \rightarrow 0$.
+For the multi-point calibration,
+define residual and variance terms
+%
+\begin{align}
+    r_{d,s} &:= e_{d,s} - e_{d,s-1} \\
+    u_{d,s} &:= \eta^2 (z_{d,s} - z_{d,s-1})
+                + v_{d,s} + v_{d,s-1}
+    \text{,}
+\end{align}
+%
+and estimate the diffusion rate parameter $\eta$
+by maximizing the log-likelihood,
+%
+\begin{equation}
+    \ell(\eta^2)
+    =
+    %-\frac{K_i}{2} \ln(2 \pi)
+    - \frac{1}{2} \sum_{d=1}^{D} \sum_{s=2}^{S_d}
+    \left[
+        \log \left( u_{d,s} \right)
+        +
+        \frac{r_{d,s}^2}{u_{d,s}}
+    \right]
+    \text{,}
+\end{equation}
+where $S_d$ is the number of standards in the $d$-th calibration check.
+This is necessary because in practice,
+only some of the standards may be checked at a time.
+
+Assuming no observational uncertainty,
+$v_s = v_{s-1} \equiv 0$,
+the closed-form of the estimator is
+%
+\begin{equation}
+    \hat{\eta}^2 =
+    \frac{1}{N}
+    \sum_{d=1}^{D} \sum_{s=2}^{S_d}
+    \frac{\left(e_{d,s} - e_{d,s-1}\right)^2}
+         {z_s - z_{s-1}}
+    \text{,}
+\end{equation}
+where $N = \sum_{d=1}^{D} (S_d - 1)$.
+This estimator is better conditioned because
+the calibration standards are separated in the $y$-dimension,
+ensuring that the denominator never approaches zero.
 
 % TODO For the multi-point calibration, ...
 \section{Hierarchical Modeling}
