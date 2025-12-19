@@ -143,15 +143,15 @@
 
 \introduction  %% \introduction[modified heading if necessary]
 %
-Environmental monitoring relies increasingly on in situ measurements 
-collected at high temporal resolution over extended deployment periods.
+Environmental monitoring often relies on in situ measurements 
+collected over extended deployment periods.
 In practice, these measurements are affected by time-varying error
-that arise from fouling, calibration drift, as well as the inherent
-precision of the measurement device.
-The device precision represents the irreducible noise that is present 
-even under ideal conditions, when the device is clean and properly calibrated.
-Once a clean, and calibrated device is deployed into the environment,
-fouling and calibration-drift may accumulate over time and
+that arise from fouling, calibration drift, 
+and the inherent precision of the device.
+%The device precision represents the irreducible noise that is present 
+%even under ideal conditions, when the device is clean and properly calibrated.
+After a clean, and calibrated device is deployed into an environment,
+fouling and calibration-drift begin to accumulate that
 bias the raw measurements.
 To correct this bias, fouling and calibration are checked periodically
 by comparing the device against known references.
@@ -163,7 +163,7 @@ We can represent the fouling and calibration-drift as
 continuous-time stochastic processes that evolve gradually between checks.
 % Conditioning these processes on the check measurements yields simple
 % expressions for the expected error and its uncertainty during a deployment.
-The proposed error model is equivalent to a linear Gaussian state-space model,
+Our proposed error model is equivalent to a linear Gaussian state-space model,
 with Wiener-process evolution between noisy observations,
 and the resulting expressions for conditional means and variances
 correspond to the Kalman filtering and smoothing solutions for this system.
