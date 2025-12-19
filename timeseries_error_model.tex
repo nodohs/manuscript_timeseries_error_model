@@ -132,7 +132,7 @@
     that evolves between maintenance events,
     during which the measurement device is checked, cleaned, and recalibrated.
     Conditioning on these check measurements
-    allows us to estimate the expected error and its uncertainty,
+    yields closed-form estimates of the expected error and its uncertainty,
     which can be used to compute bias-corrections and confidence intervals
     for the time-series.
 \end{abstract}
@@ -966,30 +966,20 @@ we also provide the log-multiplicitive error model
 in Appendix~\ref{sec:log_multiplicative_error}.
 
 \section{Parameter Estimation}
+
+Let $r_k$ be the one-step-ahead residual and $u_k$ its conditional variance
 %
-\begin{equation}
-    e_k \mid e_{k-1}
-    \sim
-    \mathcal{N}\left(
-        m^o_k(t_k)
-        ,\,
-        v^o_k(t_k) + v_k + v_r
-    \right)
-    \label{eq:error_transition}
-    \text{,}
-\end{equation}
-where $v_k$ is the observational variance,
-and $v_r$ is the observational variance at the last reset event (cleaning or recalibration).
-
-
-By defining the residual and variance terms as
 \begin{align}
-    r_k &:= e_k - m^o_k(t) \\
-    u_k &:= v^o_k(t) + v_k + v_r
+    r_k &= e_k - m^o_k(t_k) \\
+    u_k &= v^o_k(t_k) + v_k + v_r
     \text{,}
 \end{align}
-the drift rate $\mu_k$ and diffusion coefficient $\sigma_k$
-can be estimated by maximizing the log-likelihood function,
+%
+where $v_k$ denotes the observation error variance at time $t_k$,
+and $v_r$ denotes the observation error variance at the most recent reset event
+(cleaning or recalibration).
+The drift rate $\mu_k$ and diffusion coefficient $\sigma_k$
+can be estimated by maximizing the log-likelihood function
 %
 \begin{equation}
     \ell(\mu_k, \sigma_k^2)
@@ -1026,6 +1016,22 @@ Beware that when observational uncertainty is ignored,
 these estimators become ill-conditioned for short intervals,
 because the denominator goes to zero
 but the numerator does not when $t_k - t_{k-1} \rightarrow 0$.
+% When a closed-form expression is preferred,
+% the observational uncertainy can be included using the following
+% truncated heuristic,
+% %
+% \begin{equation}
+%     \hat{\sigma}^2  =  \frac{1}{K}{\sum_{k=1}^{K}
+%                        \max
+%                        \left(
+%                         0, \,
+%                         \frac{r_k^2 - v_k - v_r}
+%                              {t_k - t_{k-1}}
+%                        \right)
+%                      }
+%     \text{.}
+% \end{equation}
+
 For the multi-point calibration,
 define residual and variance terms
 %
@@ -1073,7 +1079,7 @@ the calibration standards are separated in the $y$-dimension,
 ensuring that the denominator never approaches zero.
 
 % TODO For the multi-point calibration, ...
-\section{Hierarchical Modeling}
+\section{Hierarchical Modeling of Monitoring Networks}
 % \sigma_ij (site i and bin j )
 %
 Inverse gamma distribution prior
