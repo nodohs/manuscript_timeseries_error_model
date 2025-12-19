@@ -156,20 +156,20 @@ bias the raw measurements.
 To correct this bias, fouling and calibration are checked periodically
 by comparing the device against known references.
 Each check may quantify one or both error components
-and may involve cleaning or recalibration,
-which resets the corresponding error to zero.
+and may involve cleaning or recalibrating the measurement device,
+which resets the error to zero.
 
-In this paper, we represent fouling and calibration-drift errors as
+We can represent the fouling and calibration-drift as
 continuous-time stochastic processes that evolve gradually between checks.
-Conditioning these processes on discrete check measurements yields simple
-expressions for the expected error and its uncertainty during a deployment.
+% Conditioning these processes on the check measurements yields simple
+% expressions for the expected error and its uncertainty during a deployment.
 The proposed error model is equivalent to a linear Gaussian state-space model,
 with Wiener-process evolution between noisy observations,
 and the resulting expressions for conditional means and variances
-correspond to the closed-form Kalman filtering and smoothing solutions for this system.
+correspond to the Kalman filtering and smoothing solutions for this system.
 
-The framework extends naturally to multi-point calibration procedures and to
-networks comprising multiple measurement devices with shared parameters.
+The framework extends naturally to multi-point calibration procedures,
+as well as to networks of multiple measurement devices with shared parameters.
 The resulting methods provide transparent, analytically tractable
 estimates of corrected measurements and associated confidence intervals, while
 remaining consistent with field practices for deploying environmental sensors.
@@ -984,7 +984,6 @@ can be estimated by maximizing the log-likelihood function
 \begin{equation}
     \ell(\mu_k, \sigma_k^2)
     =
-    %-\frac{K_i}{2} \ln(2 \pi)
     - \frac{1}{2} \sum_{k=1}^{K_i}
     \left[
         \log \left( u_k \right)
