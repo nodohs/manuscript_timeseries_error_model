@@ -155,11 +155,11 @@ We model the fouling and drift as continuous-time Wiener processes between the c
 The checks are also imprecise, so we treat them as noisy observations of the error processes.
 The resulting expressions for the conditional mean and variance are equivalent to
 Kalman filtering and smoothing for this system.
-We show how to extend this framework to multi-point calibration procedures and 
+We also show how to extend this framework to multi-point calibration procedures and 
 to monitoring networks of similar devices.
 The resulting methods provide transparent, analytically tractable estimates of
 bias corrections and confidence intervals,
-while remaining consistent with field practices for environmental monitoring.
+while remaining consistent with standard field practices for environmental monitoring.
 
 \subsection{Preliminaries}
 %
@@ -685,13 +685,17 @@ By independence ($E^{m} \perp E^{s}$), the variance is
 \end{equation}
 %
 
-\subsection{Multi-point Correction}
+\subsection{Multipoint Calibration}
 
-Sometimes multiple standards are used to calibrate the device.
-For example, a pH meter might be calibrated against standards at pH 4, 7, and 10.
-In that case, the expected drift-correction for a measurement is 
-a linear interpolation between
-the corrections for the two nearest standards \citep{Wagner_2006}.
+% cite Guidelines for data acquisition and data quality evaluation in environmental chemistry
+In a multipoint calibration, a device is checked against multiple standards
+that ideally span the expected range of the measurand.
+This process is essential when the measurement response is nonlinear
+and the magnitude of drift varies across the range.
+For example, a pH meter might be calibrated using standards at pH 4, 7, and 10.
+For any specific value, the drift correction is determined by linearly
+interpolating between the corrections of the two adjacent standards
+\citep{Wagner_2006}.
 
 Let $z_s$ denote the standard values for $s = 1, 2, \ldots, S$.
 For a given check time $t_k$,
@@ -1065,7 +1069,7 @@ the calibration standards are separated in the $y$-dimension,
 ensuring that the denominator never approaches zero.
 
 % TODO For the multi-point calibration, ...
-\section{Hierarchical Modeling of Monitoring Networks}
+\section{Monitoring Networks}
 % \sigma_ij (site i and bin j )
 %
 Inverse gamma distribution prior
