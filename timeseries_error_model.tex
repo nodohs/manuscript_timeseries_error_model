@@ -128,13 +128,11 @@
 \begin{abstract}
     Environmental time-series measurements are affected by time-varying errors
     arising from fouling, calibration drift, and instrument precision.
-    We represent these errors as a continuous-time stochastic processes
-    that evolves between maintenance events,
-    during which the measurement device is checked, cleaned, and recalibrated.
-    Conditioning on these check measurements
-    yields closed-form estimates of the expected error and its uncertainty,
-    which can be used to compute bias-corrections and confidence intervals
-    for the time-series.
+    We model these errors as continuous-time stochastic processes that evolve between
+    maintenance events, when the measurement device is checked, cleaned, and recalibrated.
+    Conditioning on the check measurements yields closed-form expressions for the
+    expected error and its uncertainty, which can be used to bias-correct the
+    time-series and construct confidence intervals.
 \end{abstract}
 
 
@@ -146,33 +144,22 @@
 Environmental monitoring often relies on in situ measurements 
 collected over extended deployment periods.
 In practice, these measurements are affected by time-varying error
-that arise from fouling, calibration drift, 
-and the inherent precision of the device.
-%The device precision represents the irreducible noise that is present 
-%even under ideal conditions, when the device is clean and properly calibrated.
-After a clean, and calibrated device is deployed into an environment,
-fouling and calibration-drift begin to accumulate that
-bias the raw measurements.
-To correct this bias, fouling and calibration are checked periodically
-by comparing the device against known references.
-Each check may quantify one or both error components
-and may involve cleaning or recalibrating the measurement device,
-which resets the error to zero.
+from fouling and calibration drift,
+as well as irreducible noise due to the precision of the measurement device.
+Once deployed, fouling and drift accumulate, which biases the raw measurements.
+To correct this bias, the device is checked periodically against known references.
+Each check may quantify one or both error components and may involve cleaning or
+recalibration, which resets the corresponding error to zero.
 
-We can represent the fouling and calibration-drift as
-continuous-time stochastic processes that evolve gradually between checks.
-% Conditioning these processes on the check measurements yields simple
-% expressions for the expected error and its uncertainty during a deployment.
-Our proposed error model is equivalent to a linear Gaussian state-space model,
-with Wiener-process evolution between noisy observations,
-and the resulting expressions for conditional means and variances
-correspond to the Kalman filtering and smoothing solutions for this system.
-
-The framework extends naturally to multi-point calibration procedures,
-as well as to networks of multiple measurement devices with shared parameters.
-The resulting methods provide transparent, analytically tractable
-estimates of corrected measurements and associated confidence intervals, while
-remaining consistent with field practices for deploying environmental sensors.
+We model the fouling and drift as continuous-time Wiener processes between the check events.
+The checks are also imprecise, so we treat them as noisy observations of the error processes.
+The resulting expressions for the conditional mean and variance are equivalent to
+Kalman filtering and smoothing for this system.
+We show how to extend this framework to multi-point calibration procedures and 
+to monitoring networks of similar devices.
+The resulting methods provide transparent, analytically tractable estimates of
+bias corrections and confidence intervals,
+while remaining consistent with field practices for environmental monitoring.
 
 \subsection{Preliminaries}
 %
