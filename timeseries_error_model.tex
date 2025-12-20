@@ -131,7 +131,7 @@
     We model these errors as continuous-time stochastic processes that evolve between
     maintenance events, when the measurement device is checked, cleaned, and recalibrated.
     Conditioning on the check measurements yields closed-form expressions for the
-    expected error and its uncertainty, which can be used to bias-correct the
+    expected error and its uncertainty, which are used to bias-correct the
     time-series and construct confidence intervals.
 \end{abstract}
 
@@ -241,7 +241,7 @@ before and after cleaning, $Z_b$ and $Z_a$,
 \end{equation}
 %
 Note that the reference flips the sign of the error,
-but we follow the convention used in statistics.
+whereas we follow the convention in statistics.
 
 The calibration-drift represents any residual bias after cleaning the device,
 which is measured by comparing a clean measurement against a known standard.
