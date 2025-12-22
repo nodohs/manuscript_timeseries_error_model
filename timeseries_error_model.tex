@@ -143,11 +143,11 @@
 %
 Environmental monitoring often relies on in situ measurements 
 collected over extended deployment periods.
-In practice, these measurements are affected by time-varying error
+In practice, these measurements are affected by time-varying errors
 from fouling and calibration drift,
 as well as irreducible noise due to the precision of the measurement device.
-Once deployed, fouling and drift accumulate, which biases the raw measurements.
-To correct this bias, the device is checked periodically against known references.
+Once deployed, fouling and drift accumulate, and bias the raw measurements.
+To correct that bias, the device is checked periodically against known references.
 Each check may quantify one or both error components and may involve cleaning or
 recalibration, which resets the corresponding error to zero.
 
@@ -290,11 +290,11 @@ as the precision, but this is not a requirement.
 \subsection{Wiener-Process Error Model}
 
 We model drift and fouling errors as a Wiener process
-with an optional drift term $\mu$.
+with a drift term $\mu$.
 A Wiener process is a continuous-time stochastic process
 with independent, normally distributed increments
 whose variance grows linearly with elapsed time.
-In particular, for a process $\{X_t\}_{t \ge 0}$
+Specifically, for a process $\{X_t\}_{t \ge 0}$
 with drift $\mu$ and diffusion coefficient $\sigma$,
 the increment over time $t$ satisfies
 %
@@ -478,10 +478,12 @@ thereby eliminating the need for superscripts ($m^o$, $m^c$, etc.).
 
 \subsection{Check-Measurement Uncertainty}
 
-Recall that the checks measurements have their own uncertainty, which must be propagated through the error model.
-We will explain the general statistical procedure, then apply it to fouling and calibration-drift.
+Recall that the checks measurements have their own uncertainty,
+which must be propagated through the error model.
+We will review the general approach,
+before applying it to fouling and calibration-drift.
 
-Formally, we define a Gaussian bridge with uncertain endpoints,
+Formally, we define a Brownian bridge with uncertain endpoints,
 where the expectation and variance of the endpoints is given by
 %
 \begin{equation}
@@ -496,7 +498,7 @@ where the expectation and variance of the endpoints is given by
     \operatorname{Cov}\left[ E_{k-1}, E_{k}\right] = 0
 \end{equation}
 %
-The Gaussian bridge is given by 
+The Brownian bridge is given by 
 %
 \begin{equation}
     E_t = (1 - \lambda^+_k(t)) E_{k-1} + \lambda^+_k(t) E_k + W_t
