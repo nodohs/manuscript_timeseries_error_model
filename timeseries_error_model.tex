@@ -126,7 +126,7 @@
 
 
 \begin{abstract}
-    Environmental time-series measurements are affected by time-varying errors
+    Environmental time-series measurements are subject to time-varying errors
     arising from fouling, calibration drift, and instrument precision.
     We model these errors as continuous-time stochastic processes that evolve between
     maintenance events, when the measurement device is checked, cleaned, and recalibrated.
@@ -407,7 +407,7 @@ $t$ is
     p(e_t \mid E_{t_{k-1}} = e_{k-1},\, E_{t_k} = e_k)
     =
     \mathcal{N} \left(
-        m^c(t), v^c(t)
+        m^c(t),\, v^c(t)
         %\delta_{k-1} \left( 1 - \lambda(t) \right)e_{k-1}
         %+ 
         %\lambda(t) e_k,\;
@@ -494,8 +494,6 @@ where the expectation and variance of the endpoints is given by
     \operatorname{Var}\left[ E_{k-1}\right] = v_{k-1}
     \text{,} \qquad
     \operatorname{Var}\left[ E_{k}\right] = v_{k}
-    \text{,} \qquad
-    \operatorname{Cov}\left[ E_{k-1}, E_{k}\right] = 0
 \end{equation}
 %
 The Brownian bridge is given by 
@@ -841,6 +839,7 @@ where $\tilde{v}_k(t,y)$ represents the contribution from check-measurement unce
     \text{.}
 \end{equation}
 %
+% Note that the standards need not be consistent between checks.
 
 \subsection{Combined Error}
 
@@ -1239,7 +1238,7 @@ Here, $\varepsilon$ is dimensionless and represents the log-scale error,
 given by
 %
 \begin{equation}
-    \varepsilon_d = \log Y_s - \log Z_s = \log\!\left( \frac{Y_s}{Z_s} \right)
+    \varepsilon_d = \log Y_s - \log Z_s = \log\left( \frac{Y_s}{Z_s} \right)
 \end{equation}
 %
 for the drift and similarly, for the fouling,
@@ -1261,7 +1260,7 @@ the conditional distribution of $\log X$ is
 \begin{equation}
     \log X \mid Y = y
     \sim
-    \mathcal{N}\!\left( \log y - m(t),\; v(t) \right).
+    \mathcal{N}\left( \log y - m(t),\, v(t) \right).
 \end{equation}
 %
 
@@ -1270,17 +1269,17 @@ First, the median of the implied lognormal distribution,
 which is unbiased on the logarithmic scale, is given by
 %
 \begin{equation}
-    x_{\mathrm{med}}(t)
-    := \exp\!\left( \mathbb{E}\!\left[ \log X \mid Y = y \right] \right)
-    = y \exp\!\bigl( -m(t) \bigr).
+    x_{\operatorname{med}}(t)
+    := \exp\left( \mathbb{E}\left[ \log X \mid Y = y \right] \right)
+    = y \exp\bigl( -m(t) \bigr).
 \end{equation}
 %
 Alternatively, the conditional mean of $X$ on the original scale is
 %
 \begin{equation}
-    x_{\mathrm{mean}}(t)
-    := \mathbb{E}\!\left[ X \mid Y = y \right]
-    = y \exp\!\left( -m(t) + \tfrac{1}{2} v(t) \right),
+    x_{\operatorname{mean}}(t)
+    := \mathbb{E}\left[ X \mid Y = y \right]
+    = y \exp \left( -m(t) + \tfrac{1}{2} v(t) \right),
 \end{equation}
 %
 which includes the standard lognormal bias-correction term
@@ -1294,11 +1293,11 @@ the lognormal distribution,
     \mathrm{CI}
     =
     \left[
-        x_{\mathrm{med}}(t)
-        \exp\!\left( -q_{1-\alpha/2} \sqrt{v(t)} \right),
+        x_{\operatorname{med}}(t)
+        \exp\left( -q_{1-\alpha/2} \sqrt{v(t)} \right),
         \;
-        x_{\mathrm{med}}(t)
-        \exp\!\left(  q_{1-\alpha/2} \sqrt{v(t)} \right)
+        x_{\operatorname{med}}(t)
+        \exp\left(  q_{1-\alpha/2} \sqrt{v(t)} \right)
     \right],
 \end{equation}
 %
