@@ -129,8 +129,8 @@
 \begin{abstract}
     Environmental time-series measurements are subject to systematic errors
     caused by fouling and calibration drift.
-    Consequently, operators must periodically check, clean, and recalibrate measurement devices.
-    By modeling error growth between these checks as a stochastic process,
+    Consequently, operators must periodically check, clean, and recalibrate the measurement device.
+    By modeling the error growth between checks as a stochastic process,
     we derive bias corrections and confidence intervals for measured time series.
 \end{abstract}
 
@@ -142,28 +142,28 @@
 %
 Environmental monitoring often involves collecting in situ measurements 
 over extended deployment periods.
-In practice, these measurements are affected by systematic errors
-caused by fouling and calibration drift of the measurement device,
+In practice, these measurement devices have systematic errors
+caused by fouling and calibration drift,
 as well as irreducible noise.
-To quantify that error, the device is periodically checked against known references.
-During each check, the device may also be cleaned or recalibrated,
-resetting the corresponding error component to zero.
+Consequently, the device must be periodically checked against known references,
+cleaned, and recalibrated, which resets the systematic error to zero.
+Later on, the information from these checks is used to correct
+the raw measurements by linearly interpolating errors
+between the check measurents \citep{Wagner_2006}.
+This procedure is mathematically equivalent to modeling the error
+as a Wiener process conditioned on the check measurements.
+Under this assumption, we derive expressions for the conditional mean and variance,
+which are equivalent to Kalman filtering and smoothing for this system.
+As the checks are also imprecise, we treat them as noisy observations
+of the error process and propagate their uncertainty into the time series.
+Then we extend the approach to multipoint calibrations
+and monitoring networks of similar devices.
+The result is a transparent and tractable framework for estimating
+fouling and drift corrections with confidence intervals
+that is consistent with standard operating procedures for environmental monitoring.
 
-Later on, this information is used to correct the raw measurements,
-usually by linearly interpolating the errors between successive checks \citep{Wagner_2006}.
-Mathematically, this procedure is equivalent to treating the error as
-as a Wiener process and conditioning on the check measurements.
-As the checks are also imprecise, we treat them as noisy observations of the error process,
-and propagate their uncertainty through time.
-The resulting expressions for the conditional mean and variance are equivalent to
-Kalman filtering and smoothing for this system.
-We also show how to extend this framework to multi-point calibrations and 
-monitoring networks consisting of similar devices.
-The resulting method provides transparent, analytically tractable estimates of
-bias corrections and confidence intervals,
-while remaining consistent with operational procedures used in environmental monitoring.
 
-\subsection{Preliminaries}
+\section{Preliminaries}
 %
 Let $X$ be the true value of some variable
 and let $Y$ be its measured value.
@@ -290,7 +290,7 @@ as the $2\sigma_p$ or 95\% confidence interval.
 Each of the three error components can be modeled on either scale---absolute or fractional---
 but we typically use whatever scale was specified for the precision.
 
-\subsection{Wiener-Process Error Model}
+\section{Wiener-Process Error Model}
 
 We model drift and fouling errors as a Wiener process
 with a drift term $\mu$.
@@ -479,7 +479,7 @@ the open and closed forms become equivalent,
 %
 thereby eliminating the need for superscripts ($m^o$, $m^c$, etc.).
 
-\subsection{Check-Measurement Uncertainty}
+\section{Check-Measurement Uncertainty}
 
 Recall that the checks measurements have their own uncertainty,
 which must be propagated through the error model.
@@ -572,7 +572,7 @@ Later, we will relax the constant-variance assumption,
 and refer back to the full expression for the check variance
 (Equation~\ref{eq:check_variance}).
 
-\subsubsection{Fouling-Check Uncertainty}
+\subsection{Fouling-Check Uncertainty}
 
 For a fouling check, we assume the measuring $m$ and reference $r$
 devices have known precisions $\sigma_p$ and $\sigma_r$, respectively,
@@ -643,7 +643,7 @@ then
     \text{.}
 \end{equation}
 
-\subsubsection{Calibration-Check Uncertainty}
+\subsection{Calibration-Check Uncertainty}
 
 For a calibration check, we assume the standard and measurement device have known precisions
 $\sigma_s$ and $\sigma_p$, respectively,
@@ -684,7 +684,7 @@ By independence ($E^{m} \perp E^{s}$), the variance is
 \end{equation}
 %
 
-\subsection{Multipoint Calibration}
+\section{Multipoint Calibration}
 
 % cite Guidelines for data acquisition and data quality evaluation in environmental chemistry
 In a multipoint calibration, a device is checked against multiple standards
@@ -844,7 +844,7 @@ where $\tilde{v}_k(t,y)$ represents the contribution from check-measurement unce
 %
 % Note that the standards need not be consistent between checks.
 
-\subsection{Combined Error}
+\section{Combined Error}
 
 For each component $k\in\{f,d\}$,
 we decompose the conditional variance into a process term
@@ -920,7 +920,7 @@ the combined mean and variance are
 %\end{figure*}
 %
 
-\subsection{Corrected Measurement and Confidence Interval}
+\section{Corrected Measurement and Confidence Interval}
 
 At a fixed time $t$, recall the observation model $Y = X + E$.
 Let $m(t)$ and $v(t)$ denote the mean and variance of $E$ at time $t$.
