@@ -128,9 +128,9 @@
 \begin{abstract}
     Environmental time-series measurements are subject to systematic errors
     caused by fouling and calibration drift.
-    Consequently, operators must periodically check, clean, and recalibrate the measurement device.
-    By modeling the error growth between these checks as a stochastic process,
-    we derive bias corrections and confidence intervals for the measured time-series.
+    Consequently, operators must periodically check, clean, and recalibrate their measurement devices.
+    By modeling error growth between these checks as a stochastic process,
+    we derive bias corrections and confidence intervals for time-series measurements.
 \end{abstract}
 
 
@@ -139,25 +139,28 @@
 
 \introduction  %% \introduction[modified heading if necessary]
 %
-Environmental monitoring often relies on in situ measurements 
-collected over extended deployment periods.
+Environmental monitoring often involves collecting in situ measurements 
+over extended deployment periods.
 In practice, these measurements are affected by systematic errors
-caused by fouling and calibration drift,
-as well as irreducible measurement noise.
-Once deployed, fouling and drift accumulate, and bias the raw measurements.
-To correct that bias, the device is checked periodically against known references.
-Each check may quantify one or both error components and may involve cleaning or
-recalibration, which resets the corresponding error to zero.
+caused by fouling and calibration drift of the measurement device,
+as well as irreducible noise.
+To quantify that error, the device is periodically checked against known references.
+During each check, the device may also be cleaned or recalibrated,
+resetting the corresponding error component to zero.
 
-We model the fouling and drift as continuous-time Wiener processes between the check events.
-The checks are also imprecise, so we treat them as noisy observations of the error processes.
+Later on, this information is used to correct the raw measurements,
+usually by linearly interpolating the errors between successive checks \citep{Wagner_2006}.
+Mathematically, this procedure is equivalent to treating the error as
+as a Wiener process and conditioning on the check measurements.
+As the checks are also imprecise, we treat them as noisy observations of the error process,
+and propagate their uncertainty through timeseries.
 The resulting expressions for the conditional mean and variance are equivalent to
 Kalman filtering and smoothing for this system.
-We also show how to extend this framework to multi-point calibration procedures and 
-to monitoring networks of similar devices.
-The resulting methods provide transparent, analytically tractable estimates of
+We also show how to extend this framework to multi-point calibrations and 
+monitoring networks consisting of similar devices.
+The resulting method provides transparent, analytically tractable estimates of
 bias corrections and confidence intervals,
-while remaining consistent with standard field practices for environmental monitoring.
+while remaining consistent with operational procedures used in environmental monitoring.
 
 \subsection{Preliminaries}
 %
