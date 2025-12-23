@@ -126,13 +126,11 @@
 
 
 \begin{abstract}
-    Environmental time-series measurements are subject to time-varying errors
-    arising from fouling, calibration drift, and instrument precision.
-    We model these errors as continuous-time stochastic processes that evolve between
-    maintenance events, when the measurement device is checked, cleaned, and recalibrated.
-    Conditioning on the check measurements yields closed-form expressions for the
-    expected error and its uncertainty, which are used to bias-correct the
-    time-series and construct confidence intervals.
+    Environmental time-series measurements are subject to systematic errors
+    caused by fouling and calibration drift.
+    Consequently, operators must periodically check, clean, and recalibrate the measurement device.
+    By modeling the error growth between these checks as a stochastic process,
+    we derive bias corrections and confidence intervals for the measured time-series.
 \end{abstract}
 
 
@@ -143,9 +141,9 @@
 %
 Environmental monitoring often relies on in situ measurements 
 collected over extended deployment periods.
-In practice, these measurements are affected by time-varying errors
-from fouling and calibration drift,
-as well as irreducible noise due to the precision of the measurement device.
+In practice, these measurements are affected by systematic errors
+caused by fouling and calibration drift,
+as well as irreducible measurement noise.
 Once deployed, fouling and drift accumulate, and bias the raw measurements.
 To correct that bias, the device is checked periodically against known references.
 Each check may quantify one or both error components and may involve cleaning or
