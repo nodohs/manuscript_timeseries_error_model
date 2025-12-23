@@ -1,3 +1,4 @@
+
 %% Copernicus Publications Manuscript Preparation Template for LaTeX Submissions
 %% ---------------------------------
 %% This template should be used for copernicus.cls
@@ -128,9 +129,9 @@
 \begin{abstract}
     Environmental time-series measurements are subject to systematic errors
     caused by fouling and calibration drift.
-    Consequently, operators must periodically check, clean, and recalibrate their measurement devices.
+    Consequently, operators must periodically check, clean, and recalibrate measurement devices.
     By modeling error growth between these checks as a stochastic process,
-    we derive bias corrections and confidence intervals for time-series measurements.
+    we derive bias corrections and confidence intervals for measured time series.
 \end{abstract}
 
 
@@ -153,7 +154,7 @@ usually by linearly interpolating the errors between successive checks \citep{Wa
 Mathematically, this procedure is equivalent to treating the error as
 as a Wiener process and conditioning on the check measurements.
 As the checks are also imprecise, we treat them as noisy observations of the error process,
-and propagate their uncertainty through timeseries.
+and propagate their uncertainty through time.
 The resulting expressions for the conditional mean and variance are equivalent to
 Kalman filtering and smoothing for this system.
 We also show how to extend this framework to multi-point calibrations and 
@@ -164,8 +165,8 @@ while remaining consistent with operational procedures used in environmental mon
 
 \subsection{Preliminaries}
 %
-Let $X$ denote the true value of some variable
-and let $Y$ denote its measured value.
+Let $X$ be the true value of some variable
+and let $Y$ be its measured value.
 The absolute error $E$ and percent error $\%E$ are given by
 %
 \begin{equation}
@@ -173,11 +174,10 @@ The absolute error $E$ and percent error $\%E$ are given by
     \qquad \text{and} \qquad
     \%E = 100 \times \frac{Y - X}{Y}
     \label{eq:absolute_error}
-    \text{,}
+    \text{;}
 \end{equation}
 %
-where $\%E$ expresses the error as a percentage of the measured value.
-However, it is simpler to work in terms of the fractional error,
+however, it is simpler to work with the fractional error,
 %
 \begin{equation}
     \mathcal{E} = \frac{Y - X}{Y} = \frac{\%E}{100}
@@ -185,21 +185,19 @@ However, it is simpler to work in terms of the fractional error,
     \text{,}
 \end{equation}
 %
-and only convert back to a percentage when needed.
-Either scale (absolute or fractional) may be used for uncertainty quantification,
-depending on the characteristics of the measurement device.
+and convert back to a percentage later.
 
 We assume that the measurement error has three independent components---
 fouling $E_f$, calibration-drift $E_d$,
-and instrument precision $E_p$---
-that add on the absolute scale,
+and measurement noise $E_p$---
+that combine additively on the absolute scale,
 %
 \begin{equation}
     E = E_f + E_d + E_p
     \text{.}
 \end{equation}
 %
-On the fractional scale, these components combine multiplicatively,
+or multiplicatively on the fractional scale,
 %
 \begin{equation}
     1 + \mathcal{E} = (1 + \mathcal{E}_f)(1 + \mathcal{E}_d)(1 + \mathcal{E}_p)
@@ -215,11 +213,11 @@ the relation is approximately additive,
 \end{equation}
 %
 
-Fouling arises from physical, chemical, or biological buildup that biases the measurement.
-It is assessed by taking check measurements immediately
-before and after cleaning the device, $Y_b$ and $Y_a$ repsectively.
-Under steady conditions,
-the fouling error is given by the difference between the check measurements,
+Fouling is any physical, chemical, or biological buildup on the measurement device
+that causes systematic error or bias.
+Under steady-state conditions,
+the fouling error can be assessed by comparing measurements
+taken immediately before and after cleaning the device,
 %
 \begin{equation}
     E_f = Y_b - Y_a
@@ -229,25 +227,27 @@ the fouling error is given by the difference between the check measurements,
     \label{eq:fouling_error_simple}
 \end{equation}
 %
-Otherwise, the fouling check must be adjusted 
-using a reference device to measure the environment
-before and after cleaning, $Z_b$ and $Z_a$,
+where  $Y_b$ and $Y_a$ are the before-and-after-cleaning measurements, respectively.
+Otherwise, a reference device is needed to adjust for any environmental change
+during the cleaning process,
 %
 \begin{equation}
     E_f = (Y_b - Y_a) - (Z_b - Z_a)
     \qquad \text{or} \qquad
     \mathcal{E}_f = \frac{(Y_b - Y_a) - (Z_b - Z_a)}{Y_b}
     \label{eq:fouling_error}
-    \qquad \text{\citep[][but opposite sign]{Wagner_2006}.}
+    \qquad \text{\citep[][but opposite sign]{Wagner_2006},}
 \end{equation}
 %
+where $Z_b$ and $Z_a$ are the before-and-after measurements
+from a colocated reference device.
 Note that the reference flips the sign of the error,
 whereas we follow the convention in statistics.
 
-The calibration-drift represents any residual bias after cleaning the device,
+Any systematic bias remaining after cleaning is attributed to calibration-drift,
 which is measured by comparing a clean measurement against a known standard.
-Let $Z_s$ be the standard value and let $Y_s$ be the clean measurement of $Z_s$.
-Then the calibration-drift error is given by
+Let $Z_s$ be the standard value and let $Y_s$ be the clean measurement of $Z_s$,
+then the calibration-drift error is given by
 %
 \begin{equation}
     E_d = Y_s - Z_s
@@ -258,8 +258,9 @@ Then the calibration-drift error is given by
 \end{equation}
 %
 
-Lastly, precision error $E_p$ represents irreducible measurement noise,
-which is modeled using a Gaussian distribution,
+Lastly, any residual error after cleaning and recalibrating the device
+is attributed to measurement noise,
+which is modeled with a Gaussian distribution,
 %
 \begin{equation}
     E_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
@@ -272,7 +273,8 @@ which is modeled using a Gaussian distribution,
     \text{,}
 \end{equation}
 %
-with variance given by
+where $\sigma_p$ represents the precision of the measurement device,
+and $\sigma_p^2$ is the variance of the noise,
 %
 \begin{equation}
     v_p :=
@@ -285,8 +287,8 @@ In practice, the precision is determined under controlled conditions
 and reported in the device specifications
 (sometimes called the ``accuracy'')
 as the $2\sigma_p$ or 95\% confidence interval.
-We typically assume fouling and drift errors have the same scale (absolute or relative)
-as the precision, but this is not a requirement.
+Each of the three error components can be modeled on either scale---absolute or fractional---
+but we typically use whatever scale was specified for the precision.
 
 \subsection{Wiener-Process Error Model}
 
