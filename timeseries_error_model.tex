@@ -10,7 +10,7 @@
 %% Please use the following documentclass and journal abbreviations for preprints and final revised papers.
 
 %% 2-column papers and preprints
-\documentclass[journal abbreviation, manuscript]{copernicus}
+\documentclass[gi, manuscript]{copernicus}
 
 
 
@@ -482,13 +482,12 @@ thereby eliminating the need for superscripts ($m^o$, $m^c$, etc.).
 
 \section{Check-Measurement Uncertainty}
 
-Recall that the checks measurements have their own uncertainty,
-which must be propagated through the error model.
-We will review the general approach,
-before applying it to fouling and calibration-drift.
+Check measurements contribute additional uncertainty to the error process.
+We review the general approach for propagating check-measurement uncertainty,
+then derive the check-uncertainty for fouling and calibration-drift.
 
-Formally, we define a Brownian bridge with uncertain endpoints,
-where the expectation and variance of the endpoints is given by
+For a bridge with uncertain endpoints,
+define the endpoint expectations and variances as
 %
 \begin{equation}
     \mathbb{E}\left[ E_{k-1}\right] = m_{k-1}
@@ -500,7 +499,7 @@ where the expectation and variance of the endpoints is given by
     \operatorname{Var}\left[ E_{k}\right] = v_{k}
 \end{equation}
 %
-The Brownian bridge is given by 
+Given the Brownian-bridge representation,
 %
 \begin{equation}
     E_t = (1 - \lambda^+_k(t)) E_{k-1} + \lambda^+_k(t) E_k + W_t
@@ -509,18 +508,19 @@ The Brownian bridge is given by
     \text{.}
 \end{equation}
 %
-By linearity of expectation,
+linearity of expectation gives
 %
 \begin{align}
     \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \, \mathbb{E}[E_{k-1}]
                         + \lambda^+_k(t) \, \mathbb{E}[E_k] + \mathbb{E}[W_t]
                         \notag \\
                     &= (1 - \lambda^+_k(t)) m_{k-1} + \lambda^+_k(t) m_{k}
+    \text{,}
 \end{align}
 %
-Because $W_t$ is independent of the endpoint errors $E_{k-1}$ and $E_k$,
+and, because $W_t$ is independent of the endpoint errors $E_{k-1}$ and $E_k$,
 the variance decomposes into separate terms.
-Applying the variance formula for a linear combination yields
+Applying the variance formula for a linear combination gives
 %
 \begin{align}
     \operatorname{Var}[E_t]
@@ -551,9 +551,9 @@ where $\tilde{v}_k(t)$ represents the contribution from check-measurement uncert
     \text{.}
 \end{equation}
 %
-Assuming the check-measurements have constant variance
-$\operatorname{Var}[E_k]$,
-the conditional variance at time $t$ is
+If the endpoint errors have the same variance,
+$\operatorname{Var}[E_{k-1}] = \operatorname{Var}[E_k]$,
+then the conditional variance at time $t$ is
 %
 \begin{equation}
     \tilde{v}_k(t) = \left(
@@ -563,14 +563,16 @@ the conditional variance at time $t$ is
     \text{,}
 \end{equation}
 %
-which simplifies further for the open interval
-to $ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$.
+For an open interval, this simplifies to
+$ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$.
+
 The following sections derive expressions for
 $\operatorname{Var}[E_f]$ and $\operatorname{Var}[E_d]$,
-which substitute in the $\operatorname{Var}[E_k]$ term
-of Equation~\ref{eq:check_constant_variance}.
-Later, we will relax the constant-variance assumption,
-and refer back to the full expression for the check variance
+which provide the $\operatorname{Var}[E_k]$ term in
+Equation~\ref{eq:check_constant_variance}.
+Later, when we introduce multipoint calibrations,
+the endpoint variances may differ,
+so we need the full expression for the check variance
 (Equation~\ref{eq:check_variance}).
 
 \subsection{Fouling-Check Uncertainty}
@@ -597,8 +599,8 @@ and let $X^m$ and $X^r$ be their respective true values,
     \text{.}
 \end{equation}
 %
-The superscripts are necessary because the value of $X$
-will depend on the calibration of either device.
+The superscripts are necessary because the values of $X$
+depend on the calibration of either device.
 Substituting back into the fouling error (Equation~\ref{eq:fouling_error})
 gives
 %
@@ -620,7 +622,7 @@ By independence ($E^{m} \perp E^{r}$), the variance is
 %
 If the measuring device uses internal filtering
 (e.g., time averaging),
-such that its error is perfectly correlated during the check,
+such that the error are perfectly correlated during the check,
 then the before-and-after errors cancel and the measurement variance is zero,
 %
 \begin{equation}
@@ -848,7 +850,7 @@ where $\tilde{v}_k(t,y)$ represents the contribution from check-measurement unce
 
 \section{Combined Error}
 
-For each component $k\in\{f,d\}$,
+For each error component, $k\in\{f,d\}$,
 we decompose the conditional variance into a process term
 (bridge uncertainty) and a check-measurement term:
 \begin{equation}
@@ -860,7 +862,6 @@ v_k(t) := \sigma_k^2\,\phi_k^+(t),
 $
 and $\tilde v_k(t)$ is the variance from the check measurements propagated to time $t$
 (Equations~\ref{eq:check_variance} or \ref{eq:multi_check_variance}).
-% XXX
 
 For absolute errors,
 the combined conditional mean and variance are
