@@ -131,7 +131,7 @@
     caused by fouling and calibration drift.
     Consequently, operators must periodically check, clean, and recalibrate the measurement device.
     By modeling the error growth between checks as a stochastic process,
-    we derive bias corrections and confidence intervals for measured time series.
+    we derive bias corrections and confidence intervals for the time series.
 \end{abstract}
 
 
@@ -142,10 +142,10 @@
 %
 Environmental monitoring often involves collecting in situ measurements 
 over extended deployment periods.
-In practice, these measurement devices have systematic errors
+In practice, these measurement have systematic errors
 caused by fouling and calibration drift,
 as well as irreducible noise.
-Consequently, the device must be periodically checked against known references,
+Consequently, the measurement device must be periodically checked against known references,
 cleaned, and recalibrated, which resets the systematic error to zero.
 Later on, the information from these checks is used to correct
 the raw measurements by linearly interpolating errors
@@ -154,9 +154,9 @@ This procedure is mathematically equivalent to modeling the error
 as a Wiener process conditioned on the check measurements.
 Under this assumption, we derive expressions for the conditional mean and variance,
 which are equivalent to Kalman filtering and smoothing for this system.
-As the checks are also imprecise, we treat them as noisy observations
-of the error process and propagate their uncertainty into the time series.
-Then we extend the approach to multipoint calibrations
+As the checks are also imprecise, they are treated as noisy observations
+and their uncertainty is propagated into the time-series model.
+Next, we extend the approach to multipoint calibrations
 and monitoring networks of similar devices.
 The result is a transparent and tractable framework for estimating
 fouling and drift corrections with confidence intervals
@@ -201,11 +201,11 @@ or multiplicatively on the fractional scale,
 %
 \begin{equation}
     1 + \mathcal{E} = (1 + \mathcal{E}_f)(1 + \mathcal{E}_d)(1 + \mathcal{E}_p)
-    \text{,}
+    \text{;}
 \end{equation}
 %
-but for small errors (less than a few percent),
-the relation is approximately additive,
+however, for small errors (less than a few percent),
+the fractional relation is approximately additive,
 %
 \begin{equation}
     \mathcal{E} \approx \mathcal{E}_f + \mathcal{E}_d + \mathcal{E}_p
@@ -214,20 +214,20 @@ the relation is approximately additive,
 %
 
 Fouling is any physical, chemical, or biological buildup on the measurement device
-that causes systematic error or bias.
+that causes systematic error.
 Under steady-state conditions,
-the fouling error can be assessed by comparing measurements
+the fouling error is assessed by comparing measurements
 taken immediately before and after cleaning the device,
 %
 \begin{equation}
     E_f = Y_b - Y_a
     \qquad \text{or} \qquad
     \mathcal{E}_f = \frac{Y_b - Y_a}{Y_b}
-     \text{.}
     \label{eq:fouling_error_simple}
+    \text{,}
 \end{equation}
 %
-where  $Y_b$ and $Y_a$ are the before-and-after-cleaning measurements, respectively.
+where $Y_b$ and $Y_a$ are the before-and-after-cleaning measurements, respectively.
 Otherwise, a reference device is needed to adjust for any environmental change
 during the cleaning process,
 %
@@ -244,7 +244,7 @@ from a colocated reference device.
 Note that the reference flips the sign of the error,
 whereas we follow the convention in statistics.
 
-Any systematic bias remaining after cleaning is attributed to calibration-drift,
+Any systematic bias that remains after cleaning is attributed to calibration-drift,
 which is measured by comparing a clean measurement against a known standard.
 Let $Z_s$ be the standard value and let $Y_s$ be the clean measurement of $Z_s$,
 then the calibration-drift error is given by
@@ -258,9 +258,9 @@ then the calibration-drift error is given by
 \end{equation}
 %
 
-Lastly, any residual error after cleaning and recalibrating the device
-is attributed to measurement noise,
-which is modeled with a Gaussian distribution,
+Lastly, the residual error after cleaning and recalibrating the device
+is attributed to measurement noise.
+The noise is modeled with a Gaussian distribution,
 %
 \begin{equation}
     E_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
@@ -287,13 +287,14 @@ In practice, the precision is determined under controlled conditions
 and reported in the device specifications
 (sometimes called the ``accuracy'')
 as the $2\sigma_p$ or 95\% confidence interval.
+
 Each of the three error components can be modeled on either scale---absolute or fractional---
 but we typically use whatever scale was specified for the precision.
 
 \section{Wiener-Process Error Model}
 
-We model drift and fouling errors as a Wiener process
-with a drift term $\mu$.
+We model the drift and fouling errors as a Wiener process
+with drift.
 A Wiener process is a continuous-time stochastic process
 with independent, normally distributed increments
 whose variance grows linearly with elapsed time.
@@ -574,11 +575,11 @@ and refer back to the full expression for the check variance
 
 \subsection{Fouling-Check Uncertainty}
 
-For a fouling check, we assume the measuring $m$ and reference $r$
-devices have known precisions $\sigma_p$ and $\sigma_r$, respectively,
+For the fouling check, the measuring $m$ and reference $r$
+devices have known precisions $\sigma_m$ and $\sigma_r$, 
 and their errors are normally distributed and independent,
 \begin{equation}
-    E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_p \right)
+    E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_m \right)
     \text{,} \qquad
     E^{r} \sim \mathcal{N}\left(0,\, \sigma^2_r \right)
     \text{,} \qquad
@@ -586,23 +587,26 @@ and their errors are normally distributed and independent,
     \text{.}
 \end{equation}
 %
-Let $Y$ and $Z$ denote the primary and reference measurements,
-and $Z$ their true values,
+Let $Y$ and $Z$ be the principle and reference measurements,
+and let $X^m$ and $X^r$ be their respective true values,
 %
 \begin{equation}
     Y = X^m + E^{m}
     \text{,} \qquad
     Z = X^r + E^{r}
+    \text{.}
 \end{equation}
 %
-Substituting these back into the fouling error (Equation~\ref{eq:fouling_error})
+The superscripts are necessary because the value of $X$
+will depend on the calibration of either device.
+Substituting back into the fouling error (Equation~\ref{eq:fouling_error})
 gives
 %
 \begin{align}
     E_f &= (Y_b - Y_a) - (Z_b - Z_a) \notag \\
         &= \left((X^m_b + E^m_{b}) - (X^m_a + E^m_{a})\right)
            - \left((X^r_b + E^r_{b}) - (X^r_a + E^r_{a})\right) \notag \\
-        &= (E^m_{b} - E^m_{a}) - (E^r_{b} - E^r_{a})
+        &= (E^m_{b} - E^m_{a}) - (E^r_{b} - E^r_{a})xt{}
     \text{.}
 \end{align}
 %
@@ -611,11 +615,13 @@ By independence ($E^{m} \perp E^{r}$), the variance is
     \operatorname{Var}[E_f]
         &= \operatorname{Var}[E^m_b - E^m_a]
           + \operatorname{Var}[E^r_b - E^r_a]
+    \text{.}
 \end{align}
 %
-Furthermore, we assume the measuring device uses internal filtering
+If the measuring device uses internal filtering
 (e.g., time averaging),
-so its error is perfectly correlated during the check,
+such that its error is perfectly correlated during the check,
+then the before-and-after errors cancel and the measurement variance is zero,
 %
 \begin{equation}
     \operatorname{Corr} \left( E^{m}_{a},\, E^{m}_{b} \right) = 1
@@ -624,41 +630,38 @@ so its error is perfectly correlated during the check,
     \text{,}
 \end{equation}
 %
-If the reference device also uses filtering,
-then
-\begin{equation}
-    \operatorname{Corr}(E_{z_a},\, E_{z_b}) = 1 
-    \quad \Rightarrow \quad
-    \operatorname{Var}[E_f] = 0
-    \text{;}
-\end{equation}
+Similarly, if the reference device also uses filtering;
 otherwise, if its errors are independent,
-then
+then the measurement variance is given by
 \begin{equation}
     \operatorname{Corr}(E_{z_a},\, E_{z_b}) = 0
     \quad \Rightarrow \quad
     \operatorname{Var}[E_f]
     = \operatorname{Var}[E^r_b] + \operatorname{Var}[E^r_a]
-    = 2 \sigma^2_r
+    = \sigma^2_r + \sigma^2_r = 2 \sigma^2_r
     \text{.}
 \end{equation}
+%
+Therefore, the fouling-check variance is either zero or $2 \sigma^2_r$,
+depending on the correlation structure of the reference device.
 
 \subsection{Calibration-Check Uncertainty}
 
-For a calibration check, we assume the standard and measurement device have known precisions
-$\sigma_s$ and $\sigma_p$, respectively,
-and their errors are normally distributed and independent,
+For a calibration check, 
+the standard and measurement have known precisions $\sigma_s$ and $\sigma_m$
+and independent errors,
 %
 \begin{equation}
     E^{s} \sim \mathcal{N}\left(0,\, \sigma^2_s \right)
     \text{,} \qquad
-    E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_p \right)
+    E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_m \right)
     \text{,} \qquad
     E^{s} \perp E^{m}
     \text{.}
 \end{equation}
 %
-Let $Y_s$ and $Z_s$ denote the measurement and standard values,
+Let $Y_s$ and $Z_s$ be the measurement and the standard,
+and let $X_s$ be the true value of the standard,
 \begin{equation}
     Y_s = X_s + E^{m}
     \text{,} \qquad
@@ -666,27 +669,26 @@ Let $Y_s$ and $Z_s$ denote the measurement and standard values,
     \text{.}
 \end{equation}
 %
-Substituting these variables into the drift error
-(Equation~\ref{eq:drift_error}) yields
+Substituting back into the drift error
+(Equation~\ref{eq:drift_error}) gives
 %
 \begin{equation}
     E_d = (X_s + E^m) - (X_s + E^s)
-    \text{.}
+    \text{,}
 \end{equation}
 %
-By independence ($E^{m} \perp E^{s}$), the variance is
+and by independence ($E^{m} \perp E^{s}$), the variance of the drift check is
 %
 \begin{equation}
     \operatorname{Var}[E_d]
         = \operatorname{Var}[E^m] + \operatorname{Var}[E^s]
-        = \sigma^2_p + \sigma^2_s
+        = \sigma^2_m + \sigma^2_s
     \text{.}
 \end{equation}
 %
 
 \section{Multipoint Calibration}
 
-% cite Guidelines for data acquisition and data quality evaluation in environmental chemistry
 In a multipoint calibration, a device is checked against multiple standards
 that should span the expected range of the measurand.
 This process is essential when the measurement response is nonlinear
