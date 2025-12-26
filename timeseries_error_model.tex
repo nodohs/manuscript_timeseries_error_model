@@ -189,18 +189,18 @@ and convert back to a percentage later.
 
 We assume that the measurement error has three independent components---
 fouling $E_f$, calibration-drift $E_d$,
-and measurement noise $E_p$---
+and measurement noise $E_m$---
 that combine additively on the absolute scale,
 %
 \begin{equation}
-    E = E_f + E_d + E_p
+    E = E_f + E_d + E_m
     \text{.}
 \end{equation}
 %
 or multiplicatively on the fractional scale,
 %
 \begin{equation}
-    1 + \mathcal{E} = (1 + \mathcal{E}_f)(1 + \mathcal{E}_d)(1 + \mathcal{E}_p)
+    1 + \mathcal{E} = (1 + \mathcal{E}_f)(1 + \mathcal{E}_d)(1 + \mathcal{E}_m)
     \text{;}
 \end{equation}
 %
@@ -208,7 +208,7 @@ however, for small errors (less than a few percent),
 the fractional relation is approximately additive,
 %
 \begin{equation}
-    \mathcal{E} \approx \mathcal{E}_f + \mathcal{E}_d + \mathcal{E}_p
+    \mathcal{E} \approx \mathcal{E}_f + \mathcal{E}_d + \mathcal{E}_m
     \text{.}
 \end{equation}
 %
@@ -263,32 +263,32 @@ is attributed to measurement noise.
 The noise is modeled with a Gaussian distribution,
 %
 \begin{equation}
-    E_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
+    E_m \sim \mathcal{N}(0 ,\, \sigma_m^2)
     \qquad \text{or} \qquad
-    \mathcal{E}_p \sim \mathcal{N}(0 ,\, \sigma_p^2)
+    \mathcal{E}_m \sim \mathcal{N}(0 ,\, \sigma_m^2)
     \text{,} \quad \text{where} \quad
-    \sigma_p := \frac{\sigma_{\%p}}{100}
-    \quad \text{for} \quad \mathcal{E}_p
-    \label{eq:precision_error}
+    \sigma_m := \frac{\sigma_{\%m}}{100}
+    \quad \text{for} \quad \mathcal{E}_m
+    \label{eq:measurement_error}
     \text{,}
 \end{equation}
 %
-where $\sigma_p$ represents the precision of the measurement device,
-and $\sigma_p^2$ is the variance of the noise,
+where $\sigma_m$ denotes the measurement-device precision
+and $\sigma_m^2$ is the variance of the measurement error,
 %
 \begin{equation}
-    v_p :=
-    \operatorname{Var}[E_p] = \sigma_p^2
-    \label{eq:precision_variance}
+    v_m :=
+    \operatorname{Var}[E_m] = \sigma_m^2
+    \label{eq:measurement_variance}
     \text{.}
 \end{equation}
 %
-In practice, the precision is determined under controlled conditions
-and reported in the device specifications
+In practice, the device precision is determined under controlled conditions
+and reported in its specifications
 (sometimes called the ``accuracy'')
-as the $2\sigma_p$ or 95\% confidence interval.
+as the $2\sigma_m$ or 95\% confidence interval.
 
-Each of the three error components can be modeled on either scale---absolute or fractional---
+Each of error component can be modeled on either scale---absolute or fractional---
 but we typically use whatever scale was specified for the precision.
 
 \section{Wiener-Process Error Model}
@@ -572,7 +572,7 @@ $v_{d}(t_d)$ and $v_{f}(t_f)$,
 to use in Equation~\ref{eq:check_constant_variance}.
 Later, we introduce multipoint calibrations,
 for which the endpoint variances may differ;
-in that case, we use Equation~\ref{eq:check_variance} for the check variance.
+in that case, we use Equation~\ref{eq:check_variance} for the check-measurement variance.
 
 \subsection{Fouling-Check Uncertainty}
 % TODO: Introduce v_f(t_f) into this section and the next.
@@ -635,6 +635,7 @@ then the before-and-after errors cancel and the measurement variance is zero,
 Similarly, if the reference device also uses filtering;
 otherwise, if its errors are independent,
 then the measurement variance is given by
+%
 \begin{equation}
     \operatorname{Corr}(E_{z_a},\, E_{z_b}) = 0
     \quad \Rightarrow \quad
@@ -664,6 +665,7 @@ and independent errors,
 %
 Let $Y_s$ and $Z_s$ be the measurement and the standard,
 and let $X_s$ be the true value of the standard,
+%
 \begin{equation}
     Y_s = X_s + E^{m}
     \text{,} \qquad
@@ -814,6 +816,7 @@ substitute the variance of the $y$-bridge
 (Equation~\ref{eq:y_bridge_variance})
 into the equation for a time bridge with uncertain endpoints
 (Equation~\ref{eq:variance_uncertain_bridge})
+%
 \begin{align}
     \operatorname{Var}\left[
         E_{t,y}\,\mid\,
@@ -853,9 +856,11 @@ where $\tilde{v}_k(t,y)$ represents the contribution from check-measurement unce
 For each error component, $k\in\{f,d\}$,
 we decompose the conditional variance into a process term
 (bridge uncertainty) and a check-measurement term:
+%
 \begin{equation}
 \operatorname{Var}\!\left[E_k\right] = v_k(t) + \tilde v_k(t),
 \end{equation}
+%
 where the process-only variance is
 $
 v_k(t) := \sigma_k^2\,\phi_k^+(t),
@@ -929,19 +934,24 @@ At a fixed time $t$, recall the observation model $Y = X + E$.
 Let $m(t)$ and $v(t)$ denote the mean and variance of $E$ at time $t$.
 Treating $X$ as fixed and $E$ as independent measurement error,
 the bias-corrected estimate of $X$ is
+%
 \begin{equation}
     x(t) := y - m(t),
 \end{equation}
+%
 with an approximate $(1-\alpha)$ confidence interval
+%
 \begin{equation}
     \mathrm{CI} = x(t) \pm q_{1-\alpha/2}\sqrt{v(t)}.
 \end{equation}
+%
 
 For fractional errors $\mathcal{E}$,
 we use the observation model $Y = X(1+\mathcal{E})$.
 Assuming $\mathcal{E}$ is independent of $Y$
 with mean $m(t)$ and variance $v(t)$,
 a bias-corrected estimate of $X$ is
+%
 \begin{equation}
 x(t) := y\bigl(1-m(t)\bigr)
 \text{,}
@@ -1050,6 +1060,7 @@ by maximizing the log-likelihood,
     \right]
     \text{,}
 \end{equation}
+%
 where $S_d$ is the number of standards in the $d$-th calibration check.
 This is necessary because in practice,
 only some of the standards may be checked at a time.
@@ -1066,6 +1077,7 @@ the closed-form of the estimator is
          {z_s - z_{s-1}}
     \text{,}
 \end{equation}
+%
 where $N = \sum_{d=1}^{D} (S_d - 1)$.
 This estimator is better conditioned because
 the calibration standards are separated in the $y$-dimension,
@@ -1106,6 +1118,7 @@ Inverse gamma distribution prior
     \right)
 \label{eq:hierarchical_likelihood}
 \end{equation}
+%
 
 The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site $j$ is given by
 %
@@ -1114,12 +1127,15 @@ The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site
     =
     \hat{w}_j s_j^2 + (1 - \hat{w}_j) \bar{\hat{\sigma}}^2
 \end{equation}
+%
 where
+%
 \begin{equation}
     \hat{w}_j
     =
     \frac{N_j}{N_j + 2 (\hat{a} - 1)}
 \end{equation}
+%
 
 \conclusions  %% \conclusions[modified heading if necessary]
 TEXT
@@ -1176,13 +1192,15 @@ means $m_f,m_d,0$ and variances $v_f,v_d,v_p$, respectively, and define the
 combined fractional error $E$ by
 %
 \begin{equation}
-    1+E := (1+E_f)(1+E_d)(1+E_p).
+    1+E := (1+E_f)(1+E_d)(1+E_p)
+    \text{.}
 \end{equation}
 %
 Then
 %
 \begin{equation}
-    m := \mathbb{E}[E] = (1+m_f)(1+m_d)-1,
+    m := \mathbb{E}[E] = (1+m_f)(1+m_d)-1
+    \text{,}
 \end{equation}    
 %
 and
@@ -1193,7 +1211,8 @@ and
         \left(v_f+(1+m_f)^2\right)
         \left(v_d+(1+m_d)^2\right)
         \left(v_p+1\right)
-        -\left((1+m_f)(1+m_d)\right)^2.
+        -\left((1+m_f)(1+m_d)\right)^2
+        \text{.}
 \end{equation}
 %
 
@@ -1231,13 +1250,15 @@ Let $\varepsilon$ denote the measurement error
 on the logarithmic scale, and assume the observation model
 %
 \begin{equation}
-    Y = X \exp(\varepsilon),
+    Y = X \exp(\varepsilon)
+    \text{,}
 \end{equation}
 %
 so that
 %
 \begin{equation}
-    \log Y = \log X + \varepsilon.
+    \log Y = \log X + \varepsilon
+    \text{.}
 \end{equation}
 %
 Here, $\varepsilon$ is dimensionless and represents the log-scale error,
@@ -1252,7 +1273,9 @@ for the drift and similarly, for the fouling,
 \begin{equation}
     \varepsilon_f = \left( \log Y_b - \log Y_a \right) - \left( \log Z_b - \log Z_a \right)
     = \log\left( \frac{Y_b}{Y_a} \right) - \log\left( \frac{Z_b}{Z_a} \right)
+    \text{.}
 \end{equation}
+%
 
 As before, the log-scale error $\varepsilon_t$ is modeled as a continuous-time
 stochastic process with $m(t)$ and $v(t)$
@@ -1266,7 +1289,8 @@ the conditional distribution of $\log X$ is
 \begin{equation}
     \log X \mid Y = y
     \sim
-    \mathcal{N}\left( \log y - m(t),\, v(t) \right).
+    \mathcal{N}\left( \log y - m(t),\, v(t) \right)
+    \text{.}
 \end{equation}
 %
 
@@ -1277,7 +1301,8 @@ which is unbiased on the logarithmic scale, is given by
 \begin{equation}
     x_{\operatorname{med}}(t)
     := \exp\left( \mathbb{E}\left[ \log X \mid Y = y \right] \right)
-    = y \exp\bigl( -m(t) \bigr).
+    = y \exp\bigl( -m(t) \bigr)
+    \text{.}
 \end{equation}
 %
 Alternatively, the conditional mean of $X$ on the original scale is
@@ -1285,7 +1310,8 @@ Alternatively, the conditional mean of $X$ on the original scale is
 \begin{equation}
     x_{\operatorname{mean}}(t)
     := \mathbb{E}\left[ X \mid Y = y \right]
-    = y \exp \left( -m(t) + \tfrac{1}{2} v(t) \right),
+    = y \exp \left( -m(t) + \tfrac{1}{2} v(t) \right)
+    \text{,}
 \end{equation}
 %
 which includes the standard lognormal bias-correction term
@@ -1304,7 +1330,8 @@ the lognormal distribution,
         \;
         x_{\operatorname{med}}(t)
         \exp\left(  q_{1-\alpha/2} \sqrt{v(t)} \right)
-    \right],
+    \right]
+    \text{,}
 \end{equation}
 %
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal
