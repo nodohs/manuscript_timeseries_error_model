@@ -490,13 +490,13 @@ For a bridge with uncertain endpoints,
 define the endpoint expectations and variances as
 %
 \begin{equation}
-    \mathbb{E}\left[ E_{k-1}\right] = m_{k-1}
+    m_{k}(t_{k-1}) := \mathbb{E}\left[ E_{k-1}\right]
     \text{,} \qquad
-    \mathbb{E}\left[ E_{k}\right] = m_{k}
+    m_{k}(t_k) := \mathbb{E}\left[ E_{k}\right]
     \text{,} \qquad
-    \operatorname{Var}\left[ E_{k-1}\right] = v_{k-1}
+    v_{k}(t_{k-1}) := \operatorname{Var}\left[ E_{k-1}\right]
     \text{,} \qquad
-    \operatorname{Var}\left[ E_{k}\right] = v_{k}
+    v_k(t_k) := \operatorname{Var}\left[ E_{k}\right]
 \end{equation}
 %
 Given the Brownian-bridge representation,
@@ -514,7 +514,7 @@ linearity of expectation gives
     \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \, \mathbb{E}[E_{k-1}]
                         + \lambda^+_k(t) \, \mathbb{E}[E_k] + \mathbb{E}[W_t]
                         \notag \\
-                    &= (1 - \lambda^+_k(t)) m_{k-1} + \lambda^+_k(t) m_{k}
+                    &= (1 - \lambda^+_k(t)) m_{k}(t_{k-1}) + \lambda^+_k(t) m_{k}(t_k)  
     \text{,}
 \end{align}
 %
@@ -533,8 +533,8 @@ Applying the variance formula for a linear combination gives
             &\text{(Appendix~\ref{sec:variance_linear_combination})}
             \notag \\
         &=  \underbrace{
-            (1 - \lambda^+_k(t))^2 \, \operatorname{Var}[E_{k-1}]
-            + \lambda^+_k(t)^2 \, \operatorname{Var}[E_{k}]
+            (1 - \lambda^+_k(t))^2 \, v_{k}(t_{k-1})
+            + \lambda^+_k(t)^2 \, v_k(t_k)
             }_{\tilde{v}_k(t)}
             + 
             \underbrace{\sigma^2 \phi^+_k(t)}_{v_k(t)}
@@ -545,41 +545,41 @@ Applying the variance formula for a linear combination gives
 where $\tilde{v}_k(t)$ represents the contribution from check-measurement uncertainty,
 \begin{equation}
     \tilde{v}_k(t) := 
-        (1 - \lambda^+_k(t))^2 \, \operatorname{Var}[E_{k-1}]
-        + \lambda^+_k(t)^2 \, \operatorname{Var}[E_{k}]
+        (1 - \lambda^+_k(t))^2 \, v_{k}(t_{k-1})
+        + \lambda^+_k(t)^2 \, v_{k}(t_k)
     \label{eq:check_variance}
     \text{.}
 \end{equation}
 %
 If the endpoint errors have the same variance,
-$\operatorname{Var}[E_{k-1}] = \operatorname{Var}[E_k]$,
+$v_{k}(t_{k-1}) = v_{k}(t_k)$,
 then the conditional variance at time $t$ is
 %
 \begin{equation}
     \tilde{v}_k(t) = \left(
                         (1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2
-                      \right) \, \operatorname{Var}[E_k]
+                      \right) \, v_{k}(t_k)
     \label{eq:check_constant_variance}
     \text{,}
 \end{equation}
 %
 For an open interval, this simplifies to
-$ \tilde{v}^o_k(t) = \operatorname{Var}[E_k]$.
+$ \tilde{v}^o_k(t) = v_{k}(t_k)$.
 
-The following sections derive expressions for
-$\operatorname{Var}[E_f]$ and $\operatorname{Var}[E_d]$,
-which provide the $\operatorname{Var}[E_k]$ term in
-Equation~\ref{eq:check_constant_variance}.
-Later, when we introduce multipoint calibrations,
-the endpoint variances may differ,
-so we need the full expression for the check variance
-(Equation~\ref{eq:check_variance}).
+The following sections derive expressions for the
+fouling and calibration-drift check uncertainties,
+$v_{d}(t_d)$ and $v_{f}(t_f)$,
+to use in Equation~\ref{eq:check_constant_variance}.
+Later, we introduce multipoint calibrations,
+for which the endpoint variances may differ;
+in that case, we use Equation~\ref{eq:check_variance} for the check variance.
 
 \subsection{Fouling-Check Uncertainty}
+% TODO: Introduce v_f(t_f) into this section and the next.
 
-For the fouling check, the measuring $m$ and reference $r$
+For the fouling check, the measurement $m$ and reference $r$
 devices have known precisions $\sigma_m$ and $\sigma_r$, 
-and their errors are normally distributed and independent,
+with normally distributed, independent errors,
 \begin{equation}
     E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_m \right)
     \text{,} \qquad
