@@ -142,14 +142,14 @@
 %
 Environmental monitoring often involves collecting in situ measurements 
 over extended deployment periods.
-In practice, these measurement have systematic errors
+In practice, these measurements have systematic errors
 caused by fouling and calibration drift,
 as well as irreducible noise.
 Consequently, the measurement device must be periodically checked against known references,
 cleaned, and recalibrated, which resets the systematic error to zero.
 Later on, the information from these checks is used to correct
 the raw measurements by linearly interpolating errors
-between the check measurents \citep{Wagner_2006}.
+between the check measurements \citep{Wagner_2006}.
 This procedure is mathematically equivalent to modeling the error
 as a Wiener process conditioned on the check measurements.
 Under this assumption, we derive expressions for the conditional mean and variance,
@@ -288,7 +288,7 @@ and reported in its specifications
 (sometimes called the ``accuracy'')
 as the $2\sigma_m$ or 95\% confidence interval.
 
-Each of error component can be modeled on either scale---absolute or fractional---
+Each error component can be modeled on either scale---absolute or fractional---
 but we typically use whatever scale was specified for the precision.
 
 \section{Wiener-Process Error Model}
@@ -320,7 +320,7 @@ like a reagent in a colorimetric analyzer.
 Let $E(t)$ denote the measurement error at time $t$,
 modeled as a continuous-time stochastic process,
 and let $e(t)$ denote a realization of this process.
-Observations are available only at a finite set times
+Observations are available only at a finite set of times
 when fouling or calibration checks are performed,
 $0 = t_0 < t_1 < \cdots < t_K = T$.
 For notational convenience, we define
@@ -442,7 +442,7 @@ Let $\lambda^+_k(t)$ be the linear interpolation weight,
 extended by
 %
 \begin{equation}
-    \lambda^+_k(y) :=
+    \lambda^+_k(t) :=
     \begin{cases}
         1, & t < t_{1} \\
         \frac{t - t_{k-1}}{t_k - t_{k-1}}, & t \in [t_{k-1}, t_k] \\
@@ -589,7 +589,7 @@ with normally distributed, independent errors,
     \text{.}
 \end{equation}
 %
-Let $Y$ and $Z$ be the principle and reference measurements,
+Let $Y$ and $Z$ be the principal and reference measurements,
 and let $X^m$ and $X^r$ be their respective true values,
 %
 \begin{equation}
@@ -608,7 +608,7 @@ gives
     E_f &= (Y_b - Y_a) - (Z_b - Z_a) \notag \\
         &= \left((X^m_b + E^m_{b}) - (X^m_a + E^m_{a})\right)
            - \left((X^r_b + E^r_{b}) - (X^r_a + E^r_{a})\right) \notag \\
-        &= (E^m_{b} - E^m_{a}) - (E^r_{b} - E^r_{a})xt{}
+        &= (E^m_{b} - E^m_{a}) - (E^r_{b} - E^r_{a})
     \text{.}
 \end{align}
 %
@@ -622,7 +622,7 @@ By independence ($E^{m} \perp E^{r}$), the variance is
 %
 If the measuring device uses internal filtering
 (e.g., time averaging),
-such that the error are perfectly correlated during the check,
+such that the errors are perfectly correlated during the check,
 then the before-and-after errors cancel and the measurement variance is zero,
 %
 \begin{equation}
@@ -966,7 +966,7 @@ with approximate confidence interval
 %
 
 When measurement errors exceed 100\% and the measurand is strictly positive,
-we also provide the log-multiplicitive error model
+we also provide the log-multiplicative error model
 in Appendix~\ref{sec:log_multiplicative_error}.
 
 \section{Parameter Estimation}
@@ -1291,7 +1291,17 @@ the conditional distribution of $\log X$ is
 \end{equation}
 %
 
-The bias-corrected estimate of $X$ is given by
+The bias-corrected estimate of $X$ is given in terms of the expectation of $\log X$,
+which corresponds to the median of $X$,
+%
+\begin{equation}
+    x_{\operatorname{med}}(t)
+    := \exp\left( \mathbb{E}\left[ \log X \mid Y = y \right] \right)
+    = y \exp\bigl( -m(t) \bigr)
+    \text{.}
+\end{equation}
+%
+Then, the conditional expectation of $X$ can be obtained by
 %
 \begin{equation}
     x_{\operatorname{mean}}(t)
@@ -1300,7 +1310,7 @@ The bias-corrected estimate of $X$ is given by
     \text{,}
 \end{equation}
 %
-where $\tfrac{1}{2}v(t)$ is the standard bias correction for lognormal distributions.
+where $\tfrac{1}{2}v(t)$ is the standard bias-correction term for lognormal distributions.
 
 Confidence intervals for $X$ are given by
 %
