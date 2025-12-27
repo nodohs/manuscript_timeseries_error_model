@@ -1245,30 +1245,28 @@ $\mathbb{E}[C]=1$), we obtain the stated expression for $v$.
 \label{sec:log_multiplicative_error}
 
 For strictly positive variables,
-we adopt a log-multiplicative error model.
-Let $\varepsilon$ denote the measurement error
-on the logarithmic scale, and assume the observation model
+we may assume a log-multiplicative error model,
 %
 \begin{equation}
     Y = X \exp(\varepsilon)
     \text{,}
 \end{equation}
 %
-so that
+where $\varepsilon$ is the log-scale measurement error,
+given by
 %
 \begin{equation}
-    \log Y = \log X + \varepsilon
+    \varepsilon = \log Y - \log X
     \text{.}
 \end{equation}
 %
-Here, $\varepsilon$ is dimensionless and represents the log-scale error,
-given by
+The log-scale calibration check error is
 %
 \begin{equation}
     \varepsilon_d = \log Y_s - \log Z_s = \log\left( \frac{Y_s}{Z_s} \right)
 \end{equation}
 %
-for the drift and similarly, for the fouling,
+and the log-scale fouling check error is
 %
 \begin{equation}
     \varepsilon_f = \left( \log Y_b - \log Y_a \right) - \left( \log Z_b - \log Z_a \right)
@@ -1277,13 +1275,12 @@ for the drift and similarly, for the fouling,
 \end{equation}
 %
 
-As before, the log-scale error $\varepsilon_t$ is modeled as a continuous-time
-stochastic process with $m(t)$ and $v(t)$
-denoting its conditional mean and variance,
-except their components are additive in logarithmic space
+As before, we model the log-scale error $\varepsilon_t$ as a continuous-time
+stochastic process with conditional mean $m(t)$ and variance $v(t)$,
+except that the components are additive in logarithmic space
 (Equations~\ref{eq:total_mean} and \ref{eq:total_variance}).
 
-Conditioning on the observation $Y = y$ and treating $X$ as fixed,
+Conditioning on the observation $Y=y$ and treating $X$ as fixed,
 the conditional distribution of $\log X$ is
 %
 \begin{equation}
@@ -1294,18 +1291,7 @@ the conditional distribution of $\log X$ is
 \end{equation}
 %
 
-A bias-corrected point estimate of $X$ may be defined in two common ways.
-First, the median of the implied lognormal distribution,
-which is unbiased on the logarithmic scale, is given by
-%
-\begin{equation}
-    x_{\operatorname{med}}(t)
-    := \exp\left( \mathbb{E}\left[ \log X \mid Y = y \right] \right)
-    = y \exp\bigl( -m(t) \bigr)
-    \text{.}
-\end{equation}
-%
-Alternatively, the conditional mean of $X$ on the original scale is
+The bias-corrected estimate of $X$ is given by
 %
 \begin{equation}
     x_{\operatorname{mean}}(t)
@@ -1314,12 +1300,9 @@ Alternatively, the conditional mean of $X$ on the original scale is
     \text{,}
 \end{equation}
 %
-which includes the standard lognormal bias-correction term
-$\tfrac{1}{2}v(t)$.
+where $\tfrac{1}{2}v(t)$ is the standard bias correction for lognormal distributions.
 
-Under the Gaussian assumption for $\varepsilon$, an approximate
-$(1-\alpha)$ confidence interval for $X$ is obtained from the quantiles of
-the lognormal distribution,
+Confidence intervals for $X$ are given by
 %
 \begin{equation}
     \mathrm{CI}
