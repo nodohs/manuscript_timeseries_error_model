@@ -1006,13 +1006,11 @@ and
 %
 \begin{equation}
     \hat{\sigma}_k^2 = \frac{1}{K}{\sum_{k=1}^{K} \frac{r_k^2}{t_k - t_{k-1}}}
-    \text{.}
+    \text{;}
 \end{equation}
 %
-Beware that when observational uncertainty is ignored,
-these estimators become ill-conditioned for short intervals,
-because the denominator goes to zero
-but the numerator does not when $t_k - t_{k-1} \rightarrow 0$.
+however, this is ill-conditioned if measurement uncertainty is significant,
+because the denominator may approach zero while the residual term in the numerator does not.
 % When a closed-form expression is preferred,
 % the observational uncertainty can be included using the following
 % truncated heuristic,
@@ -1076,6 +1074,11 @@ where $N = \sum_{d=1}^{D} (S_d - 1)$.
 This estimator is better conditioned because
 the calibration standards are separated in the $y$-dimension,
 ensuring that the denominator never approaches zero.
+
+In practice, maximum-likelihood estimators are sensitive to model misspecification,
+so if they give poor results, consider some robust alternative
+(Appendix~\ref{sec:robust_estimation}).
+
 
 \section{Monitoring Networks}
 
@@ -1232,7 +1235,7 @@ and
 \end{equation}
 %
 
-\paragraph{Proof.}
+\subsection{Proof}
 %
 Let $A=1+E_f$, $B=1+E_d$, and $C=1+E_p$, so that $1+E=ABC$.
 By independence,
