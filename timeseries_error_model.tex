@@ -82,8 +82,8 @@
 \begin{document}
 
 %\title{Time-series uncertainty with Wiener fouling and drift}
-\title{Uncertainty of time-series measurements subject to fouling and calibration-drift}
-
+%\title{Uncertainty of time-series measurements subject to fouling and calibration-drift}
+\title{Correcting time-series measurements affected by fouling and calibration drift}
 
 
 % \Author[affil]{given_name}{surname}
@@ -103,7 +103,7 @@
 
 
 
-\runningtitle{Wiener Error}
+\runningtitle{Fouling and Drift Correction}
 
 \runningauthor{Hodson and Schwarz}
 
@@ -1137,6 +1137,20 @@ where
 \end{equation}
 %
 
+\section{Data Requirements}
+
+Implementing the bias-correction framework requires the following information.
+%
+\begin{enumerate}
+    \item The time and value of each check measurement, including any associated reference measurements and standard values.
+    \item The time of each cleaning and recalibration (when the error process resets).
+    \item The precision for the measurement device and any reference devices or standards.
+    \item The device type (make and model) for grouping like devices in hierarchical estimation.
+    \item A unique device identifier for tracking devices across redeployments.
+    \item The error scale (absolute or fractional) for each error component.
+\end{enumerate}
+%
+
 \conclusions  %% \conclusions[modified heading if necessary]
 TEXT
 
@@ -1329,6 +1343,47 @@ Confidence intervals for $X$ are given by
 %
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal
 distribution.
+
+\section{Robust Estimation}
+
+The maximum-likelihood estimators for $\mu$ and $\sigma^2$ can be sensitive to outliers
+in the check-measurement errors,
+particularly when check intervals are short and residuals are large.
+In such cases, a robust estimator based on the median absolute deviation (MAD) may be preferred.
+
+For the drift rate, the robust estimator is the median of the increments,
+%
+\begin{equation}
+    \tilde{\mu}_k = \operatorname{median}\left\{
+        \frac{e_k - \delta_{k-1} e_{k-1}}{t_k - t_{k-1}}
+        \,:\, k = 1, 2, \ldots, K
+    \right\}
+    \text{.}
+\end{equation}
+%
+
+For the diffusion coefficient, define the standardized absolute residuals
+%
+\begin{equation}
+    \left| r_k^* \right| = \frac{\left| e_k - \delta_{k-1} e_{k-1} - \tilde{\mu}_k (t_k - t_{k-1}) \right|}{\sqrt{t_k - t_{k-1}}}
+    \text{.}
+\end{equation}
+%
+The MAD-based robust estimator is then
+%
+\begin{equation}
+    \tilde{\sigma}_k^2
+    =
+    \left(
+        1.4826 \cdot \operatorname{median}\left\{
+            \left| r_k^* \right| \,:\, k = 1, 2, \ldots, K
+        \right\}
+    \right)^2
+    \text{,}
+\end{equation}
+%
+where the factor $1.4826 \approx 1/\Phi^{-1}(0.75)$ provides consistency
+with the standard deviation under the Gaussian assumption.
 
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
