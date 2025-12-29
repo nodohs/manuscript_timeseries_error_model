@@ -472,7 +472,7 @@ the open and closed forms become equivalent,
     \text{,}
 \end{align}
 %
-so the open-closed notation ($m^o$, $m^c$, etc.) may be dropped.
+thereby eliminating the need for the open--closed notation ($m^o$, $m^c$, etc.).
 
 \section{Check-Measurement Uncertainty}
 
@@ -493,7 +493,7 @@ define the endpoint expectations and variances as
     v_k(t_k) := \operatorname{Var}\left[ E_{k}\right]
 \end{equation}
 %
-Given the Brownian-bridge representation,
+Given the Brownian--bridge representation,
 %
 \begin{equation}
     E_t = (1 - \lambda^+_k(t)) E_{k-1} + \lambda^+_k(t) E_k + W_t
@@ -1082,57 +1082,107 @@ so if they give poor results, consider some robust alternative
 
 \section{Monitoring Networks}
 
-% \sigma_ij (site i and bin j )
-%
-Inverse gamma distribution prior
-%
-\begin{equation}
-    p(\sigma^2 \mid a ,\; b)
-    =
-    \frac{b^a}{\Gamma(a)} (\sigma^2)^{-(a+1)}
-    \exp\left(-\frac{b}{\sigma^2}\right)
-\end{equation}
-%
-\begin{equation}
-    \bar{\sigma}
-    \equiv
-    \mathbb{E} \left[ \sigma^2 \mid a, b \right]
-    = \frac{b}{a - 1}
-\end{equation}
-%
-% TODO define residuals as r and sites as j
-\begin{equation}
-    \ln L(r \mid a ,\; b)
-    =
-    \sum_{j \in J}
-    \left(
-        - \frac{N_j}{2} \ln(2 \pi)
-        + a \ln(b)
-        + \ln \Gamma \left( \frac{N}{2} + a \right)
-        - \left( \frac{N_j}{2} + a \right)
-        \ln( \frac{N_j s^2_j}{2} + b)
-        - \ln \Gamma(a)
-    \right)
-\label{eq:hierarchical_likelihood}
-\end{equation}
-%
+After deploying a measurement device, several check measurements may be needed
+before drift and diffusion parameters can be estimated reliably.
+During this initial period, parameter estimates can be stabilized by
+pooling information across similar devices in a monitoring network.
+We use an empirical-Bayes approach with conjugate priors that yields closed-form weights
+for shrinking device-specific parameter estimates toward population values.
+As additional check measurements are collected, population (hyper-)parameters can be updated periodically,
+and device-specific parameters and weights can be recomputed after each new check measurement.
+Although conjugate priors can be inaccurate \citep{Gelman_2006},
+the computational efficiency of this approach simplifies real-time prediction in monitoring
+networks comprising thousands of measurement devices.
 
-The hierarchical estimate of the instantaneous variance rate $\sigma^2$ for site $j$ is given by
+Devices in the monitoring network are indexed by $j \in \{1,\ldots,J\}$.
+The index $k$ (and $K$) is reserved for check-time indexing, and $N_j$ denotes the number
+of residual observations available for device $j$,
+since a multipoint check yields multiple residuals.
+
+Let $r_{j,1},\ldots,r_{j,N_j}$ denote (approximately) independent, mean-zero residuals for device $j$,
+and let
 %
 \begin{equation}
-    \hat{\sigma}^2_j
-    =
-    \hat{w}_j s_j^2 + (1 - \hat{w}_j) \bar{\hat{\sigma}}^2
+    s_j^2 := \frac{1}{N_j}\sum_{n=1}^{N_j} r_{j,n}^2
+    \text{,}
 \end{equation}
 %
-where
+denote the per-site mean square.
+Assume
 %
 \begin{equation}
-    \hat{w}_j
-    =
-    \frac{N_j}{N_j + 2 (\hat{a} - 1)}
+    r_{j,n} \mid \sigma_j^2 \sim \mathcal{N}(0,\,\sigma_j^2)
+    \text{,}
+    \qquad
+    \sigma_j^2 \sim \operatorname{IG}(a,b)
+    \text{,}
 \end{equation}
 %
+where $\operatorname{IG}(a,b)$ is an inverse-gamma prior on the variance,
+with density
+%
+\begin{equation}
+    p(\sigma^2 \mid a,b)
+    =
+    \frac{b^a}{\Gamma(a)} (\sigma^2)^{-(a+1)}\exp\left(-\frac{b}{\sigma^2}\right)
+    \text{,}
+\end{equation}
+%
+and prior mean $\mathbb{E}[\sigma^2]=b/(a-1)$ for $a>1$.
+
+Integrating out $\sigma_j^2$ yields a closed-form marginal likelihood for $(a,b)$.
+Up to constants that do not depend on $(a,b)$, the log-marginal likelihood is
+%
+\begin{equation}
+    \ln L(r \mid a,b)
+    =
+    \sum_{j=1}^{J}
+    \left(
+        a\ln(b)
+        + \ln \Gamma\left(a + \frac{N_j}{2}\right)
+        - \ln \Gamma(a)
+        - \left(a + \frac{N_j}{2}\right)\ln\left(b + \frac{N_j s_j^2}{2}\right)
+    \right)
+    \text{.}
+    \label{eq:hierarchical_likelihood}
+\end{equation}
+%
+Empirical-Bayes estimates $\hat{a}$ and $\hat{b}$ can be obtained by maximizing
+Equation~\ref{eq:hierarchical_likelihood}.
+
+Given hyperparameters $(a,b)$, the posterior for $\sigma_j^2$ is
+$\operatorname{IG}\bigl(a + N_j/2,\; b + N_j s_j^2/2\bigr)$,
+so the posterior mean (for $a+N_j/2>1$) is
+%
+\begin{equation}
+    \mathbb{E}[\sigma_j^2 \mid r_{j,1:N_j},a,b]
+    =
+    \frac{b + \tfrac{N_j}{2}s_j^2}{a + \tfrac{N_j}{2} - 1}
+    =
+    w_j\,s_j^2 + (1-w_j)\,\bar{\sigma}^2
+    \text{,}
+\end{equation}
+%
+where $\bar{\sigma}^2 := b/(a-1)$ and
+%
+\begin{equation}
+    w_j := \frac{N_j}{N_j + 2(a-1)}
+    \text{.}
+\end{equation}
+%
+Substituting $(\hat{a},\hat{b})$ gives the empirical-Bayes shrinkage estimate
+%
+\begin{equation}
+    \hat{\sigma}_j^2
+    =
+    \hat{w}_j\,s_j^2 + (1-\hat{w}_j)\,\bar{\hat{\sigma}}^2
+    \text{,}
+    \qquad
+    \hat{w}_j := \frac{N_j}{N_j + 2(\hat{a}-1)}
+    \text{,}
+\end{equation}
+%
+The estimator can be recomputed after each new check measurement.
 
 \section{Data Requirements}
 
