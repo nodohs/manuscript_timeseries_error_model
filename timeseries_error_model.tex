@@ -82,7 +82,7 @@
 \begin{document}
 
 %\title{Time-series uncertainty with Wiener fouling and drift}
-%\title{Uncertainty of time-series measurements subject to fouling and calibration-drift}
+%\title{Uncertainty of time-series measurements subject to fouling and calibration drift}
 \title{Correcting time-series measurements affected by fouling and calibration drift}
 
 
@@ -127,10 +127,10 @@
 
 
 \begin{abstract}
-    Environmental time-series measurements are subject to systematic errors
-    caused by fouling and calibration drift.
-    Consequently, operators must periodically check, clean, and recalibrate the measurement device.
-    By modeling the error growth between checks as a stochastic process,
+    Environmental time-series measurements can accumulate systematic errors
+    from fouling and calibration drift.
+    Operators must therefore periodically check, clean, and recalibrate their measurement devices.
+    By modeling error growth between checks as a stochastic process,
     we derive bias corrections and confidence intervals for the time series.
 \end{abstract}
 
@@ -140,16 +140,16 @@
 
 \introduction  %% \introduction[modified heading if necessary]
 %
-Environmental monitoring often involves collecting in situ measurements 
-over extended deployment periods.
-In practice, these measurements have systematic errors
-caused by fouling and calibration drift,
+Environmental monitoring often relies on in situ measurements
+collected over extended deployment periods.
+In practice, these measurements can exhibit systematic errors
+from fouling and calibration drift,
 as well as irreducible noise.
 Consequently, the measurement device must be periodically checked against known references,
 cleaned, and recalibrated, which resets the systematic error to zero.
-Later on, the information from these checks is used to correct
+Later, the information from these checks is used to correct
 the raw measurements by linearly interpolating errors
-between the check measurements \citep{Wagner_2006}.
+between check measurements \citep{Wagner_2006}.
 This procedure is mathematically equivalent to modeling the error
 as a Wiener process conditioned on the check measurements.
 Under this assumption, we derive expressions for the conditional mean and variance,
@@ -188,7 +188,7 @@ however, it is simpler to work with the fractional error,
 and convert back to a percentage later.
 
 We assume that the measurement error has three independent components---
-fouling $E_f$, calibration-drift $E_d$,
+fouling $E_f$, calibration drift $E_d$,
 and measurement noise $E_m$---
 that combine additively on the absolute scale,
 %
@@ -240,14 +240,14 @@ during the cleaning process,
 \end{equation}
 %
 where $Z_b$ and $Z_a$ are the before-and-after measurements
-from a colocated reference device.
+from a co-located reference device.
 Note that the reference flips the sign of the error,
 whereas we follow the convention in statistics.
 
-Any systematic bias that remains after cleaning is attributed to calibration-drift,
+Any systematic bias that remains after cleaning is attributed to calibration drift,
 which is measured by comparing a clean measurement against a known standard.
 Let $Z_s$ be the standard value and let $Y_s$ be the clean measurement of $Z_s$,
-then the calibration-drift error is given by
+then the calibration drift error is given by
 %
 \begin{equation}
     E_d = Y_s - Z_s
@@ -259,8 +259,8 @@ then the calibration-drift error is given by
 %
 
 Lastly, the residual error after cleaning and recalibrating the device
-is attributed to measurement noise.
-The noise is modeled with a Gaussian distribution,
+is attributed to measurement noise,
+which is modeled as a Gaussian distribution,
 %
 \begin{equation}
     E_m \sim \mathcal{N}(0 ,\, \sigma_m^2)
@@ -329,8 +329,8 @@ and
 $e_k := e(t_k)$.
 Thus, $t_k - t_{k-1}$ denotes the elapsed time between successive error
 observations $e_{k-1}$ and $e_k$.
-Throughout, the subscript $k$ is used to index the error component---fouling
-($f$) or calibration drift ($d$).
+Throughout, the index $k$ denotes check times $t_k$, and subscripts $f$ and $d$
+denote the fouling and calibration drift components, respectively.
 
 We first consider the period after observing the error at time $t_{k-1}$
 but before observing the error at time $t_k$.
@@ -384,26 +384,20 @@ $e_{k-1}$ is the error at time $t_{k-1}$,
 %specified by its mean and variance,
 $\mu$ is the drift rate (mean change per unit time),
 $\sigma^2$ is the instantaneous variance rate (variance per unit time).
-Thus for any $t \ge 0$,
-it follows that the conditional mean and variance are
-%
-%
-%
+
 Later on, upon observing the error at time $t_k$,
 the conditional distribution of $E_t$ is updated.
 A Wiener process conditioned to start and end at specified values
 is known as a Brownian bridge \citep{Taylor_1998}.
-To simplify notation, 
-let $\lambda(t)$ be the linear interpolation weight,
+To simplify notation, let $\lambda_k(t)$ be the linear interpolation weight,
 %
 \begin{equation}
     \lambda_k(t) = \frac{t - t_{k-1}}{t_k - t_{k-1}}
     \text{,} \qquad
-    k \in \{f, d\}
+    t \in [t_{k-1}, t_k]
+    \text{.}
 \end{equation}
 %
-such that $\lambda_f(t)$ denotes the fouling weight
-for the interval $t \in \left[t_{f-1}, t_f \right]$.
 The conditional distribution of the bridge at time
 $t$ is
 %
@@ -483,8 +477,8 @@ thereby eliminating the need for superscripts ($m^o$, $m^c$, etc.).
 \section{Check-Measurement Uncertainty}
 
 Check measurements contribute additional uncertainty to the error process.
-We review the general approach for propagating check-measurement uncertainty,
-then derive the check-uncertainty for fouling and calibration-drift.
+We review the general approach for propagating check measurement uncertainty,
+then derive the check uncertainty for fouling and calibration drift.
 
 For a bridge with uncertain endpoints,
 define the endpoint expectations and variances as
@@ -508,7 +502,7 @@ Given the Brownian-bridge representation,
     \text{.}
 \end{equation}
 %
-linearity of expectation gives
+by linearity of expectation,
 %
 \begin{align}
     \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \, \mathbb{E}[E_{k-1}]
@@ -567,7 +561,7 @@ For an open interval, this simplifies to
 $ \tilde{v}^o_k(t) = v_{k}(t_k)$.
 
 The following sections derive expressions for the
-fouling and calibration-drift check uncertainties,
+fouling and calibration drift check uncertainties,
 $v_{d}(t_d)$ and $v_{f}(t_f)$,
 to use in Equation~\ref{eq:check_constant_variance}.
 Later, we introduce multipoint calibrations,
@@ -715,7 +709,7 @@ the error is determined at each standard value,
 %
 First, we consider the conditional distribution at the check time $t_{k}$,
 which forms a bridge in the $y$ dimension.
-%In the multi-point calibration,
+%In the multipoint calibration,
 Next, we will use that first bridge as the uncertain boundary condition
 for the bridge in the time dimension.
 
@@ -1020,7 +1014,7 @@ these estimators become ill-conditioned for short intervals,
 because the denominator goes to zero
 but the numerator does not when $t_k - t_{k-1} \rightarrow 0$.
 % When a closed-form expression is preferred,
-% the observational uncertainy can be included using the following
+% the observational uncertainty can be included using the following
 % truncated heuristic,
 % %
 % \begin{equation}
@@ -1035,7 +1029,7 @@ but the numerator does not when $t_k - t_{k-1} \rightarrow 0$.
 %     \text{.}
 % \end{equation}
 
-For the multi-point calibration,
+For the multipoint calibration,
 define residual and variance terms
 %
 \begin{align}
@@ -1083,7 +1077,7 @@ This estimator is better conditioned because
 the calibration standards are separated in the $y$-dimension,
 ensuring that the denominator never approaches zero.
 
-% TODO For the multi-point calibration, ...
+% TODO For the multipoint calibration, ...
 \section{Monitoring Networks}
 % \sigma_ij (site i and bin j )
 %
@@ -1493,8 +1487,8 @@ with the standard deviation under the Gaussian assumption.
 %
 %%% TABLES
 %%%
-%%% The different columns must be seperated with a & command and should
-%%% end with \\ to identify the column brake.
+%%% The different columns must be separated with a & command and should
+%%% end with \\ to identify the column break.
 %
 %%% ONE-COLUMN TABLE
 %
@@ -1556,7 +1550,7 @@ with the standard deviation under the Gaussian assumption.
 %%% Vectors are identified in bold italic font using \vec{x}
 %%% Matrices are identified in bold roman font
 %%% Multiplication signs are typeset using the LaTeX commands \times (for vector products, grids, and exponential notations) or \cdot
-%%% The character * should not be applied as mutliplication sign
+%%% The character * should not be applied as multiplication sign
 %
 %
 %%% EQUATIONS
