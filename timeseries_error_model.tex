@@ -1077,8 +1077,8 @@ This estimator is better conditioned because
 the calibration standards are separated in the $y$-dimension,
 ensuring that the denominator never approaches zero.
 
-% TODO For the multipoint calibration, ...
 \section{Monitoring Networks}
+
 % \sigma_ij (site i and bin j )
 %
 Inverse gamma distribution prior
@@ -1347,11 +1347,14 @@ where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal
 distribution.
 
 \section{Robust Estimation}
+\label{sec:robust_estimation}
 
-The maximum-likelihood estimators for $\mu$ and $\sigma^2$ can be sensitive to outliers
-in the check-measurement errors,
-particularly when check intervals are short and residuals are large.
-In such cases, a robust estimator based on the median absolute deviation (MAD) may be preferred.
+The maximum likelihood estimators for $\mu$ and $\sigma^2$ are sensitive to model misspecification,
+particularly when check intervals are short
+or when measurement precision is mischaracterized.
+In such cases, a robust estimator may be preferred.
+Here, one could use the median absolute deviation (MAD)
+instead of the sample variance.
 
 For the drift rate, the robust estimator is the median of the increments,
 %
