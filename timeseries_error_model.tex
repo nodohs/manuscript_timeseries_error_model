@@ -892,7 +892,7 @@ the means are given by Equations~
 and
 \ref{eq:multi_check_mean};
 and the variances by Equations
-\ref{eq:precision_variance},
+\ref{eq:measurement_error},
 \ref{eq:unified_wiener_variance},
 \ref{eq:check_variance},
 and
@@ -1136,7 +1136,8 @@ where
 Implementing the bias-correction framework requires the following information.
 %
 \begin{enumerate}
-    \item The time and value of each check measurement, including any associated reference measurements and standard values.
+    \item The time and value of each check measurement,
+    including any associated reference measurements and standard values.
     \item The time of each cleaning and recalibration (when the error process resets).
     \item The precision for the measurement device and any reference devices or standards.
     \item The device type (make and model) for grouping like devices in hierarchical estimation.
@@ -1146,7 +1147,14 @@ Implementing the bias-correction framework requires the following information.
 %
 
 \conclusions  %% \conclusions[modified heading if necessary]
-TEXT
+
+We present an error model for time-series measurements
+affected by fouling and calibration drift.
+Our model is consistent with standard bias-correction procedures,
+but by formalizing the assumptions into a stochastic process,
+we derive confidence intervals for the corrected time series.
+We extend this framework to multipoint calibrations
+and to pooling information across monitoring networks of similar devices.
 
 %% The following commands are for the statements about the availability of data sets and/or software code corresponding to the manuscript.
 %% It is strongly recommended to make use of these sections in case data sets and/or software code have been part of your research the article is based on.
