@@ -150,13 +150,13 @@ cleaned, and recalibrated, which resets the systematic error to zero.
 Later, the information from these checks is used to correct
 the raw measurements by linearly interpolating errors
 between check measurements \citep{Wagner_2006}.
-This procedure is mathematically equivalent to modeling the error
+This correction procedure is mathematically equivalent to modeling the error
 as a Wiener process conditioned on the check measurements.
-Under this assumption, we derive expressions for the conditional mean and variance,
+Following that assumption, we derive expressions for the conditional mean and variance,
 which are equivalent to Kalman filtering and smoothing for this system.
-As the checks are also imprecise, they are treated as noisy observations
+As the checks are also imprecise,
 and their uncertainty is propagated into the time-series model.
-Next, we extend the approach to multipoint calibrations
+Next, we extend the model to multipoint calibrations
 and monitoring networks of similar devices.
 The result is a transparent and tractable framework for estimating
 fouling and drift corrections with confidence intervals
@@ -187,7 +187,7 @@ however, it is simpler to work with the fractional error,
 %
 and convert back to a percentage later.
 
-We assume that the measurement error has three independent components---
+We assume the measurement error has three independent components---
 fouling $E_f$, calibration drift $E_d$,
 and measurement noise $E_m$---
 that combine additively on the absolute scale,
@@ -214,9 +214,9 @@ the fractional relation is approximately additive,
 %
 
 Fouling is any physical, chemical, or biological buildup on the measurement device
-that causes systematic error.
+causing systematic error.
 Under steady-state conditions,
-the fouling error is assessed by comparing measurements
+fouling error is assessed by comparing measurements
 taken immediately before and after cleaning the device,
 %
 \begin{equation}
@@ -227,7 +227,7 @@ taken immediately before and after cleaning the device,
     \text{,}
 \end{equation}
 %
-where $Y_b$ and $Y_a$ are the before-and-after-cleaning measurements, respectively.
+where $Y_b$ and $Y_a$ are the before-and-after measurements, respectively.
 Otherwise, a reference device is needed to adjust for any environmental change
 during the cleaning process,
 %
@@ -241,11 +241,11 @@ during the cleaning process,
 %
 where $Z_b$ and $Z_a$ are the before-and-after measurements
 from a co-located reference device.
-Note that the reference flips the sign of the error,
+Note \citet{Wagner_2006} flips the sign of the error to equal the correction,
 whereas we follow the convention in statistics.
 
-Any systematic bias that remains after cleaning is attributed to calibration drift,
-which is measured by comparing a clean measurement against a known standard.
+Any systematic bias remaining after cleaning is attributed to calibration drift,
+which is assessed by comparing a clean measurement against a known standard.
 Let $Z_s$ be the standard value and let $Y_s$ be the clean measurement of $Z_s$,
 then the calibration drift error is given by
 %
@@ -258,7 +258,7 @@ then the calibration drift error is given by
 \end{equation}
 %
 
-Lastly, the residual error after cleaning and recalibrating the device
+Finally, any residual error after cleaning and recalibrating the device
 is attributed to measurement noise,
 which is modeled as a Gaussian distribution,
 %
@@ -273,8 +273,8 @@ which is modeled as a Gaussian distribution,
     \text{,}
 \end{equation}
 %
-where $\sigma_m$ denotes the measurement-device precision
-and $\sigma_m^2$ is the variance of the measurement error,
+where $\sigma_m$ denotes the measurement-device precision,
+and the variance of the measurement error is
 %
 \begin{equation}
     v_m :=
@@ -283,13 +283,13 @@ and $\sigma_m^2$ is the variance of the measurement error,
     \text{.}
 \end{equation}
 %
-In practice, the device precision is determined under controlled conditions
-and reported in its specifications
+In practice, the measurement precision is determined under controlled conditions
+and reported in the device specifications
 (sometimes called the ``accuracy'')
 as the $2\sigma_m$ or 95\% confidence interval.
 
 Each error component can be modeled on either scale---absolute or fractional---
-but we typically use whatever scale was specified for the precision.
+but we typically assume whatever scale was specified for the precision.
 
 \section{Wiener-Process Error Model}
 
@@ -1189,24 +1189,27 @@ The estimator can be recomputed after each new check measurement.
 Implementing the bias-correction framework requires the following information.
 %
 \begin{enumerate}
+    \item The time of each cleaning and recalibration (when the error process resets).
     \item The time and value of each check measurement,
     including any associated reference measurements and standard values.
-    \item The time of each cleaning and recalibration (when the error process resets).
     \item The precision for the measurement device and any reference devices or standards.
     \item The device type (make and model) for grouping like devices in hierarchical estimation.
-    \item A unique device identifier for tracking devices across redeployments.
-    \item The error scale (absolute or fractional) for each error component.
+    \item A unique device identifier for tracking devices across multiple redeployments.
+    \item The scale (absolute or fractional) of each error component.
 \end{enumerate}
 %
 
 \conclusions  %% \conclusions[modified heading if necessary]
 
-We present an error model for time-series measurements
-affected by fouling and calibration drift.
-Our model is consistent with standard bias-correction procedures,
-but by formalizing the assumptions into a stochastic process,
-we derive confidence intervals for the corrected time series.
-We extend this framework to multipoint calibrations
+Environmental timeseries are routinely affected by fouling and calibration drift,
+which cause systematic bias.
+In practice, the measurement device must be periodically checked
+against known references, cleaned, and recalibrated.
+Later, these check measurements are used to correct the timeseries
+by interpolating between the errors observed at each check.
+Here, we formalize this correction procedure as a stochastic model
+to derive confidence intervals for the corrected timeseries.
+We also extend the model to multipoint calibrations
 and to pooling information across monitoring networks of similar devices.
 
 %% The following commands are for the statements about the availability of data sets and/or software code corresponding to the manuscript.
