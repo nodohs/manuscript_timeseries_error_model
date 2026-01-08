@@ -293,82 +293,30 @@ but we typically assume whatever scale was specified for the precision.
 
 \section{Wiener-Process Error Model}
 
-We model the drift and fouling errors as a Wiener process
-with drift.
-A Wiener process is a continuous-time stochastic process
-with independent, normally distributed increments
-whose variance grows linearly with elapsed time.
-Specifically, for a process $\{X_t\}_{t \ge 0}$
-with drift $\mu$ and diffusion coefficient $\sigma$,
-the increment over time $t$ satisfies
-%
-\begin{equation}
-    X_t - X_0 \sim
-    \mathcal{N}\!\left(\mu t,\; \sigma^2 t\right)
-    \qquad \text{for } t \ge 0
-    \qquad
-    \text{\citep{Taylor_1998}.}
-\end{equation}
-%
-The drift term $\mu$ represents the mean rate of change
-(with $\mu=0$ for a classical Wiener process)
-and is important for devices that exhibit systematic bias,
-such as a device that gradually loses responsiveness
-due to the degradation of a consumable component,
-like a reagent in a colorimetric analyzer.
-
-Let $E(t)$ denote the measurement error at time $t$,
-modeled as a continuous-time stochastic process,
-and let $e(t)$ denote a realization of this process.
-Observations are available only at a finite set of times
-when fouling or calibration checks are performed,
-$0 = t_0 < t_1 < \cdots < t_K = T$.
+Let $E(t)$ denote the measurement error at time $t$, 
+and let $e(t)$ denote its realization.
+Observations are available for a finite set of times
+when fouling or calibration are checked,
+$t_0 < t_1 < \cdots < t_K$.
 For notational convenience, we define
 $E_k := E(t_k)$
 and
 $e_k := e(t_k)$.
-Thus, $t_k - t_{k-1}$ denotes the elapsed time between successive error
+Thus, $t_k - t_{k-1}$ denotes the time elapsed between successive error
 observations $e_{k-1}$ and $e_k$.
-Throughout, the index $k$ denotes check times $t_k$, and subscripts $f$ and $d$
-denote the fouling and calibration drift components, respectively.
+Throughout, the index $k$ will be substituted with $f$ and $d$
+to denote fouling and calibration-drift checks, respectively.
 
-We first consider the period after observing the error at time $t_{k-1}$
-but before observing the error at time $t_k$.
-We refer to this as an ``open interval,'' which arises during real-time
-uncertainty estimation.
-In contrast, a ``closed interval'' is bracketed by observations at both
-$t_{k-1}$ and $t_k$; in this case, the conditional mean and variance are
-updated after incorporating the observation at $t_k$.
-
-For an open interval,
-the conditional distribution of the Wiener-process error is
+We assume the fouling and calibration-drift erroors evolve as a continuous-time
+stochastic processes, defined by
 %
 \begin{equation}
-    p(e_t \mid E_{k-1} = e_{k-1})
-    =
-    \mathcal{N}(m^o(t),\, v^o(t))
-    \text{,} \qquad
-    t > t_{k-1}
-    %\mathcal{N}(\delta_{k-1}  e_{k-1} + \mu t ,\, \sigma^2 t)
+    E_t = \delta_{k-1} E_{k-1} + \mu (t - t_{k-1}) + \sigma W_t
+    \text{,}
 \end{equation}
 %
-with conditional mean and variance given by
-%
-\begin{align}
-    m^o(t) &:=
-        \mathbb{E}\left[E_t \mid E_{k-1} = e_{k-1} \right]
-        = \delta_{k-1} e_{k-1} + \mu (t - t_{k-1})
-        \qquad \text{and}
-        \label{eq:wiener_mean}\\
-    v^o(t) &:=
-        \operatorname{Var}\left[E_t \mid E_{k-1} = e_{k-1} \right]
-        = \sigma^2 (t - t_{k-1})
-        \label{eq:wiener_variance}
-    \text{.}
-\end{align}
-%
-where $\delta_{k-1}$ indicates whether the error process has been reset
-due to cleaning or recalibration,
+where $\delta_{k-1}$ indicates whether the error process was reset during the previous check
+(because the device was cleaned or recalibrated),
 %
 \begin{equation}
     \delta_{k-1} =
@@ -379,17 +327,64 @@ due to cleaning or recalibration,
     \text{,}
 \end{equation}
 %
-$e_{k-1}$ is the error at time $t_{k-1}$,
+%$e_{k-1}$ is the error at time $t_{k-1}$,
 %$\mathcal{N}$ is the normal distribution
 %specified by its mean and variance,
-$\mu$ is the drift rate (mean change per unit time),
-$\sigma^2$ is the instantaneous variance rate (variance per unit time).
+$\mu$ is the ``drift'' rate (mean change per unit time),
+$\sigma$ is the ``diffusion'' rate,
+and $W_t$ is a standard Wiener process,
+%
+\begin{equation}
+    W_t \sim \mathcal{N}(0,\, t - t_{k-1})
+    \qquad \text{\citep{Taylor_1998}.}
+\end{equation}
+%
+The drift term $\mu$ represents the mean rate of change
+and is important for devices that gradually lose responsiveness due
+to the degradation of their components over time,
+like the chemical degradation of reagents in a colorimetric analyzer.
 
-Later on, upon observing the error at time $t_k$,
-the conditional distribution of $E_t$ is updated.
+The timeseries $E(t)$ is subdivided into intervals that are bracketed by check measurements.
+An interval bracketed by a single check is called ``open.''
+For example, the interval after the last check ($t > t_K$) is open until
+the next check occurs sometime in the future ($t_{K+1}$).
+In contrast, a ``closed'' interval is bracketed by checks at both ends ( $ t \in [t_{k-1}, t_k]$ ).
+In real-time monitoring, the present time is always within an open interval.
+Once the next check is recorded, that interval is closed and a new open interval begins.
+
+For an open interval,
+the conditional distribution of the fouling or calibration-drift error is
+%
+\begin{equation}
+    p(e_t \mid E_{k-1} = e_{k-1})
+    =
+    \mathcal{N}(m_k^o(t),\, v_k^o(t))
+    \text{,} \qquad
+    t > t_{k-1}
+    %\mathcal{N}(\delta_{k-1}  e_{k-1} + \mu t ,\, \sigma^2 t)
+\end{equation}
+%
+with conditional mean and variance given by
+%
+\begin{align}
+    m_k^o(t) &:=
+        \mathbb{E}\left[E_t \mid E_{k-1} = e_{k-1} \right]
+        = \delta_{k-1} e_{k-1} + \mu (t - t_{k-1})
+        \qquad \text{and}
+        \label{eq:wiener_mean}\\
+    v_k^o(t) &:=
+        \operatorname{Var}\left[E_t \mid E_{k-1} = e_{k-1} \right]
+        = \sigma^2 (t - t_{k-1})
+        \label{eq:wiener_variance}
+    \text{.}
+\end{align}
+%
+
+Upon observing the error at time $t_k$,
+the conditional distribution of $E_t$ is updated and the interval is closed.
 A Wiener process conditioned to start and end at specified values
-is known as a Brownian bridge \citep{Taylor_1998}.
-To simplify notation, let $\lambda_k(t)$ be the linear interpolation weight,
+is called a Brownian bridge \citep{Taylor_1998}.
+To simplify notation, let $\lambda_k(t)$ be the linear-interpolation weight,
 %
 \begin{equation}
     \lambda_k(t) = \frac{t - t_{k-1}}{t_k - t_{k-1}}
@@ -697,26 +692,14 @@ The drift correction is determined by linearly
 interpolating errors between each check value
 \citep{Wagner_2006}.
 
+The previous sections showed how single-point checks form a Gaussian bridge through time.
+The multipoint check extends the same basic idea,
+using the check measurements as boundary conditions for the bridge.
+Except now, the boundary condition is not a point but a second bridge between the standards in the $y$ dimension.
+
 Let $z_s$ denote the standard values for $s = 1, 2, \ldots, S$,
 let $E_{k,s} := E(t_k,\, z_s)$ be the error at time $t_k$ and standard $z_s$,
 and let $e_{k,s}$ be its realization.
-
-the calibrfation error at time $t_k$ is 
-the error is determined at each standard value,
-%
-\begin{equation}
-    E_{k,s} := E(t_k,\, z_s) = e_{k,s}
-    \text{,} \qquad
-    \forall s \in \{1, 2, \ldots, S\}
-    \text{.}
-\end{equation}
-%
-First, we consider the conditional distribution at the check time $t_{k}$,
-which forms a bridge in the $y$ dimension.
-%In the multipoint calibration,
-Next, we will use that first bridge as the uncertain boundary condition
-for the bridge in the time dimension.
-
 Given check-measurement errors $e_{k,s-1}$ and $e_{k,s}$,
 the conditional mean of the $y$-bridge at time $t_k$ is given by
 %
@@ -737,7 +720,7 @@ m_{k}(y) &:= \mathbb{E} \left[
 \end{align}
 %
 which is a linear interpolation between the check-measurement errors.
-%
+Unlike the time-bridge, the $y$-bridge has no drift or reset terms ($\delta$, $\mu$).
 The conditional variance of the $y$-bridge at time $t_k$ is
 %
 \begin{align}
@@ -751,15 +734,16 @@ The conditional variance of the $y$-bridge at time $t_k$ is
                  + \lambda^+_s(y)^2 \, \operatorname{Var}[E_{k,s}]
                 + \eta^2 \phi^+_{s}(y)
     \label{eq:y_bridge_variance}
-    \text{,}
+    \text(\ref{eq:variance_uncertain_bridge} as a function of $y$,)
 \end{align}
 %
-where $\eta$ is the diffusion coefficient in the $y$ dimension.
+where $\eta$ is the diffusion coefficient in the $y$ dimension,
+and $\operatorname{Var}[E_{k,s-1}]$ and $\operatorname{Var}[E_{k,s}]$
+are the variances of the checks against standards $s-1$ and $s$.
 
-Next, let these mean and variance define the boundary conditions
-(end points) for the time-bridge.
-The conditional mean is given by
-the bilinear interpolation between four check points,
+Under this boundary condition,
+the conditional mean is a bilinear interpolation
+between four check points,
 $e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$,
 denoted as the set
 $\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
