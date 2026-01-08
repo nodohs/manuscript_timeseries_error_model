@@ -1228,18 +1228,18 @@ and to pooling information across monitoring networks of similar devices.
 \label{sec:variance_linear_combination}
 
 For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments,
-and any constants $a_1, a_2, \ldots, a_n$,
+and any constants $a_1, a_2, \ldots, a_n$, where
 %
 \begin{equation}
     Y = a_1 X_1 + a_2 X_2 + \ldots + a_n X_n
 \end{equation}
 %
-the variance is given by
+the variance of $Y$ is given by
 %
 \begin{equation}
-    \operatorname{Var}(Y)
+    \operatorname{Var}\left[ Y \right]
     =
-    \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j \operatorname{Cov}(X_i, X_j)
+    \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j \operatorname{Cov}\left[ X_i, X_j \right]
 \end{equation}
 %
 In the two-variable case,
@@ -1248,10 +1248,13 @@ In the two-variable case,
     Y = a X + b Z
 \end{equation}
 %
-then the variance is
+the variance simplifies to
 %
 \begin{equation}
-    \operatorname{Var}(Y) = a^2 \operatorname{Var}(X) + b^2 \operatorname{Var}(Z) + 2ab \operatorname{Cov}(X, Z)
+    \operatorname{Var}\left[ Y \right]
+        = a^2 \operatorname{Var}\left[ X \right]
+        + b^2 \operatorname{Var}\left[ Z \right]
+        + 2ab \operatorname{Cov}\left[ X, Z \right]
 \end{equation}
 
 
@@ -1260,30 +1263,31 @@ then the variance is
 \label{sec:combined_fractional_proof}
 
 Let $E_f$, $E_d$, and $E_p$ denote independent fractional-error components with
-means $m_f,m_d,0$ and variances $v_f,v_d,v_p$, respectively, and define the
-combined fractional error $E$ by
+means $m_f,m_d,0$ and variances $v_f,v_d,v_p$, respectively.
+The combined fractional error $E$ is given by
 %
 \begin{equation}
-    1+E := (1+E_f)(1+E_d)(1+E_p)
+    1+E = (1+E_f)(1+E_d)(1+E_p)
     \text{.}
 \end{equation}
 %
-Then
+with conditional mean given by
 %
 \begin{equation}
     m := \mathbb{E}[E] = (1+m_f)(1+m_d)-1
     \text{,}
 \end{equation}    
 %
-and
+and conditional variance given by
 %
 \begin{equation}
-    v := \operatorname{Var}(E)
+    v := \operatorname{Var}\left[ E \right]
         =
         \left(v_f+(1+m_f)^2\right)
         \left(v_d+(1+m_d)^2\right)
         \left(v_p+1\right)
         -\left((1+m_f)(1+m_d)\right)^2
+        \label{eq:combined_fractional_variance_proof}
         \text{.}
 \end{equation}
 %
@@ -1310,7 +1314,7 @@ Also by independence,
 %
 Using $\mathbb{E}[A^2]=\operatorname{Var}(A)+\mathbb{E}[A]^2=v_f+(1+m_f)^2$,
 $\mathbb{E}[B^2]=v_d+(1+m_d)^2$, and $\mathbb{E}[C^2]=v_p+1$ (since
-$\mathbb{E}[C]=1$), we obtain the stated expression for $v$.
+$\mathbb{E}[C]=1$) yeilds Equation~\ref{eq:combined_fractional_variance_proof}.
 
 
 \section{Log-multiplicative error model}
@@ -1328,63 +1332,63 @@ where $\varepsilon$ is the log-scale measurement error,
 given by
 %
 \begin{equation}
-    \varepsilon = \log Y - \log X
+    \varepsilon = \ln Y - \ln X
     \text{.}
 \end{equation}
 %
-The log-scale calibration check error is
+Similarly, the log-scale calibration check error is
 %
 \begin{equation}
-    \varepsilon_d = \log Y_s - \log Z_s = \log\left( \frac{Y_s}{Z_s} \right)
+    \varepsilon_d = \ln Y_s - \ln Z_s = \ln\left( \frac{Y_s}{Z_s} \right)
 \end{equation}
 %
 and the log-scale fouling check error is
 %
 \begin{equation}
-    \varepsilon_f = \left( \log Y_b - \log Y_a \right) - \left( \log Z_b - \log Z_a \right)
-    = \log\left( \frac{Y_b}{Y_a} \right) - \log\left( \frac{Z_b}{Z_a} \right)
+    \varepsilon_f = \left( \ln Y_b - \ln Y_a \right) - \left( \ln Z_b - \ln Z_a \right)
+    = \ln\left( \frac{Y_b}{Y_a} \right) - \ln\left( \frac{Z_b}{Z_a} \right)
     \text{.}
 \end{equation}
 %
 
-As before, we model the log-scale error $\varepsilon_t$ as a continuous-time
-stochastic process with conditional mean $m(t)$ and variance $v(t)$,
-except that the components are additive in logarithmic space
+In this case, the log-scale error $\varepsilon_t$ is a continuous-time
+stochastic process with additive components ($f$, $d$, and $m$) in log space
 (Equations~\ref{eq:total_mean} and \ref{eq:total_variance}).
 
-Conditioning on the observation $Y=y$ and treating $X$ as fixed,
-the conditional distribution of $\log X$ is
-%
-\begin{equation}
-    \log X \mid Y = y
-    \sim
-    \mathcal{N}\left( \log y - m(t),\, v(t) \right)
-    \text{.}
-\end{equation}
-%
+% TODO MOVE
+%Conditioning on the observation $Y=y$ and treating $X$ as fixed,
+%the conditional distribution of $\ln X$ is
+%%
+%\begin{equation}
+%    \ln X \mid Y = y
+%    \sim
+%    \mathcal{N}\left( \ln y - m(t),\, v(t) \right)
+%    \text{.}
+%\end{equation}
+%%
 
-The bias-corrected estimate of $X$ is given in terms of the expectation of $\log X$,
+The bias-corrected timeseries is given in terms of the expectation of $\ln X$,
 which corresponds to the median of $X$,
 %
 \begin{equation}
     x_{\operatorname{med}}(t)
-    := \exp\left( \mathbb{E}\left[ \log X \mid Y = y \right] \right)
+    := \exp\left( \mathbb{E}\left[ \ln X \mid Y = y \right] \right)
     = y \exp\bigl( -m(t) \bigr)
     \text{.}
 \end{equation}
 %
-Then, the conditional expectation of $X$ can be obtained by
+The expected value (mean) of $X$ is given by, 
 %
 \begin{equation}
     x_{\operatorname{mean}}(t)
     := \mathbb{E}\left[ X \mid Y = y \right]
     = y \exp \left( -m(t) + \tfrac{1}{2} v(t) \right)
-    \text{,}
+    \text{.}
 \end{equation}
 %
-where $\tfrac{1}{2}v(t)$ is the standard bias-correction term for lognormal distributions.
+where $\tfrac{1}{2}v(t)$ is a transformation correction for the lognormal distribution.
 
-Confidence intervals for $X$ are given by
+The confidence intervals for the corrected timeseries are multiplicative,
 %
 \begin{equation}
     \mathrm{CI}
