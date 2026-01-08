@@ -398,8 +398,7 @@ To simplify notation, let $\lambda_k(t)$ be the linear interpolation weight,
     \text{.}
 \end{equation}
 %
-The conditional distribution of the bridge at time
-$t$ is
+The conditional distribution of the bridge at time $t$ is
 %
 \begin{equation}
     p(e_t \mid E_{t_{k-1}} = e_{k-1},\, E_{t_k} = e_k)
@@ -418,22 +417,24 @@ $t$ is
 with conditional mean and variance given by
 %
 \begin{align}
-    m^c(t) &:=
+    m_k^c(t) &:=
         \mathbb{E}\left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
         =
-        \delta_{k-1} \left( 1 - \lambda(t) \right) e_{k-1} + \lambda(t) e_k
+        \delta_{k-1} \left( 1 - \lambda_k(t) \right) e_{k-1} + \lambda_k(t) e_k
         \qquad \text{and}
         \label{eq:bridge_mean} \\
-    v^c(t) &:=
+    v_k^c(t) &:=
     \operatorname{Var} \left[ E_t \mid E_{t_{k-1}} = e_{k-1} ,\, E_{t_k} = e_k \right]
-        = \sigma^2 \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
+        = \sigma^2
+        \underbrace{
+            \frac{(t - t_{k-1})(t_{k} - t)}{t_{k} - t_{k-1}} 
+        }_{\text{bridge factor}}
         % = \sigma^2 (1 - \lambda_k(t)) (t - t_{k-1})
         \label{eq:bridge_variance}
     \text{.}
 \end{align}
 %
-Let $\lambda^+_k(t)$ be the linear interpolation weight,
-extended by
+Extending $\lambda_k(t)$ as
 %
 \begin{equation}
     \lambda^+_k(t) :=
@@ -445,9 +446,8 @@ extended by
     \text{,}
 \end{equation}
 %
-such that $\lambda^+_k(t) = 1$ or $0$ when extrapolating
-below or above the standard range, respectively.
-Also let $\phi^+_k(t)$ define the bridge factor, extended by
+so $\lambda^+_k(t) = 1$ or $0$ for open intervals,
+and letting $\phi^+_k(t)$ be the bridge factor, extended by
 %
 \begin{equation}
     \phi^+_k(t) :=
@@ -460,8 +460,8 @@ Also let $\phi^+_k(t)$ define the bridge factor, extended by
     \text{.}
 \end{equation}
 %
-By substituting these definitions into the equations for the mean and covariance,
-the open and closed forms become equivalent,
+Then conditional mean and variance can be written without superscripts 
+($m^o$, $m^c$, etc.), as
 %
 \begin{align}
     m_k(t) &= \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1} + \lambda^+_k(t) e_k
@@ -469,19 +469,18 @@ the open and closed forms become equivalent,
     \qquad \text{and} \qquad \\
     v_k(t) &= \sigma^2 \phi^+_k(t)
     \label{eq:unified_wiener_variance}
-    \text{,}
+    \text{.}
 \end{align}
 %
-thereby eliminating the need for the open--closed notation ($m^o$, $m^c$, etc.).
 
 \section{Check-Measurement Uncertainty}
 
-Check measurements contribute additional uncertainty to the error process.
-We review the general approach for propagating check measurement uncertainty,
-then derive the check uncertainty for fouling and calibration drift.
+Noise in the check measurements contributes additional uncertainty to the error process.
+After reviewing the general approach for propagating check-measurement uncertainty,
+we derive the formula for fouling and calibration-drift checks.
 
 For a bridge with uncertain endpoints,
-define the endpoint expectations and variances as
+the endpoint expectations and variances are defined as
 %
 \begin{equation}
     m_{k}(t_{k-1}) := \mathbb{E}\left[ E_{k-1}\right]
@@ -493,16 +492,16 @@ define the endpoint expectations and variances as
     v_k(t_k) := \operatorname{Var}\left[ E_{k}\right]
 \end{equation}
 %
-Given the Brownian--bridge representation,
+Given the Brownian-bridge
 %
 \begin{equation}
-    E_t = (1 - \lambda^+_k(t)) E_{k-1} + \lambda^+_k(t) E_k + W_t
+    E_t = (1 - \lambda^+_k(t)) E_{k-1} + \lambda^+_k(t) E_k + \sigma W_t
     \text{,} \qquad
-    W_t \sim \mathcal{N}\left(0, \sigma^2 \phi^+_k(t)\right)
+    W_t \sim \mathcal{N}\left(0, \phi^+_k(t)\right)
     \text{.}
 \end{equation}
 %
-by linearity of expectation,
+and using linearity of the expectation,
 %
 \begin{align}
     \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \, \mathbb{E}[E_{k-1}]
@@ -512,9 +511,10 @@ by linearity of expectation,
     \text{,}
 \end{align}
 %
-and, because $W_t$ is independent of the endpoint errors $E_{k-1}$ and $E_k$,
-the variance decomposes into separate terms.
-Applying the variance formula for a linear combination gives
+shows the expectation is unaffected by the endpoint uncertainty.
+%
+Because $W_t$ is independent of the check errors $E_{k-1}$ and $E_k$,
+the combined variance is given by the variance of a linear combination,
 %
 \begin{align}
     \operatorname{Var}[E_t]
@@ -545,9 +545,9 @@ where $\tilde{v}_k(t)$ represents the contribution from check-measurement uncert
     \text{.}
 \end{equation}
 %
-If the endpoint errors have the same variance,
+If the endpoint errors have equal variance,
 $v_{k}(t_{k-1}) = v_{k}(t_k)$,
-then the conditional variance at time $t$ is
+the conditional variance simplifies to
 %
 \begin{equation}
     \tilde{v}_k(t) = \left(
@@ -557,23 +557,23 @@ then the conditional variance at time $t$ is
     \text{,}
 \end{equation}
 %
-For an open interval, this simplifies to
-$ \tilde{v}^o_k(t) = v_{k}(t_k)$.
+which is constant for open intervals,
+$ \tilde{v}^o_k(t) = v_{k}(t_k) = v_{k}(t_{k-1})$.
 
-The following sections derive expressions for the
-fouling and calibration drift check uncertainties,
+The next sections derive variance formula for the
+fouling and calibration-drift checks,
 $v_{d}(t_d)$ and $v_{f}(t_f)$,
 to use in Equation~\ref{eq:check_constant_variance}.
 Later, we introduce multipoint calibrations,
-for which the endpoint variances may differ;
-in that case, we use Equation~\ref{eq:check_variance} for the check-measurement variance.
+where the check variances often differ;
+so we will use Equation~\ref{eq:check_variance} for that case.
 
 \subsection{Fouling-Check Uncertainty}
 % TODO: Introduce v_f(t_f) into this section and the next.
 
-For the fouling check, the measurement $m$ and reference $r$
-devices have known precisions $\sigma_m$ and $\sigma_r$, 
-with normally distributed, independent errors,
+For a fouling check, the measurement $m$ and reference $r$
+devices have known precisions $\sigma_m$ and $\sigma_r$
+and normally distributed, independent errors,
 \begin{equation}
     E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_m \right)
     \text{,} \qquad
@@ -593,8 +593,8 @@ and let $X^m$ and $X^r$ be their respective true values,
     \text{.}
 \end{equation}
 %
-The superscripts are necessary because the values of $X$
-depend on the calibration of either device.
+The superscripts are necessary because $X$
+depends on the calibration of either device.
 Substituting back into the fouling error (Equation~\ref{eq:fouling_error})
 gives
 %
@@ -606,7 +606,7 @@ gives
     \text{.}
 \end{align}
 %
-By independence ($E^{m} \perp E^{r}$), the variance is
+By independence ($E^{m} \perp E^{r}$), the variance of the fouling check is
 \begin{align}
     \operatorname{Var}[E_f]
         &= \operatorname{Var}[E^m_b - E^m_a]
@@ -614,33 +614,34 @@ By independence ($E^{m} \perp E^{r}$), the variance is
     \text{.}
 \end{align}
 %
-If the measuring device uses internal filtering
+If the measurement device uses internal filtering
 (e.g., time averaging),
-such that the errors are perfectly correlated during the check,
-then the before-and-after errors cancel and the measurement variance is zero,
+we assume its errors are perfectly correlated during the check,
+such that the before-and-after errors cancel and the check variance is zero,
 %
 \begin{equation}
-    \operatorname{Corr} \left( E^{m}_{a},\, E^{m}_{b} \right) = 1
+    \operatorname{Corr} \left[ E^{m}_{a},\, E^{m}_{b} \right] = 1
     \quad \Rightarrow \quad
-    \operatorname{Var}[E^m_b - E^m_a] = 0
-    \text{,}
+    \operatorname{Var}[E_f] =
+    \operatorname{Var} \left[E^m_b - E^m_a\right] = 0
+    \text{.}
 \end{equation}
 %
-Similarly, if the reference device also uses filtering;
-otherwise, if its errors are independent,
-then the measurement variance is given by
+Similarly, for the reference device, if it also uses filtering;
+otherwise, we assume its errors are independent,
+and the check variance is given by
 %
 \begin{equation}
-    \operatorname{Corr}(E_{z_a},\, E_{z_b}) = 0
+    \operatorname{Corr}\left[E_{z_a},\, E_{z_b}\right] = 0
     \quad \Rightarrow \quad
-    \operatorname{Var}[E_f]
-    = \operatorname{Var}[E^r_b] + \operatorname{Var}[E^r_a]
+    \operatorname{Var} \left[E_f\right]
+    = \operatorname{Var} \left[E^r_b\right] + \operatorname{Var}\left[E^r_a\right]
     = \sigma^2_r + \sigma^2_r = 2 \sigma^2_r
     \text{.}
 \end{equation}
 %
 Therefore, the fouling-check variance is either zero or $2 \sigma^2_r$,
-depending on the correlation structure of the reference device.
+depending on the error correlation of the reference device.
 
 \subsection{Calibration-Check Uncertainty}
 
@@ -658,11 +659,11 @@ and independent errors,
 \end{equation}
 %
 Let $Y_s$ and $Z_s$ be the measurement and the standard,
-and let $X_s$ be the true value of the standard,
+and let $X_s$ be the true value of the standard, such that
 %
 \begin{equation}
     Y_s = X_s + E^{m}
-    \text{,} \qquad
+    \text{,} \qquad \text{and} \qquad
     Z_s = X_s + E^{s}
     \text{.}
 \end{equation}
@@ -685,19 +686,22 @@ and by independence ($E^{m} \perp E^{s}$), the variance of the drift check is
 \end{equation}
 %
 
-\section{Multipoint Calibration}
+\section{Multipoint Calibration Check}
 
-In a multipoint calibration, a device is checked against multiple standards
+In a multipoint calibration check, a device is checked against multiple standards
 that should span the expected range of the measurand.
-This process is essential when the measurement response is nonlinear
-and the magnitude of drift varies across the range.
+Multipoint calibrations are essential when the device response is nonlinear
+and the magnitude of drift varies across the measurement range.
 For example, a pH meter might be calibrated using standards at pH 4, 7, and 10.
-For any specific value, the drift correction is determined by linearly
-interpolating between the corrections of the two adjacent standards
+The drift correction is determined by linearly
+interpolating errors between each check value
 \citep{Wagner_2006}.
 
-Let $z_s$ denote the standard values for $s = 1, 2, \ldots, S$.
-For a given check time $t_k$,
+Let $z_s$ denote the standard values for $s = 1, 2, \ldots, S$,
+let $E_{k,s} := E(t_k,\, z_s)$ be the error at time $t_k$ and standard $z_s$,
+and let $e_{k,s}$ be its realization.
+
+the calibrfation error at time $t_k$ is 
 the error is determined at each standard value,
 %
 \begin{equation}
@@ -823,9 +827,10 @@ into the equation for a time bridge with uncertain endpoints
     }_{\tilde{v}_k(t,y)}
     + 
     \underbrace{\sigma^2 \phi^+_k(t)}_{v_k(t)}
+    \text{.}
 \end{align}
 %
-where $\tilde{v}_k(t,y)$ represents the contribution from check-measurement uncertainty,
+Expanding $\tilde{v}_k(t,y)$ gives
 %
 \begin{equation}
     \tilde{v}_k(t,y) :=
@@ -840,9 +845,32 @@ where $\tilde{v}_k(t,y)$ represents the contribution from check-measurement unce
         \end{bmatrix}
         + \left((1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2\right)\eta^2 \phi^+_s(y)
     \label{eq:multi_check_variance}
-    \text{.}
+    \text{,}
 \end{equation}
 %
+which satisfies the four boundary conditions
+%
+\begin{align}
+    \tilde{v}_k(t, y_{s-1})   &=    (1 - \lambda^+_k(t))^2 v_k(t_{k-1,s-1})
+                                    + \lambda^+_k(t)^2 v_k(t_{k,s-1})
+                                    + \sigma^2 \phi^+_k(t)
+                                    \text{,} \notag \\
+    \tilde{v}_k(t, y_{s})     &=    (1 - \lambda^+_k(t))^2 v_k(t_{k-1,s})
+                                    + \lambda^+_k(t)^2 v_k(t_{k,s})
+                                    + \sigma^2 \phi^+_k(t)
+                                    \text{,} \notag \\
+    \tilde{v}_k(t_{k-1}, y)   &=    (1 - \lambda^+_s(y))^2 v_k(t_{k-1,s-1})
+                                    + \lambda^+_s(y)^2 v_k(t_{k-1,s})
+                                    + \eta^2 \phi^+_s(y)
+                                    \text{,} \notag \\
+    \tilde{v}_k(t_{k}, y)     &=    (1 - \lambda^+_s(y))^2 v_k(t_{k,s-1}) 
+                                    + \lambda^+_s(y)^2 v_k(t_{k,s})
+                                    + \eta^2 \phi^+_s(y)
+    \text{,}
+\end{align}
+%
+each being a one-dimensional Gaussian bridge.
+
 % Note that the standards need not be consistent between checks.
 
 \section{Combined Error}
