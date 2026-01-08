@@ -724,17 +724,17 @@ Unlike the time-bridge, the $y$-bridge has no drift or reset terms ($\delta$, $\
 The conditional variance of the $y$-bridge at time $t_k$ is
 %
 \begin{align}
-    v_{k}(y) &:= \operatorname{Var} \left[
+    v_{k}(y)    &:= \operatorname{Var} \left[
                             E_{k,y}
                             \mid
                             E_{k,s-1} = e_{k,s-1},\,
                             E_{k,s} = e_{k,s}
                             \right] \notag \\
-               &= (1 - \lambda^+_s(y))^2 \, \operatorname{Var}[E_{k,s-1}]
-                 + \lambda^+_s(y)^2 \, \operatorname{Var}[E_{k,s}]
-                + \eta^2 \phi^+_{s}(y)
+                &= (1 - \lambda^+_s(y))^2 \, \operatorname{Var}[E_{k,s-1}]
+                    + \lambda^+_s(y)^2 \, \operatorname{Var}[E_{k,s}]
+                    + \eta^2 \phi^+_{s}(y)
     \label{eq:y_bridge_variance}
-    \text(\ref{eq:variance_uncertain_bridge} as a function of $y$,)
+    \text{\ref{eq:variance_uncertain_bridge} as a function of $y$,}
 \end{align}
 %
 where $\eta$ is the diffusion coefficient in the $y$ dimension,
@@ -859,19 +859,15 @@ each being a one-dimensional Gaussian bridge.
 
 \section{Combined Error}
 
-For each error component, $k\in\{f,d\}$,
-we decompose the conditional variance into a process term
-(bridge uncertainty) and a check-measurement term:
+Recall that the fouling and calibration-drift variance has two components:
 %
 \begin{equation}
-\operatorname{Var}\!\left[E_k\right] = v_k(t) + \tilde v_k(t),
+    \dot{v}_k := \operatorname{Var}\!\left[E_k\right] = v_k(t) + \tilde v_k(t)
+    \text{,}
 \end{equation}
 %
-where the process-only variance is
-$
-v_k(t) := \sigma_k^2\,\phi_k^+(t),
-$
-and $\tilde v_k(t)$ is the variance from the check measurements propagated to time $t$
+where $v_k(t)$ is the error-process evolution 
+and $\tilde v_k(t)$ is the additional variance from check-measurement uncertainty
 (Equations~\ref{eq:check_variance} or \ref{eq:multi_check_variance}).
 
 For absolute errors,
@@ -887,19 +883,16 @@ m(t) &=
 v(t) &=
     v_{f}(t)
     +
-    \tilde{v}_{f}(t)
+    \dot{v}_{f}(t,\,y)
     +
-    v_{d}(t)
-    +
-    \tilde{v}_{d}(t, y)
-    +
-    v_{p}
+    v_{m}
     \label{eq:total_variance}
     \text{,}
 \end{align}
 %
-where $f$, $d$, and $p$ denote the fouling, drift, and precision components, respectively;
-the means are given by Equations~
+where $f$, $d$, and $p$ denote the fouling, drift, and precision components, respectively.
+By definition, the mean of the measurement noise is zero ($m_m = 0$),
+and the other means are given by Equations~
 \ref{eq:unified_wiener_mean}
 and
 \ref{eq:multi_check_mean};
@@ -917,13 +910,14 @@ the combined mean and variance are
     m(t) &= (1+m_f)(1+m_d) - 1
     \qquad \text{and} \\
     v(t) &=
-        \left(v_f + (1+m_f)^2\right)
-        \left(v_d + (1+m_d)^2\right)
-        \left(v_p + 1\right)
+        \left(\dot{v}_f + (1+m_f)^2\right)
+        \left(\dot{v}_d + (1+m_d)^2\right)
+        \left(\dot{v}_p + 1\right)
         - \left((1+m_f)(1+m_d)\right)^2
-    \qquad \text{(Appendix~\ref{sec:combined_fractional_proof}).}
+    \qquad \text{(Appendix~\ref{sec:combined_fractional_proof}),}
 \end{align}
 %
+with inputs $(t,y)$ omitted for clarity.
 
 % TODO DESCRIBE FIGURE HERE
 
@@ -936,30 +930,33 @@ the combined mean and variance are
 
 \section{Corrected Measurement and Confidence Interval}
 
-At a fixed time $t$, recall the observation model $Y = X + E$.
-Let $m(t)$ and $v(t)$ denote the mean and variance of $E$ at time $t$.
-Treating $X$ as fixed and $E$ as independent measurement error,
-the bias-corrected estimate of $X$ is
+Recall that $m(t)$ and $v(t)$ give the mean and variance of the error $E$ at time $t$.
+On the absolute scale, the measurement model is $Y = X + E$.
+Therefore, the bias-corrected estimate of the measurand $X$ is given by
 %
 \begin{equation}
-    x(t) := y - m(t),
+    x(t) = y(t) - m(t),
 \end{equation}
 %
-with an approximate $(1-\alpha)$ confidence interval
+where $y(t)$ is the uncorrected measurement at time $t$.
+The errors are conditionally Gaussian,
+so the approximate confidence interval is
 %
 \begin{equation}
     \mathrm{CI} = x(t) \pm q_{1-\alpha/2}\sqrt{v(t)}.
 \end{equation}
 %
+where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile
+of the standard normal distribution.
 
 For fractional errors $\mathcal{E}$,
 we use the observation model $Y = X(1+\mathcal{E})$.
 Assuming $\mathcal{E}$ is independent of $Y$
 with mean $m(t)$ and variance $v(t)$,
-a bias-corrected estimate of $X$ is
+a bias-corrected estimate of $X$ is given by
 %
 \begin{equation}
-x(t) := y\bigl(1-m(t)\bigr)
+x(t) = y\bigl(1-m(t)\bigr)
 \text{,}
 \end{equation}
 %
@@ -971,28 +968,33 @@ with approximate confidence interval
 \end{equation}
 %
 
-When measurement errors exceed 100\% and the measurand is strictly positive,
-we also provide the log-multiplicative error model
-in Appendix~\ref{sec:log_multiplicative_error}.
+If measurement errors exceed 100\%,
+this equation has a negative lower bound.
+If the measurand is strictly positive,
+consider using a log-multiplicative error model instead
+(Appendix~\ref{sec:log_multiplicative_error}).
 
 \section{Parameter Estimation}
 
-Let $r_k$ be the one-step-ahead residual and $u_k$ its conditional variance
-%
-\begin{align}
-    r_k &= e_k - m^o_k(t_k) \\
-    u_k &= v^o_k(t_k) + v_k + v_r
-    \text{,}
-\end{align}
-%
-where $v_k$ denotes the observation error variance at time $t_k$,
-and $v_r$ denotes the observation error variance at the most recent reset event
-(cleaning or recalibration).
-The drift rate $\mu_k$ and diffusion coefficient $\sigma_k$
-can be estimated by maximizing the log-likelihood function
+Let $r_k$ be the ``one-step-transition'' residual 
 %
 \begin{equation}
-    \ell(\mu_k, \sigma_k^2)
+    r_k = e_k - m^o_k(t_k)
+\end{equation}
+and let $u_k$ be its conditional variance   
+\begin{equation}
+    u_k = v^o_k(t_k) + v_{k-1} + v_{k}
+    \text{,}
+\end{equation}
+%
+where $v_{k-1}$ and $v_{k}$ are the variances of the previous and current checks.
+
+The drift rate $\mu_k$ and diffusion coefficient $\sigma_k$
+are estimated by maximizing the Gaussian log-likelihood function
+(omitting the additive constants),
+%
+\begin{equation}
+    \ln \mathcal{L} (\mu_k, \sigma_k^2)
     =
     - \frac{1}{2} \sum_{k=1}^{K_i}
     \left[
@@ -1006,8 +1008,7 @@ can be estimated by maximizing the log-likelihood function
 
 For the special case of no observational uncertainty,
 $v_k = v_r \equiv 0$,
-the drift and diffusion parameters have closed-form maximum-likelihood estimators.
-Specifically,
+the drift and diffusion parameters have closed-form maximum-likelihood estimators,
 %
 \begin{equation}
     \hat{\mu}_k = \frac{\sum_{k=1}^{K} e_k - \delta_{k-1} e_{k-1}}
@@ -1021,7 +1022,7 @@ and
     \text{;}
 \end{equation}
 %
-however, this is ill-conditioned if measurement uncertainty is significant,
+however, these become ill-conditioned when measurement uncertainty is significant,
 because the denominator may approach zero while the residual term in the numerator does not.
 % When a closed-form expression is preferred,
 % the observational uncertainty can be included using the following
@@ -1040,20 +1041,20 @@ because the denominator may approach zero while the residual term in the numerat
 % \end{equation}
 
 For the multipoint calibration,
-define residual and variance terms
+the residual and its variance are given by
 %
 \begin{align}
-    r_{d,s} &:= e_{d,s} - e_{d,s-1} \\
-    u_{d,s} &:= \eta^2 (z_{d,s} - z_{d,s-1})
+    r_{d,s} &= e_{d,s} - e_{d,s-1} \\
+    u_{d,s} &= \eta^2 (z_{d,s} - z_{d,s-1})
                 + v_{d,s} + v_{d,s-1}
     \text{,}
 \end{align}
 %
-and estimate the diffusion rate parameter $\eta$
-by maximizing the log-likelihood,
+and the diffusion-rate parameter $\eta$
+is estimated by maximizing the log-likelihood (omitting constants),
 %
 \begin{equation}
-    \ell(\eta^2)
+    \ln \mathcal{L} (\eta^2)
     =
     %-\frac{K_i}{2} \ln(2 \pi)
     - \frac{1}{2} \sum_{d=1}^{D} \sum_{s=2}^{S_d}
@@ -1065,13 +1066,15 @@ by maximizing the log-likelihood,
     \text{,}
 \end{equation}
 %
-where $S_d$ is the number of standards in the $d$-th calibration check.
+where $S_d$ is the number of standards in the $d$-th calibration check,
+because each check may use different standards.
+
 This is necessary because in practice,
 only some of the standards may be checked at a time.
 
 Assuming no observational uncertainty,
 $v_s = v_{s-1} \equiv 0$,
-the closed-form of the estimator is
+the maximum-likelihood estimator for $\eta$ is
 %
 \begin{equation}
     \hat{\eta}^2 =
@@ -1083,106 +1086,90 @@ the closed-form of the estimator is
 \end{equation}
 %
 where $N = \sum_{d=1}^{D} (S_d - 1)$.
-This estimator is better conditioned because
-the calibration standards are separated in the $y$-dimension,
-ensuring that the denominator never approaches zero.
+This is better conditioned than $\hat{\sigma}$,
+because calibration standards are typically separated in the $y$-dimension,
+so the denominator never approaches zero.
 
-In practice, maximum-likelihood estimators are sensitive to model misspecification,
-so if they give poor results, consider some robust alternative
+Maximum-likelihood estimators are sensitive to model misspecification,
+so in practice it may be necessary to use a robust alternative 
 (Appendix~\ref{sec:robust_estimation}).
 
 
 \section{Monitoring Networks}
 
-After deploying a measurement device, several check measurements may be needed
-before drift and diffusion parameters can be estimated reliably.
-During this initial period, parameter estimates can be stabilized by
-pooling information across similar devices in a monitoring network.
-We use an empirical-Bayes approach with conjugate priors that yields closed-form weights
-for shrinking device-specific parameter estimates toward population values.
-As additional check measurements are collected, population (hyper-)parameters can be updated periodically,
-and device-specific parameters and weights can be recomputed after each new check measurement.
-Although conjugate priors can be inaccurate \citep{Gelman_2006},
-the computational efficiency of this approach simplifies real-time prediction in monitoring
-networks comprising thousands of measurement devices.
+After deploying a measurement device,
+several checks may be required before the drift and diffusion
+parameters can be estimated reliably.
+During this initial period, the estimates can be stabilized
+by pooling information across similar devices in a monitoring network.
+We propose using an empirical-Bayes approach with conjugate priors to obtain a closed-form shrinkage weight
+that shrinks the individual estimate toward the network (population) mean.
 
-Devices in the monitoring network are indexed by $j \in \{1,\ldots,J\}$.
-The index $k$ (and $K$) is reserved for check-time indexing, and $N_j$ denotes the number
-of residual observations available for device $j$,
-since a multipoint check yields multiple residuals.
+Let $s_j$ be the diffusion estimate for device $j \in \{1,\ldots,J\}$,
+and let $K_j$ be the number of checks for that particular device.
 
-Let $r_{j,1},\ldots,r_{j,N_j}$ denote (approximately) independent, mean-zero residuals for device $j$,
-and let
+We assume an inverse-gamma prior on the diffusion rate,
 %
 \begin{equation}
-    s_j^2 := \frac{1}{N_j}\sum_{n=1}^{N_j} r_{j,n}^2
+    \sigma_j^2 \sim \operatorname{IG}(\kappa, \theta)
     \text{,}
 \end{equation}
 %
-denote the per-site mean square.
-Assume
+where $\kappa>0$ and $\theta>0$ are hyperparameters to be estimated from the data.
+The prior density is
 %
 \begin{equation}
-    r_{j,n} \mid \sigma_j^2 \sim \mathcal{N}(0,\,\sigma_j^2)
-    \text{,}
-    \qquad
-    \sigma_j^2 \sim \operatorname{IG}(a,b)
-    \text{,}
-\end{equation}
-%
-where $\operatorname{IG}(a,b)$ is an inverse-gamma prior on the variance,
-with density
-%
-\begin{equation}
-    p(\sigma^2 \mid a,b)
+    p(\sigma^2 \mid \kappa,\theta)
     =
-    \frac{b^a}{\Gamma(a)} (\sigma^2)^{-(a+1)}\exp\left(-\frac{b}{\sigma^2}\right)
+    \frac{\theta^\kappa}{\Gamma(\kappa)} (\sigma^2)^{-(\kappa+1)}\exp\left(-\frac{\theta}{\sigma^2}\right)
     \text{,}
 \end{equation}
 %
-and prior mean $\mathbb{E}[\sigma^2]=b/(a-1)$ for $a>1$.
+and prior mean $\mathbb{E}[\sigma^2]=\theta/(\kappa-1)$ for $\kappa>1$.
 
-Integrating out $\sigma_j^2$ yields a closed-form marginal likelihood for $(a,b)$.
-Up to constants that do not depend on $(a,b)$, the log-marginal likelihood is
+Integrating out $\sigma_j^2$ gives the marginal likelihood for $(\kappa,\theta)$,
+which, up to an additive constant, is
 %
 \begin{equation}
-    \ln L(r \mid a,b)
+    \ln \mathcal{L} (s \mid \kappa,\theta)
     =
     \sum_{j=1}^{J}
     \left(
-        a\ln(b)
-        + \ln \Gamma\left(a + \frac{N_j}{2}\right)
-        - \ln \Gamma(a)
-        - \left(a + \frac{N_j}{2}\right)\ln\left(b + \frac{N_j s_j^2}{2}\right)
+        \kappa\ln(\theta)
+        + \ln \Gamma\left(\kappa + \frac{K_j}{2}\right)
+        - \ln \Gamma(\kappa)
+        - \left(\kappa + \frac{K_j}{2}\right)\ln\left(\theta + \frac{K_j s_j^2}{2}\right)
     \right)
     \text{.}
     \label{eq:hierarchical_likelihood}
 \end{equation}
 %
-Empirical-Bayes estimates $\hat{a}$ and $\hat{b}$ can be obtained by maximizing
+Empirical-Bayes estimates $\hat{\kappa}$ and $\hat{\theta}$ can be obtained by maximizing
 Equation~\ref{eq:hierarchical_likelihood}.
 
-Given hyperparameters $(a,b)$, the posterior for $\sigma_j^2$ is
-$\operatorname{IG}\bigl(a + N_j/2,\; b + N_j s_j^2/2\bigr)$,
-so the posterior mean (for $a+N_j/2>1$) is
+Given hyperparameters $(\kappa,\theta)$, the posterior for $\sigma_j^2$ is
+$\operatorname{IG}\bigl(\kappa + K_j/2,\; \theta + K_j s_j^2/2\bigr)$,
+so the posterior mean (for $\kappa+K_j/2>1$) is
 %
 \begin{equation}
-    \mathbb{E}[\sigma_j^2 \mid r_{j,1:N_j},a,b]
+    \mathbb{E}[\sigma_j^2 \mid s_j^2,\kappa,\theta]
     =
-    \frac{b + \tfrac{N_j}{2}s_j^2}{a + \tfrac{N_j}{2} - 1}
+    \frac{\theta + \tfrac{K_j}{2}s_j^2}{\kappa + \tfrac{K_j}{2} - 1}
     =
     w_j\,s_j^2 + (1-w_j)\,\bar{\sigma}^2
     \text{,}
 \end{equation}
 %
-where $\bar{\sigma}^2 := b/(a-1)$ and
+where
 %
 \begin{equation}
-    w_j := \frac{N_j}{N_j + 2(a-1)}
+    \bar{\sigma}^2 := \frac{\theta}{\kappa-1}
+    \text{,} \qquad
+    w_j := \frac{K_j}{K_j + 2(\kappa-1)}
     \text{.}
 \end{equation}
 %
-Substituting $(\hat{a},\hat{b})$ gives the empirical-Bayes shrinkage estimate
+Substituting $(\hat{\kappa},\hat{\theta})$ gives the empirical-Bayes shrinkage estimate
 %
 \begin{equation}
     \hat{\sigma}_j^2
@@ -1190,11 +1177,69 @@ Substituting $(\hat{a},\hat{b})$ gives the empirical-Bayes shrinkage estimate
     \hat{w}_j\,s_j^2 + (1-\hat{w}_j)\,\bar{\hat{\sigma}}^2
     \text{,}
     \qquad
-    \hat{w}_j := \frac{N_j}{N_j + 2(\hat{a}-1)}
+    \hat{w}_j := \frac{K_j}{K_j + 2(\hat{\kappa}-1)}
+    \text{.}
+\end{equation}
+%
+
+For the drift rate, we assume a Gaussian prior,
+%
+\begin{equation}
+    \mu_j \sim \mathcal{N}(\nu, \tau^2)
     \text{,}
 \end{equation}
 %
-The estimator can be recomputed after each new check measurement.
+where $\nu$ and $\tau^2$ are the population hyperparameters,
+which have closed-form maximum-likelihood estimators
+%
+\begin{align}
+    \hat{\nu} &= \frac{\sum_{j=1}^{J} K_j \hat{\mu}_j}{\sum_{j=1}^{J} K_j} \\
+    \hat{\tau}^2 &= \frac{\sum_{j=1}^{J} K_j (\hat{\mu}_j - \hat{\nu})^2}{\sum_{j=1}^{J} K_j}
+    \text{,}
+\end{align}
+
+Given hyperparameters $(\nu,\tau^2)$ and assuming the sampling variance of $\hat{\mu}_j$ is $\sigma_j^2/K_j$,
+the posterior mean of $\mu_j$ is
+%
+\begin{equation}
+    \mathbb{E}[\mu_j \mid \hat{\mu}_j,\nu,\tau^2]
+    =
+    \frac{\tau^{-2}\nu + K_j\sigma_j^{-2}\hat{\mu}_j}{\tau^{-2} + K_j\sigma_j^{-2}}
+    =
+    u_j\,\hat{\mu}_j + (1-u_j)\,\nu
+    \text{,}
+\end{equation}
+%
+where the shrinkage weight is
+%
+\begin{equation}
+    u_j := \frac{K_j\sigma_j^{-2}}{\tau^{-2} + K_j\sigma_j^{-2}}
+    =
+    \frac{K_j\tau^2}{K_j\tau^2 + \sigma_j^2}
+    \text{.}
+\end{equation}
+%
+Substituting $(\hat{\nu},\hat{\tau}^2,\hat{\sigma}_j^2)$ gives the empirical-Bayes shrinkage estimate
+%
+\begin{equation}
+    \tilde{\mu}_j
+    =
+    \hat{u}_j\,\hat{\mu}_j + (1-\hat{u}_j)\,\hat{\nu}
+    \text{,}
+    \qquad
+    \hat{u}_j := \frac{K_j\hat{\tau}^2}{K_j\hat{\tau}^2 + \hat{\sigma}_j^2}
+    \text{.}
+\end{equation}
+
+In practice, per-device estimates for
+$(\hat{\sigma}_j^2$, $\hat{w}_j$, $\tilde{\mu}_j$, and $\hat{u}_j)$
+can be recomputed after each check,
+whereas the population hyperparameters $(\hat{\kappa},\hat{\theta},\hat{\nu},\hat{\tau}^2)$
+may be updated less frequently.
+The main limitation of our Empirical-Bayes approach is that
+the inverse-gamma prior is known to be suboptimal \citep{Gelman_2006}.
+Nevertheless, its closed-form shrinkage estimator is advantageous for large, real-time monitoring networks.
+Otherwise, each new check measurement incurs a significant computational cost.
 
 \section{Data Requirements}
 
@@ -1422,13 +1467,11 @@ distribution.
 \label{sec:robust_estimation}
 
 The maximum likelihood estimators for $\mu$ and $\sigma^2$ are sensitive to model misspecification,
-particularly when check intervals are short
-or when measurement precision is mischaracterized.
-In such cases, a robust estimator may be preferred.
-Here, one could use the median absolute deviation (MAD)
-instead of the sample variance.
-
-For the drift rate, the robust estimator is the median of the increments,
+particularly for short check intervals
+or innacurate measurement precisions.
+If either becomes problematic,
+better results may be obtained from robust estimators.
+For the drift rate, a robust estimator is the median of the increments,
 %
 \begin{equation}
     \tilde{\mu}_k = \operatorname{median}\left\{
