@@ -468,7 +468,7 @@ and letting $\zeta^+_k(t)$ be a drift factor, extended by
 so the drift term is negated during closed intervals.
 %
 Then conditional mean and variance can be written without superscripts
-($m^o$, $m^c$, etc.), as
+($m^o$, $m^c$, etc.) as
 %
 \begin{align}
     m_k(t)  &=  \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1}
@@ -509,7 +509,7 @@ Given the Brownian-bridge
     \text{.}
 \end{equation}
 %
-and using linearity of the expectation,
+Applying linearity of the expectation,
 %
 \begin{align}
     \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \, \mathbb{E}[E_{k-1}]
@@ -519,10 +519,11 @@ and using linearity of the expectation,
     \text{,}
 \end{align}
 %
-shows that the endpoint uncertainy affects the variance but not the expectation.
+shows that the conditional mean remains a linear interpolation between the endpoint means,
+regardless of the endpoint variances.
 %
-Because $W_t$ is independent of the check errors $E_{k-1}$ and $E_k$,
-the combined variance is given by
+Since $W_t$ is independent of $E_{k-1}$ and $E_k$,
+the combined variance is obtained by applying the variance formula for a linear combination,
 %
 \begin{align}
     \operatorname{Var}[E_t]
@@ -885,26 +886,25 @@ Recall that the fouling and calibration-drift variance has two components:
     \text{,}
 \end{equation}
 %
-where $v_k(t)$ is the error-process evolution 
+where $v_k(t)$ is the variance from the error-process evolution 
 and $\tilde v_k(t)$ is the additional variance from check-measurement uncertainty
 (Equations~\ref{eq:check_variance} or \ref{eq:multi_check_variance}).
 
-For absolute errors,
-the combined conditional mean and variance are
+The combined conditional mean and variance are given by the sum of the individual components,
 %
 \begin{align}
-m(t) &=
-    m_{f}(t)
+m(t ,\, y) &=
+    m_{f}(t ,\, y)
     +
-    m_{d}(t, y)
+    m_{d}(t ,\, y)
     \label{eq:total_mean}
     \qquad \text{and} \\
-v(t) &=
-    v_{f}(t)
+v(t ,\, y) &=
+    \dot{v}_{f}(t ,\, y)
     +
-    \dot{v}_{f}(t,\,y)
+    \dot{v}_{d}(t ,\, y)
     +
-    v_{m}
+    v_{m}(y)
     \label{eq:total_variance}
     \text{,}
 \end{align}
@@ -921,21 +921,6 @@ and the variances by Equations
 \ref{eq:check_variance},
 and
 \ref{eq:multi_check_variance}.
-
-For fractional errors,
-the combined mean and variance are
-%
-\begin{align}
-    m(t) &= (1+m_f)(1+m_d) - 1
-    \qquad \text{and} \\
-    v(t) &=
-        \left(\dot{v}_f + (1+m_f)^2\right)
-        \left(\dot{v}_d + (1+m_d)^2\right)
-        \left(\dot{v}_m + 1\right)
-        - \left((1+m_f)(1+m_d)\right)^2
-\end{align}
-%
-with inputs $(t,y)$ omitted for clarity.
 
 % TODO DESCRIBE FIGURE HERE
 
