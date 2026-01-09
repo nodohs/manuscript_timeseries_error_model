@@ -1090,11 +1090,6 @@ This is better conditioned than $\hat{\sigma}$,
 because calibration standards are typically separated in the $y$-dimension,
 so the denominator never approaches zero.
 
-Maximum-likelihood estimators are sensitive to model misspecification,
-so in practice it may be necessary to use a robust alternative 
-(Appendix~\ref{sec:robust_estimation}).
-
-
 \section{Monitoring Networks}
 
 After deploying a measurement device,
@@ -1462,67 +1457,6 @@ The confidence intervals for the corrected timeseries are multiplicative,
 %
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal
 distribution.
-
-\section{Robust Estimation}
-\label{sec:robust_estimation}
-
-The maximum likelihood estimators for $\mu$ and $\sigma^2$ are sensitive to model misspecification,
-particularly for short check intervals
-or inaccurate measurement precisions.
-If either becomes problematic,
-better results may be obtained from robust estimators.
-For the drift rate, a robust estimator is the median of the increments,
-%
-\begin{equation}
-    \tilde{\mu}_k = \operatorname{median}\left\{
-        \frac{e_k - \delta_{k-1} e_{k-1}}{t_k - t_{k-1}}
-        \,:\, k = 1, 2, \ldots, K
-    \right\}
-    \text{.}
-\end{equation}
-%
-
-For the diffusion coefficient, 
-we use a robust M-estimator that downweights outliers.
-Define the adjusted residuals
-%
-\begin{equation}
-    r_k = e_k - \delta_{k-1} e_{k-1} - \tilde{\mu}_k (t_k - t_{k-1})
-    \text{,}
-\end{equation}
-%
-and the conditional variance
-%
-\begin{equation}
-    u_k = \sigma^2(t_k - t_{k-1}) + v_{k-1} + v_k
-    \text{.}
-\end{equation}
-%
-The robust estimator minimizes the Huber loss function,
-%
-\begin{equation}
-    \tilde{\sigma}_k^2 = \underset{\sigma^2}{\operatorname{argmin}} 
-    \sum_{k=1}^{K} \rho\left(\frac{r_k}{\sqrt{u_k}}\right)
-    \text{,}
-\end{equation}
-%
-where the Huber loss is
-%
-\begin{equation}
-    \rho(z) = 
-    \begin{cases}
-        \tfrac{1}{2}z^2, & |z| \leq c \\
-        c|z| - \tfrac{1}{2}c^2, & |z| > c
-    \end{cases}
-    \text{,}
-\end{equation}
-%
-with tuning constant $c \approx 1.345$ chosen to achieve 95\% efficiency
-relative to maximum likelihood under the Gaussian model.
-This objective is solved iteratively using standard M-estimation algorithms.
-The Huber loss behaves quadratically for small residuals (like Gaussian ML)
-but linearly for large residuals (robust to outliers),
-without requiring a specific parametric form for the tail behavior.
 
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
