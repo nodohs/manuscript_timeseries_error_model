@@ -192,8 +192,6 @@ taken immediately before and after cleaning the device,
 %
 \begin{equation}
     E_f = Y_b - Y_a
-    \qquad \text{or} \qquad
-    \mathcal{E}_f = \frac{Y_b - Y_a}{Y_b}
     \label{eq:fouling_error_simple}
     \text{,}
 \end{equation}
@@ -246,14 +244,29 @@ and the variance of the measurement error is
 \end{equation}
 %
 In practice, the measurement precision is determined under controlled conditions
-and reported in the device specifications
+and usually reported in the device specifications
 (sometimes called the ``accuracy'')
-as the $2\sigma_m$ or 95\% confidence interval.
+as the $2\sigma_m$ (approximately 95\%) confidence interval. 
 
-TODO Here we need to introduce the percent or absolute, whichever is greater precision
-and explain that we won' work on the percent scale because it 
-% Each error component can be modeled on either scale---absolute or fractional---
-% but we typically assume whatever scale was specified for the precision.
+Rather than constant, the precision may be heteroscedastic and specified
+piecewise over ranges of the measurand. For example, an instrument might be
+specified as follows: 0--10\,mg\,L$^{-1}$: $\pm 0.1$\,mg\,L$^{-1}$ or 5\% of the
+reading (whichever is greater); 10--30\,mg\,L$^{-1}$: 7\% of the reading.
+In that case, the conditional variance is a function of $y$, given by
+%
+\begin{equation}
+    v_m(y)
+    :=
+    \operatorname{Var}[E_m \mid Y = y]
+    =
+    \begin{cases}
+        \max\left( (0.1/2)^2,\, (0.05 y/2)^2 \right), & 0 \leq y < 10 \\
+        (0.07 y/2)^2, & 10 \leq y \leq 30 \\
+        \text{undefined}, & \text{otherwise}
+    \end{cases}
+    \text{,}
+\end{equation}
+where the division by 2 converts the $2\sigma$ specification to $\sigma$.
 
 \section{Wiener-Process Error Model}
 
@@ -416,7 +429,7 @@ and letting $\phi^+_k(t)$ be the bridge factor, extended by
         & t \in [t_{k-1}, t_{k}] \\
         (t - t_{K}), & t > t_{K} 
     \end{cases}
-    \text{.}
+    \text{,}
 \end{equation}
 and letting $\zeta^+_k(t)$ be a drift factor, extended by
 %
@@ -429,7 +442,7 @@ and letting $\zeta^+_k(t)$ be a drift factor, extended by
     \end{cases}
     \text{,}
 \end{equation}
-so the drift term is negated during closed intervals.
+so the drift term is set to zero for closed intervals.
 %
 Then conditional mean and variance can be written without superscripts
 ($m^o$, $m^c$, etc.) as
@@ -486,7 +499,14 @@ Applying linearity of the expectation,
 shows that the conditional mean remains a linear interpolation between the endpoint means,
 regardless of the endpoint variances.
 
-Since $W_t$ is independent of $E_{k-1}$ and $E_k$,
+Assuming the endpoint errors are conditionally independent given the check measurements $\mathcal{C}$,
+%
+\begin{equation}
+    \operatorname{Cov}\left[ E_{k-1},\, E_k \mid \mathcal{C} \right] = 0
+    \text{,}
+\end{equation}
+%
+and independent of $W_t$,
 the combined variance is obtained by applying the variance formula for a linear combination,
 %
 \begin{align}
@@ -536,12 +556,12 @@ so we will use Equation~\ref{eq:check_variance} for that case.
 \subsection{Fouling-Check Uncertainty}
 
 For a fouling check, the measurement $m$ and reference $r$
-devices have known precisions $\sigma_m$ and $\sigma_r$
+devices have known precisions
 and normally distributed, independent errors,
 \begin{equation}
-    E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_m \right)
+    E^{m} \sim \mathcal{N}\left(0,\, v_m(y) \right)
     \text{,} \qquad
-    E^{r} \sim \mathcal{N}\left(0,\, \sigma^2_r \right)
+    E^{r} \sim \mathcal{N}\left(0,\, v_r(z) \right)
     \text{,} \qquad
     E^{m} \perp E^{r}
     \text{.}
@@ -600,12 +620,14 @@ and the check variance is given by
     \quad \Rightarrow \quad
     \operatorname{Var} \left[E_f\right]
     = \operatorname{Var} \left[E^r_b\right] + \operatorname{Var}\left[E^r_a\right]
-    = \sigma^2_r + \sigma^2_r = 2 \sigma^2_r
+    = v_r(z_b) + v_r(z_a)
+    % = \sigma^2_r + \sigma^2_r = 2 \sigma^2_r
     \text{.}
 \end{equation}
 %
-Therefore, the fouling-check variance is either zero or $2 \sigma^2_r$,
-depending on the error correlation of the reference device.
+Thus, under constant precision, the fouling-check variance is either zero
+(if the reference-device errors are perfectly correlated during the check)
+or $2\sigma_r^2$ (if the errors are independent).
 
 \subsection{Calibration-Check Uncertainty}
 
@@ -616,7 +638,7 @@ and independent errors,
 \begin{equation}
     E^{s} \sim \mathcal{N}\left(0,\, \sigma^2_s \right)
     \text{,} \qquad
-    E^{m} \sim \mathcal{N}\left(0,\, \sigma^2_m \right)
+    E^{m} \sim \mathcal{N}\left(0,\, v_m(z_s) \right)
     \text{,} \qquad
     E^{s} \perp E^{m}
     \text{.}
@@ -645,7 +667,7 @@ and by independence ($E^{m} \perp E^{s}$), the variance of the drift check is
 \begin{equation}
     \operatorname{Var}[E_d]
         = \operatorname{Var}[E^m] + \operatorname{Var}[E^s]
-        = \sigma^2_m + \sigma^2_s
+        = v_m(z_s) + \sigma^2_s
     \text{.}
 \end{equation}
 %
@@ -789,23 +811,33 @@ into the equation for a time bridge with uncertain endpoints
     \text{.}
 \end{align}
 %
-Expanding $\tilde{v}_k(t,y)$ gives
+Expanding the right-hand side yields
 %
-\begin{equation}
-    \tilde{v}_k(t,y) :=
+% TODO FIX THIS!
+\begin{align}
+    \tilde{v}_k(t,y) &:=
         \left((1 - \lambda^+_k(t))^2,\; \lambda^+_k(t)^2\right)
+        %\begin{bmatrix}
+        %    \operatorname{Var}[E_{k-1,s-1}] & \operatorname{Var}[E_{k-1,s}] \\
+        %    \operatorname{Var}[E_{k,s-1}]   & \operatorname{Var}[E_{k,s}]
+        %\end{bmatrix}
         \begin{bmatrix}
-            \operatorname{Var}[E_{k-1,s-1}] & \operatorname{Var}[E_{k-1,s}] \\
-            \operatorname{Var}[E_{k,s-1}]   & \operatorname{Var}[E_{k,s}]
+            v_{k-1}(y) & v_{k-1}(y) \\
+            v_k(y) & v_k(y)
         \end{bmatrix}
         \begin{bmatrix}
             (1 - \lambda^+_s(y))^2 \\
             \lambda^+_s(y)^2
         \end{bmatrix}
+        \notag \\
+        &\quad
         + \left((1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2\right)\eta^2 \phi^+_s(y)
+        \notag \\
+        &\quad
+        + \sigma^2_k \phi^+_k(t)
     \label{eq:multi_check_variance}
     \text{,}
-\end{equation}
+\end{align}
 %
 which satisfies the four boundary conditions
 %
