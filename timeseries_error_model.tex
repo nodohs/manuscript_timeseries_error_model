@@ -522,7 +522,7 @@ and using linearity of the expectation,
 shows that the endpoint uncertainy affects the variance but not the expectation.
 %
 Because $W_t$ is independent of the check errors $E_{k-1}$ and $E_k$,
-the combined variance is given by the variance of a linear combination,
+the combined variance is given by
 %
 \begin{align}
     \operatorname{Var}[E_t]
@@ -532,7 +532,7 @@ the combined variance is given by the variance of a linear combination,
             \lambda^+_k(t) \, E_{k}
             ]
             + \operatorname{Var}[W_t]
-            &\text{(Appendix~\ref{sec:variance_linear_combination})}
+            &\text{(from the variance of a linear combination)}
             \notag \\
         &=  \underbrace{
             (1 - \lambda^+_k(t))^2 \, v_{k}(t_{k-1})
@@ -1273,42 +1273,9 @@ and to pooling information across monitoring networks of similar devices.
 % \videosupplement{TEXT} %% use this section when having video supplements available
 
 
-\appendix
+% \appendix
 
-\section{Variance of a Linear Combination}
-\label{sec:variance_linear_combination}
-
-For any random variables $X_1, X_2, \ldots, X_n$ with finite second moments,
-and any constants $a_1, a_2, \ldots, a_n$, where
-%
-\begin{equation}
-    Y = a_1 X_1 + a_2 X_2 + \ldots + a_n X_n
-\end{equation}
-%
-the variance of $Y$ is given by
-%
-\begin{equation}
-    \operatorname{Var}\left[ Y \right]
-    =
-    \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j \operatorname{Cov}\left[ X_i, X_j \right]
-\end{equation}
-%
-In the two-variable case,
-%
-\begin{equation}
-    Y = a X + b Z
-\end{equation}
-%
-the variance simplifies to
-%
-\begin{equation}
-    \operatorname{Var}\left[ Y \right]
-        = a^2 \operatorname{Var}\left[ X \right]
-        + b^2 \operatorname{Var}\left[ Z \right]
-        + 2ab \operatorname{Cov}\left[ X, Z \right]
-\end{equation}
-
-\noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
+% \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
 %% Regarding figures and tables in appendices, the following two options are possible depending on your general handling of figures and tables in the manuscript environment:
 
