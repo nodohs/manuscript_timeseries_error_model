@@ -307,7 +307,7 @@ observations $e_{k-1}$ and $e_k$.
 Throughout, the index $k$ will be substituted with $f$ and $d$
 to denote fouling and calibration-drift checks, respectively.
 
-We assume the fouling and calibration-drift erroors evolve as a continuous-time
+We assume the fouling and calibration-drift errors evolve as a continuous-time
 stochastic processes, defined by
 %
 \begin{equation}
@@ -890,7 +890,7 @@ v(t) &=
     \text{,}
 \end{align}
 %
-where $f$, $d$, and $p$ denote the fouling, drift, and precision components, respectively.
+where $f$, $d$, and $m$ denote the fouling, drift, and measurement-noise components, respectively.
 By definition, the mean of the measurement noise is zero ($m_m = 0$),
 and the other means are given by Equations~
 \ref{eq:unified_wiener_mean}
@@ -912,7 +912,7 @@ the combined mean and variance are
     v(t) &=
         \left(\dot{v}_f + (1+m_f)^2\right)
         \left(\dot{v}_d + (1+m_d)^2\right)
-        \left(\dot{v}_p + 1\right)
+        \left(\dot{v}_m + 1\right)
         - \left((1+m_f)(1+m_d)\right)^2
     \qquad \text{(Appendix~\ref{sec:combined_fractional_proof}),}
 \end{align}
@@ -1371,7 +1371,7 @@ Also by independence,
 %
 Using $\mathbb{E}[A^2]=\operatorname{Var}(A)+\mathbb{E}[A]^2=v_f+(1+m_f)^2$,
 $\mathbb{E}[B^2]=v_d+(1+m_d)^2$, and $\mathbb{E}[C^2]=v_p+1$ (since
-$\mathbb{E}[C]=1$) yeilds Equation~\ref{eq:combined_fractional_variance_proof}.
+$\mathbb{E}[C]=1$) yields Equation~\ref{eq:combined_fractional_variance_proof}.
 
 
 \section{Log-multiplicative error model}
@@ -1468,7 +1468,7 @@ distribution.
 
 The maximum likelihood estimators for $\mu$ and $\sigma^2$ are sensitive to model misspecification,
 particularly for short check intervals
-or innacurate measurement precisions.
+or inaccurate measurement precisions.
 If either becomes problematic,
 better results may be obtained from robust estimators.
 For the drift rate, a robust estimator is the median of the increments,
@@ -1482,28 +1482,47 @@ For the drift rate, a robust estimator is the median of the increments,
 \end{equation}
 %
 
-For the diffusion coefficient, define the standardized absolute residuals
+For the diffusion coefficient, 
+we use a robust M-estimator that downweights outliers.
+Define the adjusted residuals
 %
 \begin{equation}
-    \left| r_k^* \right| = \frac{\left| e_k - \delta_{k-1} e_{k-1} - \tilde{\mu}_k (t_k - t_{k-1}) \right|}{\sqrt{t_k - t_{k-1}}}
-    \text{.}
-\end{equation}
-%
-The MAD-based robust estimator is then
-%
-\begin{equation}
-    \tilde{\sigma}_k^2
-    =
-    \left(
-        1.4826 \cdot \operatorname{median}\left\{
-            \left| r_k^* \right| \,:\, k = 1, 2, \ldots, K
-        \right\}
-    \right)^2
+    r_k = e_k - \delta_{k-1} e_{k-1} - \tilde{\mu}_k (t_k - t_{k-1})
     \text{,}
 \end{equation}
 %
-where the factor $1.4826 \approx 1/\Phi^{-1}(0.75)$ provides consistency
-with the standard deviation under the Gaussian assumption.
+and the conditional variance
+%
+\begin{equation}
+    u_k = \sigma^2(t_k - t_{k-1}) + v_{k-1} + v_k
+    \text{.}
+\end{equation}
+%
+The robust estimator minimizes the Huber loss function,
+%
+\begin{equation}
+    \tilde{\sigma}_k^2 = \underset{\sigma^2}{\operatorname{argmin}} 
+    \sum_{k=1}^{K} \rho\left(\frac{r_k}{\sqrt{u_k}}\right)
+    \text{,}
+\end{equation}
+%
+where the Huber loss is
+%
+\begin{equation}
+    \rho(z) = 
+    \begin{cases}
+        \tfrac{1}{2}z^2, & |z| \leq c \\
+        c|z| - \tfrac{1}{2}c^2, & |z| > c
+    \end{cases}
+    \text{,}
+\end{equation}
+%
+with tuning constant $c \approx 1.345$ chosen to achieve 95\% efficiency
+relative to maximum likelihood under the Gaussian model.
+This objective is solved iteratively using standard M-estimation algorithms.
+The Huber loss behaves quadratically for small residuals (like Gaussian ML)
+but linearly for large residuals (robust to outliers),
+without requiring a specific parametric form for the tail behavior.
 
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
