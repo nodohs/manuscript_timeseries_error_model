@@ -81,9 +81,8 @@
 
 \begin{document}
 
-%\title{Time-series uncertainty with Wiener fouling and drift}
-%\title{Uncertainty of time-series measurements subject to fouling and calibration drift}
-\title{Correcting time-series measurements affected by fouling and calibration drift}
+%\title{Correcting time-series measurements affected by fouling and calibration drift}
+\title{Bias correction and confidence intervals for time series with fouling and calibration drift}
 
 
 % \Author[affil]{given_name}{surname}
@@ -103,7 +102,7 @@
 
 
 
-\runningtitle{Fouling and Drift Correction}
+\runningtitle{Fouling and Calibration-drift}
 
 \runningauthor{Hodson and Schwarz}
 
@@ -166,53 +165,25 @@ that is consistent with standard operating procedures for environmental monitori
 \section{Preliminaries}
 %
 Let $X$ be the true value of some variable
-and let $Y$ be its measured value.
-The absolute error $E$ and percent error $\%E$ are given by
+and let $Y$ be its measured value,
+then the measurement error $E$ is the difference
 %
 \begin{equation}
     E = Y - X
-    \qquad \text{and} \qquad
-    \%E = 100 \times \frac{Y - X}{Y}
     \label{eq:absolute_error}
-    \text{;}
+    \text{.}
 \end{equation}
-%
-however, it is simpler to work with the fractional error,
-%
-\begin{equation}
-    \mathcal{E} = \frac{Y - X}{Y} = \frac{\%E}{100}
-    \label{eq:fractional_error}
-    \text{,}
-\end{equation}
-%
-and convert back to a percentage later.
-
 We assume the measurement error has three independent components---
 fouling $E_f$, calibration drift $E_d$,
 and measurement noise $E_m$---
-that combine additively on the absolute scale,
+that combine additively,
+such that the total error is
 %
 \begin{equation}
     E = E_f + E_d + E_m
     \text{.}
 \end{equation}
 %
-or multiplicatively on the fractional scale,
-%
-\begin{equation}
-    1 + \mathcal{E} = (1 + \mathcal{E}_f)(1 + \mathcal{E}_d)(1 + \mathcal{E}_m)
-    \text{;}
-\end{equation}
-%
-however, for small errors (less than a few percent),
-the fractional relation is approximately additive,
-%
-\begin{equation}
-    \mathcal{E} \approx \mathcal{E}_f + \mathcal{E}_d + \mathcal{E}_m
-    \text{.}
-\end{equation}
-%
-
 Fouling is any physical, chemical, or biological buildup on the measurement device
 causing systematic error.
 Under steady-state conditions,
@@ -233,8 +204,6 @@ during the cleaning process,
 %
 \begin{equation}
     E_f = (Y_b - Y_a) - (Z_b - Z_a)
-    \qquad \text{or} \qquad
-    \mathcal{E}_f = \frac{(Y_b - Y_a) - (Z_b - Z_a)}{Y_b}
     \label{eq:fouling_error}
     \qquad \text{\citep[][but opposite sign]{Wagner_2006},}
 \end{equation}
@@ -251,8 +220,6 @@ then the calibration drift error is given by
 %
 \begin{equation}
     E_d = Y_s - Z_s
-    \qquad \text{or} \qquad
-    \mathcal{E}_{d} = \frac{Y_s - Z_s}{Y_s}
     \label{eq:drift_error}
     \qquad \text{\citep[][but opposite sign]{Wagner_2006}.}
 \end{equation}
@@ -264,11 +231,6 @@ which is modeled as a Gaussian distribution,
 %
 \begin{equation}
     E_m \sim \mathcal{N}(0 ,\, \sigma_m^2)
-    \qquad \text{or} \qquad
-    \mathcal{E}_m \sim \mathcal{N}(0 ,\, \sigma_m^2)
-    \text{,} \quad \text{where} \quad
-    \sigma_m := \frac{\sigma_{\%m}}{100}
-    \quad \text{for} \quad \mathcal{E}_m
     \label{eq:measurement_error}
     \text{,}
 \end{equation}
@@ -288,8 +250,10 @@ and reported in the device specifications
 (sometimes called the ``accuracy'')
 as the $2\sigma_m$ or 95\% confidence interval.
 
-Each error component can be modeled on either scale---absolute or fractional---
-but we typically assume whatever scale was specified for the precision.
+TODO Here we need to introduce the percent or absolute, whichever is greater precision
+and explain that we won' work on the percent scale because it 
+% Each error component can be modeled on either scale---absolute or fractional---
+% but we typically assume whatever scale was specified for the precision.
 
 \section{Wiener-Process Error Model}
 
@@ -521,7 +485,7 @@ Applying linearity of the expectation,
 %
 shows that the conditional mean remains a linear interpolation between the endpoint means,
 regardless of the endpoint variances.
-%
+
 Since $W_t$ is independent of $E_{k-1}$ and $E_k$,
 the combined variance is obtained by applying the variance formula for a linear combination,
 %
@@ -533,7 +497,6 @@ the combined variance is obtained by applying the variance formula for a linear 
             \lambda^+_k(t) \, E_{k}
             ]
             + \operatorname{Var}[W_t]
-            &\text{(from the variance of a linear combination)}
             \notag \\
         &=  \underbrace{
             (1 - \lambda^+_k(t))^2 \, v_{k}(t_{k-1})
@@ -545,15 +508,7 @@ the combined variance is obtained by applying the variance formula for a linear 
     \text{,}
 \end{align}
 %
-where $\tilde{v}_k(t)$ represents the contribution from check-measurement uncertainty,
-\begin{equation}
-    \tilde{v}_k(t) := 
-        (1 - \lambda^+_k(t))^2 \, v_{k}(t_{k-1})
-        + \lambda^+_k(t)^2 \, v_{k}(t_k)
-    \label{eq:check_variance}
-    \text{.}
-\end{equation}
-%
+where $\tilde{v}_k(t)$ is the contribution from check-measurement uncertainty.
 If the endpoint errors have equal variance,
 $v_{k}(t_{k-1}) = v_{k}(t_k)$,
 the conditional variance simplifies to
@@ -933,45 +888,25 @@ and
 
 \section{Corrected Measurement and Confidence Interval}
 
-Recall that $m(t)$ and $v(t)$ give the mean and variance of the error $E$ at time $t$.
-On the absolute scale, the measurement model is $Y = X + E$.
-Therefore, the bias-corrected estimate of the measurand $X$ is given by
+Recall that $m(t ,\, y)$ and $v(t ,\, y)$ give the expectation and variance of the error $E$ at $(t,y)$.
+For the measurement model $Y = X + E$,
+the bias-corrected estimate of the measurand $X$ is given by
 %
 \begin{equation}
-    x(t) = y(t) - m(t),
+    x(t ,\, y) = y - m(t ,\, y)
+    \text{.}
 \end{equation}
 %
-where $y(t)$ is the uncorrected measurement at time $t$.
-The errors are conditionally Gaussian,
-so the approximate confidence interval is
+Since errors are conditionally Gaussian,
+the approximate confidence interval is
 %
 \begin{equation}
-    \mathrm{CI} = x(t) \pm q_{1-\alpha/2}\sqrt{v(t)}.
+    \mathrm{CI} = x(t ,\, y) \pm q_{1-\alpha/2}\sqrt{v(t ,\, y)}
+    \text{,}
 \end{equation}
 %
 where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile
 of the standard normal distribution.
-
-For fractional errors $\mathcal{E}$,
-we use the observation model $Y = X(1+\mathcal{E})$.
-Assuming $\mathcal{E}$ is independent of $Y$
-with mean $m(t)$ and variance $v(t)$,
-a bias-corrected estimate of $X$ is given by
-%
-\begin{equation}
-x(t) = y\bigl(1-m(t)\bigr)
-\text{,}
-\end{equation}
-%
-with approximate confidence interval
-%
-\begin{equation}
-\mathrm{CI} = x(t) \pm q_{1-\alpha/2}\,y\sqrt{v(t)}
-\text{.}
-\end{equation}
-%
-If measurement errors exceed 100\%,
-this equation has a negative lower bound.
 
 \section{Parameter Estimation}
 
@@ -1232,6 +1167,7 @@ Implementing the bias-correction framework requires the following information.
     \item The device type (make and model) for grouping like devices in hierarchical estimation.
     \item A unique device identifier for tracking devices across multiple redeployments.
     \item The scale (absolute or fractional) of each error component.
+    % TODO more accurately which 0 values are imputed for the fractional
 \end{enumerate}
 %
 
