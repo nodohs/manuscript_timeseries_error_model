@@ -155,7 +155,7 @@ as a Wiener process conditioned on the check measurements.
 Following that assumption, we derive expressions for the conditional mean and variance,
 which are equivalent to Kalman filtering and smoothing for this system.
 As the checks are also imprecise,
-and their uncertainty is propagated into the time-series model.
+their uncertainty is propagated into the time-series model.
 Next, we extend the model to multipoint calibrations
 and monitoring networks of similar devices.
 The result is a transparent and tractable framework for estimating
@@ -307,8 +307,8 @@ observations $e_{k-1}$ and $e_k$.
 Throughout, the index $k$ will be substituted with $f$ and $d$
 to denote fouling and calibration-drift checks, respectively.
 
-We assume the fouling and calibration-drift errors evolve as a continuous-time
-stochastic processes, defined by
+We assume the fouling or calibration-drift error evolve as a continuous-time
+stochastic process, defined by
 %
 \begin{equation}
     E_t = \delta_{k-1} E_{k-1} + \mu (t - t_{k-1}) + \sigma W_t
@@ -344,7 +344,7 @@ and is important for devices that gradually lose responsiveness due
 to the degradation of their components over time,
 like the chemical degradation of reagents in a colorimetric analyzer.
 
-The timeseries $E(t)$ is subdivided into intervals that are bracketed by check measurements.
+The timeseries $E_t$ is subdivided into intervals that are bracketed by check measurements.
 An interval bracketed by a single check is called ``open.''
 For example, the interval after the last check ($t > t_K$) is open until
 the next check occurs sometime in the future ($t_{K+1}$).
@@ -458,6 +458,8 @@ and letting $\phi^+_k(t)$ be the bridge factor, extended by
 Then conditional mean and variance can be written without superscripts 
 ($m^o$, $m^c$, etc.), as
 %
+TODO This equation needs to include the drift term.
+%
 \begin{align}
     m_k(t) &= \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1} + \lambda^+_k(t) e_k
     \label{eq:unified_wiener_mean}
@@ -467,12 +469,13 @@ Then conditional mean and variance can be written without superscripts
     \text{.}
 \end{align}
 %
+% m_k(t) = \delta_{k-1} (1 - \lambda^+_k(t)) e_{k-1} + \lambda^+_k(t) e_k + \mu(t - t_{k-1})
 
 \section{Check-Measurement Uncertainty}
 
 Noise in the check measurements contributes additional uncertainty to the error process.
 After reviewing the general approach for propagating check-measurement uncertainty,
-we derive the formula for fouling and calibration-drift checks.
+we derive formulas for fouling and calibration-drift checks.
 
 For a bridge with uncertain endpoints,
 the endpoint expectations and variances are defined as
@@ -506,7 +509,7 @@ and using linearity of the expectation,
     \text{,}
 \end{align}
 %
-shows the expectation is unaffected by the endpoint uncertainty.
+shows that the endpoint uncertainy affects the variance but not the expectation.
 %
 Because $W_t$ is independent of the check errors $E_{k-1}$ and $E_k$,
 the combined variance is given by the variance of a linear combination,
@@ -549,22 +552,22 @@ the conditional variance simplifies to
                         (1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2
                       \right) \, v_{k}(t_k)
     \label{eq:check_constant_variance}
-    \text{,}
+    \text{.}
 \end{equation}
 %
-which is constant for open intervals,
-$ \tilde{v}^o_k(t) = v_{k}(t_k) = v_{k}(t_{k-1})$.
+For open intervals, this reduces to
+$ \tilde{v}^o_k(t) = v_{k}(t_{k-1})$,
+which is constant in time.
 
 The next sections derive variance formula for the
 fouling and calibration-drift checks,
-$v_{d}(t_d)$ and $v_{f}(t_f)$,
+$v_{f}(t_f)$ and $v_{d}(t_d)$,
 to use in Equation~\ref{eq:check_constant_variance}.
 Later, we introduce multipoint calibrations,
 where the check variances often differ;
 so we will use Equation~\ref{eq:check_variance} for that case.
 
 \subsection{Fouling-Check Uncertainty}
-% TODO: Introduce v_f(t_f) into this section and the next.
 
 For a fouling check, the measurement $m$ and reference $r$
 devices have known precisions $\sigma_m$ and $\sigma_r$
@@ -622,12 +625,12 @@ such that the before-and-after errors cancel and the check variance is zero,
     \text{.}
 \end{equation}
 %
-Similarly, for the reference device, if it also uses filtering;
-otherwise, we assume its errors are independent,
+Similarly, for the reference device, if it also uses filtering.
+Otherwise, we assume its errors are independent,
 and the check variance is given by
 %
 \begin{equation}
-    \operatorname{Corr}\left[E_{z_a},\, E_{z_b}\right] = 0
+    \operatorname{Corr}\left[E^{r}_a,\, E^{r}_b\right] = 0
     \quad \Rightarrow \quad
     \operatorname{Var} \left[E_f\right]
     = \operatorname{Var} \left[E^r_b\right] + \operatorname{Var}\left[E^r_a\right]
@@ -695,7 +698,7 @@ interpolating errors between each check value
 The previous sections showed how single-point checks form a Gaussian bridge through time.
 The multipoint check extends the same basic idea,
 using the check measurements as boundary conditions for the bridge.
-Except now, the boundary condition is not a point but a second bridge between the standards in the $y$ dimension.
+In this case, the boundary condition is not a point but a second bridge between the standards in the $y$ dimension.
 
 Let $z_s$ denote the standard values for $s = 1, 2, \ldots, S$,
 let $E_{k,s} := E(t_k,\, z_s)$ be the error at time $t_k$ and standard $z_s$,
@@ -734,7 +737,7 @@ The conditional variance of the $y$-bridge at time $t_k$ is
                     + \lambda^+_s(y)^2 \, \operatorname{Var}[E_{k,s}]
                     + \eta^2 \phi^+_{s}(y)
     \label{eq:y_bridge_variance}
-    \text{\ref{eq:variance_uncertain_bridge} as a function of $y$,}
+    \text{(\ref{eq:variance_uncertain_bridge} adapted for the $y$ dimension),}
 \end{align}
 %
 where $\eta$ is the diffusion coefficient in the $y$ dimension,
@@ -744,16 +747,22 @@ are the variances of the checks against standards $s-1$ and $s$.
 Under this boundary condition,
 the conditional mean is a bilinear interpolation
 between four check points,
-$e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$,
-denoted as the set
-$\{e_{i,j}\}$ where $i\in\{k-1,k\}$ and $j\in\{s-1,s\}$.
+$e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$.
+Let $\mathcal{C}_{k,s}$ denote this set of four check errors,
+%
+\begin{equation}
+    \mathcal{C}_{k,s} := \{E_{k-1,s-1} = e_{k-1,s-1},\, E_{k-1,s} = e_{k-1,s},\, 
+    E_{k,s-1} = e_{k,s-1},\, E_{k,s} = e_{k,s}\}
+    \text{,}
+\end{equation}
+then the conditional mean is given by
 %
 \begin{align}
     m_k(t, y)
     &:=
     \mathbb{E}\left[
         E_{t,y}\,\mid\,
-        \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
+        \mathcal{C}_{k,s}
         \right] \notag \\
     &=
     (1-\lambda^+_k(t),\;\lambda^+_k(t))
@@ -774,13 +783,13 @@ Expanding the right-hand side yields
 \begin{align}
     m_k(t,y)
     &=
-    (1 - \lambda_k(t))(1 - \lambda_s(y)) \delta_{k-1} e_{k-1,s-1} \notag \\
+    (1 - \lambda^+_k(t))(1 - \lambda^+_s(y)) \delta_{k-1} e_{k-1,s-1} \notag \\
     &\quad
-    + (1 - \lambda_k(t)) \lambda_s(y) \delta_{k-1} e_{k-1,s} \notag \\
+    + (1 - \lambda^+_k(t)) \lambda^+_s(y) \delta_{k-1} e_{k-1,s} \notag \\
     &\quad
-    + \lambda_k(t)(1 - \lambda_s(y)) e_{k,s-1} \notag \\
+    + \lambda^+_k(t)(1 - \lambda^+_s(y)) e_{k,s-1} \notag \\
     &\quad
-    + \lambda_k(t) \lambda_s(y) e_{k,s}
+    + \lambda^+_k(t) \lambda^+_s(y) e_{k,s}
     \text{,}
 \end{align}
 %
@@ -802,7 +811,7 @@ into the equation for a time bridge with uncertain endpoints
 \begin{align}
     \operatorname{Var}\left[
         E_{t,y}\,\mid\,
-        \{\,E_{t_i,y_j}=e_{i,j}\,\}_{\,i\in\{k-1,k\},\, j\in\{s-1,s\}}
+        \mathcal{C}_{k,s}
         \right]
     =  
     \underbrace{
@@ -1024,21 +1033,6 @@ and
 %
 however, these become ill-conditioned when measurement uncertainty is significant,
 because the denominator may approach zero while the residual term in the numerator does not.
-% When a closed-form expression is preferred,
-% the observational uncertainty can be included using the following
-% truncated heuristic,
-% %
-% \begin{equation}
-%     \hat{\sigma}^2  =  \frac{1}{K}{\sum_{k=1}^{K}
-%                        \max
-%                        \left(
-%                         0, \,
-%                         \frac{r_k^2 - v_k - v_r}
-%                              {t_k - t_{k-1}}
-%                        \right)
-%                      }
-%     \text{.}
-% \end{equation}
 
 For the multipoint calibration,
 the residual and its variance are given by
@@ -1314,19 +1308,19 @@ the variance simplifies to
 \section{Combined mean and variance for independent fractional errors}
 \label{sec:combined_fractional_proof}
 
-Let $E_f$, $E_d$, and $E_p$ denote independent fractional-error components with
-means $m_f,m_d,0$ and variances $v_f,v_d,v_p$, respectively.
+Let $E_f$, $E_d$, and $E_m$ denote independent fractional-error components with
+means $m_f,m_d,0$ and variances $v_f,v_d,v_m$, respectively.
 The combined fractional error $E$ is given by
 %
 \begin{equation}
-    1+E = (1+E_f)(1+E_d)(1+E_p)
+    1+E = (1+E_f)(1+E_d)(1+E_m)
     \text{.}
 \end{equation}
 %
 with conditional mean given by
 %
 \begin{equation}
-    m := \mathbb{E}[E] = (1+m_f)(1+m_d)-1
+    m := \mathbb{E}[E] = (1+m_f)(1+m_d) - 1
     \text{,}
 \end{equation}    
 %
@@ -1337,7 +1331,7 @@ and conditional variance given by
         =
         \left(v_f+(1+m_f)^2\right)
         \left(v_d+(1+m_d)^2\right)
-        \left(v_p+1\right)
+        \left(v_m+1\right)
         -\left((1+m_f)(1+m_d)\right)^2
         \label{eq:combined_fractional_variance_proof}
         \text{.}
@@ -1346,7 +1340,7 @@ and conditional variance given by
 
 \subsection{Proof}
 %
-Let $A=1+E_f$, $B=1+E_d$, and $C=1+E_p$, so that $1+E=ABC$.
+Let $A=1+E_f$, $B=1+E_d$, and $C=1+E_m$, so that $1+E=ABC$.
 By independence,
 %
 \begin{equation}
@@ -1365,7 +1359,7 @@ Also by independence,
 \end{equation}
 %
 Using $\mathbb{E}[A^2]=\operatorname{Var}(A)+\mathbb{E}[A]^2=v_f+(1+m_f)^2$,
-$\mathbb{E}[B^2]=v_d+(1+m_d)^2$, and $\mathbb{E}[C^2]=v_p+1$ (since
+$\mathbb{E}[B^2]=v_d+(1+m_d)^2$, and $\mathbb{E}[C^2]=v_m+1$ (since
 $\mathbb{E}[C]=1$) yields Equation~\ref{eq:combined_fractional_variance_proof}.
 
 
