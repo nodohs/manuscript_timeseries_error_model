@@ -986,12 +986,8 @@ with approximate confidence interval
 \text{.}
 \end{equation}
 %
-
 If measurement errors exceed 100\%,
 this equation has a negative lower bound.
-If the measurand is strictly positive,
-consider using a log-multiplicative error model instead
-(Appendix~\ref{sec:log_multiplicative_error}).
 
 \section{Parameter Estimation}
 
@@ -1371,96 +1367,6 @@ Also by independence,
 Using $\mathbb{E}[A^2]=\operatorname{Var}(A)+\mathbb{E}[A]^2=v_f+(1+m_f)^2$,
 $\mathbb{E}[B^2]=v_d+(1+m_d)^2$, and $\mathbb{E}[C^2]=v_m+1$ (since
 $\mathbb{E}[C]=1$) yields Equation~\ref{eq:combined_fractional_variance_proof}.
-
-
-\section{Log-multiplicative error model}
-\label{sec:log_multiplicative_error}
-
-For strictly positive variables,
-we may assume a log-multiplicative error model,
-%
-\begin{equation}
-    Y = X \exp(\varepsilon)
-    \text{,}
-\end{equation}
-%
-where $\varepsilon$ is the log-scale measurement error,
-given by
-%
-\begin{equation}
-    \varepsilon = \ln Y - \ln X
-    \text{.}
-\end{equation}
-%
-Similarly, the log-scale calibration check error is
-%
-\begin{equation}
-    \varepsilon_d = \ln Y_s - \ln Z_s = \ln\left( \frac{Y_s}{Z_s} \right)
-\end{equation}
-%
-and the log-scale fouling check error is
-%
-\begin{equation}
-    \varepsilon_f = \left( \ln Y_b - \ln Y_a \right) - \left( \ln Z_b - \ln Z_a \right)
-    = \ln\left( \frac{Y_b}{Y_a} \right) - \ln\left( \frac{Z_b}{Z_a} \right)
-    \text{.}
-\end{equation}
-%
-
-In this case, the log-scale error $\varepsilon_t$ is a continuous-time
-stochastic process with additive components ($f$, $d$, and $m$) in log space
-(Equations~\ref{eq:total_mean} and \ref{eq:total_variance}).
-
-% TODO MOVE
-%Conditioning on the observation $Y=y$ and treating $X$ as fixed,
-%the conditional distribution of $\ln X$ is
-%%
-%\begin{equation}
-%    \ln X \mid Y = y
-%    \sim
-%    \mathcal{N}\left( \ln y - m(t),\, v(t) \right)
-%    \text{.}
-%\end{equation}
-%%
-
-The bias-corrected timeseries is given in terms of the expectation of $\ln X$,
-which corresponds to the median of $X$,
-%
-\begin{equation}
-    x_{\operatorname{med}}(t)
-    := \exp\left( \mathbb{E}\left[ \ln X \mid Y = y \right] \right)
-    = y \exp\bigl( -m(t) \bigr)
-    \text{.}
-\end{equation}
-%
-The expected value (mean) of $X$ is given by, 
-%
-\begin{equation}
-    x_{\operatorname{mean}}(t)
-    := \mathbb{E}\left[ X \mid Y = y \right]
-    = y \exp \left( -m(t) + \tfrac{1}{2} v(t) \right)
-    \text{.}
-\end{equation}
-%
-where $\tfrac{1}{2}v(t)$ is a transformation correction for the lognormal distribution.
-
-The confidence intervals for the corrected timeseries are multiplicative,
-%
-\begin{equation}
-    \mathrm{CI}
-    =
-    \left[
-        x_{\operatorname{med}}(t)
-        \exp\left( -q_{1-\alpha/2} \sqrt{v(t)} \right),
-        \;
-        x_{\operatorname{med}}(t)
-        \exp\left(  q_{1-\alpha/2} \sqrt{v(t)} \right)
-    \right]
-    \text{,}
-\end{equation}
-%
-where $q_{1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal
-distribution.
 
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
