@@ -933,7 +933,6 @@ the combined mean and variance are
         \left(\dot{v}_d + (1+m_d)^2\right)
         \left(\dot{v}_m + 1\right)
         - \left((1+m_f)(1+m_d)\right)^2
-    \qquad \text{(Appendix~\ref{sec:combined_fractional_proof}),}
 \end{align}
 %
 with inputs $(t,y)$ omitted for clarity.
@@ -1308,65 +1307,6 @@ the variance simplifies to
         + b^2 \operatorname{Var}\left[ Z \right]
         + 2ab \operatorname{Cov}\left[ X, Z \right]
 \end{equation}
-
-
-
-\section{Combined mean and variance for independent fractional errors}
-\label{sec:combined_fractional_proof}
-
-Let $E_f$, $E_d$, and $E_m$ denote independent fractional-error components with
-means $m_f,m_d,0$ and variances $v_f,v_d,v_m$, respectively.
-The combined fractional error $E$ is given by
-%
-\begin{equation}
-    1+E = (1+E_f)(1+E_d)(1+E_m)
-    \text{.}
-\end{equation}
-%
-with conditional mean given by
-%
-\begin{equation}
-    m := \mathbb{E}[E] = (1+m_f)(1+m_d) - 1
-    \text{,}
-\end{equation}    
-%
-and conditional variance given by
-%
-\begin{equation}
-    v := \operatorname{Var}\left[ E \right]
-        =
-        \left(v_f+(1+m_f)^2\right)
-        \left(v_d+(1+m_d)^2\right)
-        \left(v_m+1\right)
-        -\left((1+m_f)(1+m_d)\right)^2
-        \label{eq:combined_fractional_variance_proof}
-        \text{.}
-\end{equation}
-%
-
-\subsection{Proof}
-%
-Let $A=1+E_f$, $B=1+E_d$, and $C=1+E_m$, so that $1+E=ABC$.
-By independence,
-%
-\begin{equation}
-    \mathbb{E}[ABC]=\mathbb{E}[A]\mathbb{E}[B]\mathbb{E}[C]
-                   = (1+m_f)(1+m_d)\cdot 1,
-\end{equation}
-%
-which implies $m=\mathbb{E}[E]=\mathbb{E}[ABC]-1=(1+m_f)(1+m_d)-1$.
-%
-Also by independence,
-%
-\begin{equation}
-    \operatorname{Var}(ABC)=\mathbb{E}[A^2B^2C^2]-\mathbb{E}[ABC]^2
-    =\mathbb{E}[A^2]\mathbb{E}[B^2]\mathbb{E}[C^2]-\mathbb{E}[ABC]^2
-    \text{.}
-\end{equation}
-%
-Using $\mathbb{E}[A^2]=\operatorname{Var}(A)+\mathbb{E}[A]^2=v_f+(1+m_f)^2$,
-$\mathbb{E}[B^2]=v_d+(1+m_d)^2$, and $\mathbb{E}[C^2]=v_m+1$ (since
-$\mathbb{E}[C]=1$) yields Equation~\ref{eq:combined_fractional_variance_proof}.
 
 \noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
 
