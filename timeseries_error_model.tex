@@ -129,7 +129,7 @@
 \begin{abstract}
     Environmental time-series measurements can accumulate systematic errors
     from fouling and calibration drift.
-    Operators must therefore periodically check, clean, and recalibrate their measurement devices.
+    Operators therefore routinely check, clean, and recalibrate measurement devices.
     By modeling error growth between checks as a stochastic process,
     we derive bias corrections and confidence intervals for the time series.
 \end{abstract}
@@ -455,21 +455,31 @@ and letting $\phi^+_k(t)$ be the bridge factor, extended by
     \text{.}
 \end{equation}
 %
-Then conditional mean and variance can be written without superscripts 
+Then conditional mean and variance can be written without superscripts
 ($m^o$, $m^c$, etc.), as
 %
-TODO This equation needs to include the drift term.
-%
 \begin{align}
-    m_k(t) &= \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1} + \lambda^+_k(t) e_k
+    m_k(t)  &=  \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1}
+                + \lambda^+_k(t) e_k
+                + \mu^+_k(t)
     \label{eq:unified_wiener_mean}
     \qquad \text{and} \qquad \\
     v_k(t) &= \sigma^2 \phi^+_k(t)
     \label{eq:unified_wiener_variance}
-    \text{.}
+    \text{,}
 \end{align}
+where $\mu^+_k(t)$ is the extended drift term,
+which is zero for closed intervals,
+\begin{equation}
+    \mu^+_k(t) :=
+    \begin{cases}
+        \mu_k (t_{1} - t), & t < t_{1} \\
+        0 , & t \in [t_{k-1}, t_{k}] \\
+        \mu_k (t - t_{K}), & t > t_{K}
+    \end{cases}
+    \text{.}
+\end{equation}
 %
-% m_k(t) = \delta_{k-1} (1 - \lambda^+_k(t)) e_{k-1} + \lambda^+_k(t) e_k + \mu(t - t_{k-1})
 
 \section{Check-Measurement Uncertainty}
 
@@ -737,7 +747,7 @@ The conditional variance of the $y$-bridge at time $t_k$ is
                     + \lambda^+_s(y)^2 \, \operatorname{Var}[E_{k,s}]
                     + \eta^2 \phi^+_{s}(y)
     \label{eq:y_bridge_variance}
-    \text{(\ref{eq:variance_uncertain_bridge} adapted for the $y$ dimension),}
+    %\text{(Equation \ref{eq:variance_uncertain_bridge} adapted for the $y$ dimension),}
 \end{align}
 %
 where $\eta$ is the diffusion coefficient in the $y$ dimension,
@@ -748,10 +758,10 @@ Under this boundary condition,
 the conditional mean is a bilinear interpolation
 between four check points,
 $e_{k-1,s-1}$, $e_{k-1,s}$, $e_{k,s-1}$, and $e_{k,s}$.
-Let $\mathcal{C}_{k,s}$ denote this set of four check errors,
+Let $\mathcal{C}$ denote the set of four check errors,
 %
 \begin{equation}
-    \mathcal{C}_{k,s} := \{E_{k-1,s-1} = e_{k-1,s-1},\, E_{k-1,s} = e_{k-1,s},\, 
+    \mathcal{C} := \{E_{k-1,s-1} = e_{k-1,s-1},\, E_{k-1,s} = e_{k-1,s},\, 
     E_{k,s-1} = e_{k,s-1},\, E_{k,s} = e_{k,s}\}
     \text{,}
 \end{equation}
@@ -762,7 +772,7 @@ then the conditional mean is given by
     &:=
     \mathbb{E}\left[
         E_{t,y}\,\mid\,
-        \mathcal{C}_{k,s}
+        \mathcal{C}
         \right] \notag \\
     &=
     (1-\lambda^+_k(t),\;\lambda^+_k(t))
@@ -811,7 +821,7 @@ into the equation for a time bridge with uncertain endpoints
 \begin{align}
     \operatorname{Var}\left[
         E_{t,y}\,\mid\,
-        \mathcal{C}_{k,s}
+        \mathcal{C}
         \right]
     =  
     \underbrace{
@@ -819,7 +829,7 @@ into the equation for a time bridge with uncertain endpoints
         + \lambda^+_k(t)^2 v_k(y)
     }_{\tilde{v}_k(t,y)}
     + 
-    \underbrace{\sigma^2 \phi^+_k(t)}_{v_k(t)}
+    \underbrace{\sigma^2_k \phi^+_k(t)}_{v_k(t)}
     \text{.}
 \end{align}
 %
@@ -846,11 +856,11 @@ which satisfies the four boundary conditions
 \begin{align}
     \tilde{v}_k(t, y_{s-1})   &=    (1 - \lambda^+_k(t))^2 v_k(t_{k-1,s-1})
                                     + \lambda^+_k(t)^2 v_k(t_{k,s-1})
-                                    + \sigma^2 \phi^+_k(t)
+                                    + \sigma^2_k \phi^+_k(t)
                                     \text{,} \notag \\
     \tilde{v}_k(t, y_{s})     &=    (1 - \lambda^+_k(t))^2 v_k(t_{k-1,s})
                                     + \lambda^+_k(t)^2 v_k(t_{k,s})
-                                    + \sigma^2 \phi^+_k(t)
+                                    + \sigma^2_k \phi^+_k(t)
                                     \text{,} \notag \\
     \tilde{v}_k(t_{k-1}, y)   &=    (1 - \lambda^+_s(y))^2 v_k(t_{k-1,s-1})
                                     + \lambda^+_s(y)^2 v_k(t_{k-1,s})
