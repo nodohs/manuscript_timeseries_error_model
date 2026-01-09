@@ -454,6 +454,18 @@ and letting $\phi^+_k(t)$ be the bridge factor, extended by
     \end{cases}
     \text{.}
 \end{equation}
+and letting $\zeta^+_k(t)$ be a drift factor, extended by
+%
+\begin{equation}
+    \zeta^+_k(t) :=
+    \begin{cases}
+        (t_{1} - t), & t < t_{1} \\
+        0 , & t \in [t_{k-1}, t_{k}] \\
+        (t - t_{K}), & t > t_{K}
+    \end{cases}
+    \text{,}
+\end{equation}
+so the drift term is negated during closed intervals.
 %
 Then conditional mean and variance can be written without superscripts
 ($m^o$, $m^c$, etc.), as
@@ -461,25 +473,13 @@ Then conditional mean and variance can be written without superscripts
 \begin{align}
     m_k(t)  &=  \delta_{k-1} \left( 1 - \lambda^+_k(t) \right)e_{k-1}
                 + \lambda^+_k(t) e_k
-                + \mu^+_k(t)
+                + \mu \zeta^+_k(t)
     \label{eq:unified_wiener_mean}
     \qquad \text{and} \qquad \\
     v_k(t) &= \sigma^2 \phi^+_k(t)
     \label{eq:unified_wiener_variance}
-    \text{,}
-\end{align}
-where $\mu^+_k(t)$ is the extended drift term,
-which is zero for closed intervals,
-\begin{equation}
-    \mu^+_k(t) :=
-    \begin{cases}
-        \mu_k (t_{1} - t), & t < t_{1} \\
-        0 , & t \in [t_{k-1}, t_{k}] \\
-        \mu_k (t - t_{K}), & t > t_{K}
-    \end{cases}
     \text{.}
-\end{equation}
-%
+\end{align}
 
 \section{Check-Measurement Uncertainty}
 
