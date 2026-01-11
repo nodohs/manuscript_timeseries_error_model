@@ -813,17 +813,12 @@ into the equation for a time bridge with uncertain endpoints
 %
 Expanding the right-hand side yields
 %
-% TODO FIX THIS!
 \begin{align}
     \tilde{v}_k(t,y) &:=
         \left((1 - \lambda^+_k(t))^2,\; \lambda^+_k(t)^2\right)
-        %\begin{bmatrix}
-        %    \operatorname{Var}[E_{k-1,s-1}] & \operatorname{Var}[E_{k-1,s}] \\
-        %    \operatorname{Var}[E_{k,s-1}]   & \operatorname{Var}[E_{k,s}]
-        %\end{bmatrix}
         \begin{bmatrix}
-            v_{k-1}(y) & v_{k-1}(y) \\
-            v_k(y) & v_k(y)
+            v_{k-1,s-1} & v_{k-1,s} \\
+            v_{k,s-1}   & v_{k,s}
         \end{bmatrix}
         \begin{bmatrix}
             (1 - \lambda^+_s(y))^2 \\
@@ -832,8 +827,6 @@ Expanding the right-hand side yields
         \notag \\
         &\quad
         + \left((1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2\right)\eta^2 \phi^+_s(y)
-        \notag \\
-        &\quad
         + \sigma^2_k \phi^+_k(t)
     \label{eq:multi_check_variance}
     \text{,}
@@ -842,20 +835,20 @@ Expanding the right-hand side yields
 which satisfies the four boundary conditions
 %
 \begin{align}
-    \tilde{v}_k(t, y_{s-1})   &=    (1 - \lambda^+_k(t))^2 v_k(t_{k-1,s-1})
-                                    + \lambda^+_k(t)^2 v_k(t_{k,s-1})
+    \tilde{v}_k(t, y_{s-1})   &=    (1 - \lambda^+_k(t))^2 v_{k-1,s-1}
+                                    + \lambda^+_k(t)^2 v_{k,s-1}
                                     + \sigma^2_k \phi^+_k(t)
                                     \text{,} \notag \\
-    \tilde{v}_k(t, y_{s})     &=    (1 - \lambda^+_k(t))^2 v_k(t_{k-1,s})
-                                    + \lambda^+_k(t)^2 v_k(t_{k,s})
+    \tilde{v}_k(t, y_{s})     &=    (1 - \lambda^+_k(t))^2 v_{k-1,s}
+                                    + \lambda^+_k(t)^2 v_{k,s}
                                     + \sigma^2_k \phi^+_k(t)
                                     \text{,} \notag \\
-    \tilde{v}_k(t_{k-1}, y)   &=    (1 - \lambda^+_s(y))^2 v_k(t_{k-1,s-1})
-                                    + \lambda^+_s(y)^2 v_k(t_{k-1,s})
+    \tilde{v}_k(t_{k-1}, y)   &=    (1 - \lambda^+_s(y))^2 v_{k-1,s-1}
+                                    + \lambda^+_s(y)^2 v_{k-1,s}
                                     + \eta^2 \phi^+_s(y)
                                     \text{,} \notag \\
-    \tilde{v}_k(t_{k}, y)     &=    (1 - \lambda^+_s(y))^2 v_k(t_{k,s-1}) 
-                                    + \lambda^+_s(y)^2 v_k(t_{k,s})
+    \tilde{v}_k(t_{k}, y)     &=    (1 - \lambda^+_s(y))^2 v_{k,s-1} 
+                                    + \lambda^+_s(y)^2 v_{k,s}
                                     + \eta^2 \phi^+_s(y)
     \text{,}
 \end{align}
@@ -875,7 +868,7 @@ Recall that the fouling and calibration-drift variance has two components:
 %
 where $v_k(t)$ is the variance from the error-process evolution 
 and $\tilde v_k(t)$ is the additional variance from check-measurement uncertainty
-(Equations~\ref{eq:check_variance} or \ref{eq:multi_check_variance}).
+(Equations~\ref{eq:check_constant_variance} or \ref{eq:multi_check_variance}).
 
 The combined conditional mean and variance are given by the sum of the individual components,
 %
@@ -960,9 +953,9 @@ are estimated by maximizing the Gaussian log-likelihood function
 (omitting the additive constants),
 %
 \begin{equation}
-    \ln \mathcal{L} (\mu_k, \sigma_k^2)
+    \ln \mathcal{L} (\mu_k ,\, \sigma_k^2)
     =
-    - \frac{1}{2} \sum_{k=1}^{K_i}
+    - \frac{1}{2} \sum_{k=1}^{K}
     \left[
         \log \left( u_k \right)
         +
@@ -991,13 +984,13 @@ and
 however, these become ill-conditioned when measurement uncertainty is significant,
 because the denominator may approach zero while the residual term in the numerator does not.
 
-For the multipoint calibration,
+For the multipoint check,
 the residual and its variance are given by
 %
 \begin{align}
-    r_{d,s} &= e_{d,s} - e_{d,s-1} \\
-    u_{d,s} &= \eta^2 (z_{d,s} - z_{d,s-1})
-                + v_{d,s} + v_{d,s-1}
+    r_{k,s} &= e_{k,s} - e_{k,s-1} \\
+    u_{k,s} &= \eta^2 (z_{k,s} - z_{k,s-1})
+                + v_{k,s} + v_{k,s-1}
     \text{,}
 \end{align}
 %
@@ -1008,20 +1001,18 @@ is estimated by maximizing the log-likelihood (omitting constants),
     \ln \mathcal{L} (\eta^2)
     =
     %-\frac{K_i}{2} \ln(2 \pi)
-    - \frac{1}{2} \sum_{d=1}^{D} \sum_{s=2}^{S_d}
+    - \frac{1}{2} \sum_{k=1}^{K} \sum_{s=2}^{S_k}
     \left[
-        \log \left( u_{d,s} \right)
+        \log \left( u_{k,s} \right)
         +
-        \frac{r_{d,s}^2}{u_{d,s}}
+        \frac{r_{k,s}^2}{u_{k,s}}
     \right]
     \text{,}
 \end{equation}
 %
-where $S_d$ is the number of standards in the $d$-th calibration check,
-because each check may use different standards.
-
-This is necessary because in practice,
-only some of the standards may be checked at a time.
+where $S_k$ is the number of points in the $k$-th check.
+%This is necessary because in practice,
+%only some of the standards may be checked at a time.
 
 Assuming no observational uncertainty,
 $v_s = v_{s-1} \equiv 0$,
@@ -1030,13 +1021,13 @@ the maximum-likelihood estimator for $\eta$ is
 \begin{equation}
     \hat{\eta}^2 =
     \frac{1}{N}
-    \sum_{d=1}^{D} \sum_{s=2}^{S_d}
-    \frac{\left(e_{d,s} - e_{d,s-1}\right)^2}
+    \sum_{k=1}^{K} \sum_{s=2}^{S_k}
+    \frac{\left(e_{k,s} - e_{k,s-1}\right)^2}
          {z_s - z_{s-1}}
     \text{,}
 \end{equation}
 %
-where $N = \sum_{d=1}^{D} (S_d - 1)$.
+where $N = \sum_{k=1}^{K} (S_k - 1)$.
 This is better conditioned than $\hat{\sigma}$,
 because calibration standards are typically separated in the $y$-dimension,
 so the denominator never approaches zero.
@@ -1055,26 +1046,11 @@ Let $s_j$ be the diffusion estimate for device $j \in \{1,\ldots,J\}$,
 and let $K_j$ be the number of checks for that particular device.
 
 We assume an inverse-gamma prior on the diffusion rate,
-%
-\begin{equation}
-    \sigma_j^2 \sim \operatorname{IG}(\kappa, \theta)
-    \text{,}
-\end{equation}
-%
+$\sigma_j^2 \sim \operatorname{IG}(\kappa, \theta)$,
 where $\kappa>0$ and $\theta>0$ are hyperparameters to be estimated from the data.
-The prior density is
-%
-\begin{equation}
-    p(\sigma^2 \mid \kappa,\theta)
-    =
-    \frac{\theta^\kappa}{\Gamma(\kappa)} (\sigma^2)^{-(\kappa+1)}\exp\left(-\frac{\theta}{\sigma^2}\right)
-    \text{,}
-\end{equation}
-%
-and prior mean $\mathbb{E}[\sigma^2]=\theta/(\kappa-1)$ for $\kappa>1$.
-
-Integrating out $\sigma_j^2$ gives the marginal likelihood for $(\kappa,\theta)$,
-which, up to an additive constant, is
+The prior has mean $\mathbb{E}[\sigma^2]=\theta/(\kappa-1)$ for $\kappa>1$.
+Integrating out $\sigma_j^2$ gives the marginal log-likelihood for $(\kappa,\theta)$,
+which, omitting additive constants, is
 %
 \begin{equation}
     \ln \mathcal{L} (s \mid \kappa,\theta)
@@ -1090,92 +1066,53 @@ which, up to an additive constant, is
     \label{eq:hierarchical_likelihood}
 \end{equation}
 %
-Empirical-Bayes estimates $\hat{\kappa}$ and $\hat{\theta}$ can be obtained by maximizing
-Equation~\ref{eq:hierarchical_likelihood}.
-
-Given hyperparameters $(\kappa,\theta)$, the posterior for $\sigma_j^2$ is
-$\operatorname{IG}\bigl(\kappa + K_j/2,\; \theta + K_j s_j^2/2\bigr)$,
-so the posterior mean (for $\kappa+K_j/2>1$) is
-%
-\begin{equation}
-    \mathbb{E}[\sigma_j^2 \mid s_j^2,\kappa,\theta]
-    =
-    \frac{\theta + \tfrac{K_j}{2}s_j^2}{\kappa + \tfrac{K_j}{2} - 1}
-    =
-    w_j\,s_j^2 + (1-w_j)\,\bar{\sigma}^2
-    \text{,}
-\end{equation}
-%
-where
-%
-\begin{equation}
-    \bar{\sigma}^2 := \frac{\theta}{\kappa-1}
-    \text{,} \qquad
-    w_j := \frac{K_j}{K_j + 2(\kappa-1)}
-    \text{.}
-\end{equation}
-%
-Substituting $(\hat{\kappa},\hat{\theta})$ gives the empirical-Bayes shrinkage estimate
+Maximizing Equation~\ref{eq:hierarchical_likelihood} yields empirical-Bayes estimates $\hat{\kappa}$ and $\hat{\theta}$.
+The empirical-Bayes shrinkage estimate is
 %
 \begin{equation}
     \hat{\sigma}_j^2
     =
     \hat{w}_j\,s_j^2 + (1-\hat{w}_j)\,\bar{\hat{\sigma}}^2
     \text{,}
-    \qquad
-    \hat{w}_j := \frac{K_j}{K_j + 2(\hat{\kappa}-1)}
+\end{equation}
+%
+where
+\begin{equation}
+    \bar{\hat{\sigma}}^2 := \hat{\theta}/(\hat{\kappa}-1)
+    \text{,} \qquad
+    \hat{w}_j := K_j/(K_j + 2(\hat{\kappa}-1))
     \text{.}
 \end{equation}
 %
 
-For the drift rate, we assume a Gaussian prior,
+For the drift rate, we assume a Gaussian prior $\mu_j \sim \mathcal{N}(\nu, \tau^2)$,
+where $\nu$ and $\tau^2$ are population hyperparameters
+with maximum-likelihood estimators
 %
 \begin{equation}
-    \mu_j \sim \mathcal{N}(\nu, \tau^2)
-    \text{,}
-\end{equation}
-%
-where $\nu$ and $\tau^2$ are the population hyperparameters,
-which have closed-form maximum-likelihood estimators
-%
-\begin{align}
-    \hat{\nu} &= \frac{\sum_{j=1}^{J} K_j \hat{\mu}_j}{\sum_{j=1}^{J} K_j} \\
-    \hat{\tau}^2 &= \frac{\sum_{j=1}^{J} K_j (\hat{\mu}_j - \hat{\nu})^2}{\sum_{j=1}^{J} K_j}
-    \text{,}
-\end{align}
-
-Given hyperparameters $(\nu,\tau^2)$ and assuming the sampling variance of $\hat{\mu}_j$ is $\sigma_j^2/K_j$,
-the posterior mean of $\mu_j$ is
-%
-\begin{equation}
-    \mathbb{E}[\mu_j \mid \hat{\mu}_j,\nu,\tau^2]
-    =
-    \frac{\tau^{-2}\nu + K_j\sigma_j^{-2}\hat{\mu}_j}{\tau^{-2} + K_j\sigma_j^{-2}}
-    =
-    u_j\,\hat{\mu}_j + (1-u_j)\,\nu
-    \text{,}
-\end{equation}
-%
-where the shrinkage weight is
-%
-\begin{equation}
-    u_j := \frac{K_j\sigma_j^{-2}}{\tau^{-2} + K_j\sigma_j^{-2}}
-    =
-    \frac{K_j\tau^2}{K_j\tau^2 + \sigma_j^2}
+    \hat{\nu} = \frac{\sum_{j=1}^{J} K_j \hat{\mu}_j}{\sum_{j=1}^{J} K_j}
+    \text{,} \qquad
+    \hat{\tau}^2 = \frac{\sum_{j=1}^{J} K_j (\hat{\mu}_j - \hat{\nu})^2}{\sum_{j=1}^{J} K_j}
     \text{.}
 \end{equation}
 %
-Substituting $(\hat{\nu},\hat{\tau}^2,\hat{\sigma}_j^2)$ gives the empirical-Bayes shrinkage estimate
+The empirical-Bayes shrinkage estimate is
 %
 \begin{equation}
     \tilde{\mu}_j
     =
     \hat{u}_j\,\hat{\mu}_j + (1-\hat{u}_j)\,\hat{\nu}
     \text{,}
-    \qquad
+\end{equation}
+%
+where the shrinkage weight is derived from the posterior mean of a Gaussian with Gaussian prior:
+%
+\begin{equation}
     \hat{u}_j := \frac{K_j\hat{\tau}^2}{K_j\hat{\tau}^2 + \hat{\sigma}_j^2}
+    = \frac{\hat{\tau}^{-2}}{\hat{\tau}^{-2} + K_j^{-1}\hat{\sigma}_j^2}
     \text{.}
 \end{equation}
+%
 
 In practice, per-device estimates for
 $(\hat{\sigma}_j^2$, $\hat{w}_j$, $\tilde{\mu}_j$, and $\hat{u}_j)$
@@ -1198,8 +1135,6 @@ Implementing the bias-correction framework requires the following information.
     \item The precision for the measurement device and any reference devices or standards.
     \item The device type (make and model) for grouping like devices in hierarchical estimation.
     \item A unique device identifier for tracking devices across multiple redeployments.
-    \item The scale (absolute or fractional) of each error component.
-    % TODO more accurately which 0 values are imputed for the fractional
 \end{enumerate}
 %
 
