@@ -1105,11 +1105,10 @@ The empirical-Bayes shrinkage estimate is
     \text{,}
 \end{equation}
 %
-where the shrinkage weight is derived from the posterior mean of a Gaussian with Gaussian prior:
+where the shrinkage weight follows from the conjugate Gaussian prior,
 %
 \begin{equation}
-    \hat{u}_j := \frac{K_j\hat{\tau}^2}{K_j\hat{\tau}^2 + \hat{\sigma}_j^2}
-    = \frac{\hat{\tau}^{-2}}{\hat{\tau}^{-2} + K_j^{-1}\hat{\sigma}_j^2}
+    \hat{u}_j := K_j\hat{\tau}^2/(K_j\hat{\tau}^2 + \hat{\sigma}_j^2)
     \text{.}
 \end{equation}
 %
