@@ -468,31 +468,31 @@ For a bridge with uncertain endpoints,
 the endpoint expectations and variances are defined as
 %
 \begin{equation}
-    m_{k}(t_{k-1}) := \mathbb{E}\left[ E_{k-1}\right]
+    e_{k-1} := \mathbb{E}\left[ E_{k-1}\right]
     \text{,} \qquad
-    m_{k}(t_k) := \mathbb{E}\left[ E_{k}\right]
+    e_{k} := \mathbb{E}\left[ E_{k}\right]
     \text{,} \qquad
-    v_{k}(t_{k-1}) := \operatorname{Var}\left[ E_{k-1}\right]
+    v_{k-1} := \operatorname{Var}\left[ E_{k-1}\right]
     \text{,} \qquad
-    v_k(t_k) := \operatorname{Var}\left[ E_{k}\right]
+    v_k := \operatorname{Var}\left[ E_{k}\right]
 \end{equation}
 %
-Given the Brownian-bridge
+Given the Brownian-bridge,
 %
 \begin{equation}
     E_t = (1 - \lambda^+_k(t)) E_{k-1} + \lambda^+_k(t) E_k + \sigma W_t
     \text{,} \qquad
     W_t \sim \mathcal{N}\left(0, \phi^+_k(t)\right)
-    \text{.}
+    \text{,}
 \end{equation}
 %
-Applying linearity of the expectation,
+and applying linearity of the expectation,
 %
 \begin{align}
     \mathbb{E}[E_t] &= (1 - \lambda^+_k(t)) \, \mathbb{E}[E_{k-1}]
                         + \lambda^+_k(t) \, \mathbb{E}[E_k] + \mathbb{E}[W_t]
                         \notag \\
-                    &= (1 - \lambda^+_k(t)) m_{k}(t_{k-1}) + \lambda^+_k(t) m_{k}(t_k)  
+                    &= (1 - \lambda^+_k(t)) e_{k-1} + \lambda^+_k(t) e_k  
     \text{,}
 \end{align}
 %
@@ -519,8 +519,8 @@ the combined variance is obtained by applying the variance formula for a linear 
             + \operatorname{Var}[W_t]
             \notag \\
         &=  \underbrace{
-            (1 - \lambda^+_k(t))^2 \, v_{k}(t_{k-1})
-            + \lambda^+_k(t)^2 \, v_k(t_k)
+            (1 - \lambda^+_k(t))^2 \, v_{k-1}
+            + \lambda^+_k(t)^2 \, v_k
             }_{\tilde{v}_k(t)}
             + 
             \underbrace{\sigma^2 \phi^+_k(t)}_{v_k(t)}
@@ -530,28 +530,28 @@ the combined variance is obtained by applying the variance formula for a linear 
 %
 where $\tilde{v}_k(t)$ is the contribution from check-measurement uncertainty.
 If the endpoint errors have equal variance,
-$v_{k}(t_{k-1}) = v_{k}(t_k)$,
+$v_{k-1} = v_{k}$,
 the conditional variance simplifies to
 %
 \begin{equation}
     \tilde{v}_k(t) = \left(
                         (1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2
-                      \right) \, v_{k}(t_k)
+                      \right) \, v_{k}
     \label{eq:check_constant_variance}
     \text{.}
 \end{equation}
 %
 For open intervals, this reduces to
-$ \tilde{v}^o_k(t) = v_{k}(t_{k-1})$,
+$ \tilde{v}^o_k(t) = v_{k-1}$,
 which is constant in time.
 
 The next sections derive variance formula for the
 fouling and calibration-drift checks,
-$v_{f}(t_f)$ and $v_{d}(t_d)$,
+$v_{f}$ and $v_{d}$,
 to use in Equation~\ref{eq:check_constant_variance}.
 Later, we introduce multipoint calibrations,
 where the check variances often differ;
-so we will use Equation~\ref{eq:check_variance} for that case.
+so we will use Equation~\ref{eq:variance_uncertain_bridge} for that case.
 
 \subsection{Fouling-Check Uncertainty}
 
@@ -672,15 +672,17 @@ and by independence ($E^{m} \perp E^{s}$), the variance of the drift check is
 \end{equation}
 %
 
-\section{Multipoint Calibration Check}
+\section{Multipoint Check}
 
-In a multipoint calibration check, a device is checked against multiple standards
+In a multipoint check, a device is checked against multiple reference values
 that should span the expected range of the measurand.
-Multipoint calibrations are essential when the device response is nonlinear
-and the magnitude of drift varies across the measurement range.
-For example, a pH meter might be calibrated using standards at pH 4, 7, and 10.
-The drift correction is determined by linearly
-interpolating errors between each check value
+To distinguish these from the reference device used in fouling checks,
+we call them ``standards,''
+although in some cases ``reference value'' may be more appropriate.
+Multipoint checks are essential when the device response is nonlinear
+and the error magnitude varies across its range.
+For example, a pH meter might be checked against standards at pH 4, 7, and 10,
+then the drift correction interpolates errors at these check points
 \citep{Wagner_2006}.
 
 The previous sections showed how single-point checks form a Gaussian bridge through time.
@@ -710,7 +712,7 @@ m_{k}(y) &:= \mathbb{E} \left[
 \text{,}
 \end{align}
 %
-which is a linear interpolation between the check-measurement errors.
+which linearly interpolates between the standard values.
 Unlike the time-bridge, the $y$-bridge has no drift or reset terms ($\delta$, $\mu$).
 The conditional variance of the $y$-bridge at time $t_k$ is
 %
@@ -855,7 +857,33 @@ which satisfies the four boundary conditions
 %
 each being a one-dimensional Gaussian bridge.
 
-% Note that the standards need not be consistent between checks.
+Another application of a multipoint check is to apply a percentage correction
+using a single reference value.
+This is common in fouling checks where the only available reference is the post-cleaning value.
+For consistency with the multipoint notation,
+let this check value be at $z_s$ with error $e_s$ and variance $v_s$.
+Here, we may apply a percentage or absolute correction depending on the device characteristics.
+For an absolute correction,
+we apply the appropriate formula from previous sections
+(Equations~\ref{eq:unified_wiener_mean} and \ref{eq:variance_uncertain_bridge}).
+For a percentage correction,
+we apply the multipoint formula assuming that $e_0=0$ and $v_0=0$ at $z_0 = 0$,
+such that the error scales linearly with the measurand.
+Then, the interpolation weight simplifies to $\lambda^+_s(y) = y/z_s$
+and the bridge factor to $\phi^+_s(y) = y(z_s - y)/z_s$.
+Substituting back into the conditional mean (Equation~\ref{eq:multi_check_mean}) gives
+%
+\begin{align}
+    m_k(t,y) &= \frac{y}{z_s} \left[ (1 - \lambda^+_k(t)) \delta_{k-1} e_{k-1,s} + \lambda^+_k(t) e_{k,s} \right]
+    \text{,}
+\end{align}
+%
+and the conditional variance (Equation~\ref{eq:multi_check_variance}) gives 
+\begin{equation}
+    v_k(t,y) = \left(\frac{y}{z_s}\right)^2 v_s + \eta^2 \frac{y(z_s - y)}{z_s}
+    \text{.}
+\end{equation}
+%
 
 \section{Combined Error}
 
@@ -898,7 +926,7 @@ and
 and the variances by Equations
 \ref{eq:measurement_error},
 \ref{eq:unified_wiener_variance},
-\ref{eq:check_variance},
+\ref{eq:variance_uncertain_bridge},
 and
 \ref{eq:multi_check_variance}.
 
@@ -1171,6 +1199,187 @@ and to pooling information across monitoring networks of similar devices.
 
 %% Option 2: If you put all figures after the reference list, please insert appendix tables and figures after the normal tables and figures.
 %% To rename them correctly to A1, A2, etc., please add the following commands in front of them:
+
+\appendix
+
+\section{Derivation of the Shrinkage Weight for Diffusion Rate}
+
+The shrinkage weight $\hat{w}_j$ in the empirical-Bayes estimator for the diffusion rate
+follows from the conjugate inverse-gamma prior structure.
+We assume an inverse-gamma prior on the diffusion variance,
+%
+\begin{equation}
+    \sigma_j^2 \sim \operatorname{IG}(\kappa, \theta)
+    \text{,}
+\end{equation}
+%
+where $\kappa > 0$ is the shape parameter and $\theta > 0$ is the scale parameter.
+The sample variance $s_j^2$ has a scaled chi-squared distribution,
+%
+\begin{equation}
+    \frac{K_j s_j^2}{\sigma_j^2} \sim \chi^2_{K_j}
+    \text{,}
+\end{equation}
+%
+where $K_j$ is the number of checks for device $j$.
+
+The inverse-gamma prior has density
+%
+\begin{equation}
+    p(\sigma_j^2) \propto (\sigma_j^2)^{-\kappa-1} \exp\left(-\frac{\theta}{\sigma_j^2}\right)
+    \text{,}
+\end{equation}
+%
+and the likelihood is
+%
+\begin{equation}
+    p(s_j^2 \mid \sigma_j^2) \propto (\sigma_j^2)^{-K_j/2} \exp\left(-\frac{K_j s_j^2}{2\sigma_j^2}\right)
+    \text{.}
+\end{equation}
+%
+By Bayes' theorem, the posterior distribution is
+%
+\begin{equation}
+    p(\sigma_j^2 \mid s_j^2) \propto p(s_j^2 \mid \sigma_j^2) \, p(\sigma_j^2)
+    \text{.}
+\end{equation}
+%
+Substituting the densities yields
+%
+\begin{align}
+    p(\sigma_j^2 \mid s_j^2)
+    &\propto (\sigma_j^2)^{-K_j/2} \exp\left(-\frac{K_j s_j^2}{2\sigma_j^2}\right)
+             (\sigma_j^2)^{-\kappa-1} \exp\left(-\frac{\theta}{\sigma_j^2}\right)
+    \notag \\
+    &= (\sigma_j^2)^{-(\kappa + K_j/2)-1} \exp\left(-\frac{\theta + K_j s_j^2/2}{\sigma_j^2}\right)
+    \text{,}
+\end{align}
+%
+which is another inverse-gamma distribution,
+%
+\begin{equation}
+    \sigma_j^2 \mid s_j^2 \sim \operatorname{IG}\left(\kappa + \frac{K_j}{2},\, \theta + \frac{K_j s_j^2}{2}\right)
+    \text{.}
+\end{equation}
+%
+The posterior mean is
+%
+\begin{align}
+    \mathbb{E}[\sigma_j^2 \mid s_j^2]
+    &= \frac{\theta + K_j s_j^2/2}{\kappa + K_j/2 - 1}
+    \notag \\
+    &= \frac{\theta}{\kappa + K_j/2 - 1} + \frac{K_j s_j^2/2}{\kappa + K_j/2 - 1}
+    \notag \\
+    &= \frac{\theta}{\kappa - 1} \cdot \frac{\kappa - 1}{\kappa + K_j/2 - 1}
+       + s_j^2 \cdot \frac{K_j/2}{\kappa + K_j/2 - 1}
+    \text{.}
+\end{align}
+%
+Recognizing that $\bar{\sigma}^2 := \theta/(\kappa-1)$ is the prior mean
+and rearranging terms gives
+%
+\begin{equation}
+    \mathbb{E}[\sigma_j^2 \mid s_j^2]
+    = \frac{K_j/2}{\kappa + K_j/2 - 1} s_j^2
+      + \frac{\kappa - 1}{\kappa + K_j/2 - 1} \bar{\sigma}^2
+    \text{.}
+\end{equation}
+%
+Multiplying numerator and denominator by 2 yields
+%
+\begin{equation}
+    \mathbb{E}[\sigma_j^2 \mid s_j^2]
+    = \frac{K_j}{K_j + 2(\kappa - 1)} s_j^2
+      + \frac{2(\kappa - 1)}{K_j + 2(\kappa - 1)} \bar{\sigma}^2
+    \text{.}
+\end{equation}
+%
+Defining the shrinkage weight
+%
+\begin{equation}
+    \hat{w}_j := \frac{K_j}{K_j + 2(\hat{\kappa} - 1)}
+    \text{,}
+\end{equation}
+%
+the posterior mean becomes
+%
+\begin{equation}
+    \hat{\sigma}_j^2 = \hat{w}_j s_j^2 + (1 - \hat{w}_j) \bar{\hat{\sigma}}^2
+    \text{,}
+\end{equation}
+%
+which shrinks the sample variance $s_j^2$ toward the population mean $\bar{\hat{\sigma}}^2$.
+The weight $\hat{w}_j$ increases with $K_j$ (more checks provide stronger evidence)
+and decreases as $\hat{\kappa}$ increases (stronger prior belief in population homogeneity).
+
+
+\section{Derivation of the Shrinkage Weight for Drift Rate}
+
+The shrinkage weight $\hat{u}_j$ in the empirical-Bayes estimator for the drift rate
+follows from the conjugate Gaussian prior structure.
+We assume a Gaussian prior on the drift rate,
+%
+\begin{equation}
+    \mu_j \sim \mathcal{N}(\nu, \tau^2)
+    \text{,}
+\end{equation}
+%
+and the maximum-likelihood estimate $\hat{\mu}_j$ has sampling distribution
+%
+\begin{equation}
+    \hat{\mu}_j \mid \mu_j \sim \mathcal{N}\left(\mu_j, \frac{\hat{\sigma}_j^2}{K_j}\right)
+    \text{,}
+\end{equation}
+%
+where $K_j$ is the number of checks and $\hat{\sigma}_j^2$ is the estimated diffusion variance.
+
+By Bayes' theorem, the posterior distribution is
+%
+\begin{equation}
+    p(\mu_j \mid \hat{\mu}_j) \propto p(\hat{\mu}_j \mid \mu_j) \, p(\mu_j)
+    \text{.}
+\end{equation}
+%
+Substituting the Gaussian densities and completing the square yields another Gaussian,
+%
+\begin{equation}
+    \mu_j \mid \hat{\mu}_j \sim \mathcal{N}(\tilde{\mu}_j, \tilde{\sigma}_j^2)
+    \text{,}
+\end{equation}
+%
+where the posterior mean is
+%
+\begin{align}
+    \tilde{\mu}_j
+    &= \frac{\tau^{-2} \nu + (K_j/\hat{\sigma}_j^2) \hat{\mu}_j}{\tau^{-2} + K_j/\hat{\sigma}_j^2}
+    \notag \\
+    &= \frac{K_j\hat{\sigma}_j^{-2}}{K_j\hat{\sigma}_j^{-2} + \tau^{-2}} \hat{\mu}_j
+       + \frac{\tau^{-2}}{K_j\hat{\sigma}_j^{-2} + \tau^{-2}} \nu
+    \notag \\
+    &= \frac{K_j\tau^2}{K_j\tau^2 + \hat{\sigma}_j^2} \hat{\mu}_j
+       + \frac{\hat{\sigma}_j^2}{K_j\tau^2 + \hat{\sigma}_j^2} \nu
+    \text{.}
+\end{align}
+%
+Defining the shrinkage weight
+%
+\begin{equation}
+    \hat{u}_j := \frac{K_j\hat{\tau}^2}{K_j\hat{\tau}^2 + \hat{\sigma}_j^2}
+    \text{,}
+\end{equation}
+%
+the posterior mean becomes
+%
+\begin{equation}
+    \tilde{\mu}_j = \hat{u}_j \hat{\mu}_j + (1 - \hat{u}_j) \hat{\nu}
+    \text{,}
+\end{equation}
+%
+which shrinks the individual estimate $\hat{\mu}_j$ toward the population mean $\hat{\nu}$.
+The weight $\hat{u}_j$ increases with $K_j$ (more checks provide stronger evidence)
+and decreases with $\hat{\sigma}_j^2$ (higher diffusion variance implies less precise estimates).
+
+\noappendix
 
 \appendixfigures  %% needs to be added in front of appendix figures
 
