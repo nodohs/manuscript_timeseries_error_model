@@ -528,7 +528,27 @@ the combined variance is obtained by applying the variance formula for a linear 
     \text{,}
 \end{align}
 %
-where $\tilde{v}_k(t)$ is the contribution from check-measurement uncertainty.
+where $\tilde{v}_k(t)$ is the contribution from check-measurement uncertainty
+(Figure~\ref{fig:variance_between_uncertain_checkpoints}).
+
+\begin{figure*}[t]
+\includegraphics[width=12cm]{
+    figures/variance_between_uncertain_checkpoints.pdf
+}
+\caption{
+    Error variance during open and closed-interval intervals with uncertain check measurements.
+    where the diffusion rate is
+    $\sigma^2 = 0.02$,
+    and the check variances are
+    $v(t=0) = 0.04$
+    and
+    $v(t=10) = 0.09$.
+}
+\label{fig:variance_between_uncertain_checkpoints}
+\end{figure*}
+%
+
+
 If the endpoint errors have equal variance,
 $v_{k-1} = v_{k}$,
 the conditional variance simplifies to
@@ -930,15 +950,6 @@ and the variances by Equations
 and
 \ref{eq:multi_check_variance}.
 
-% TODO DESCRIBE FIGURE HERE
-
-%\begin{figure*}[t]
-%\includegraphics[width=12cm]{FILE NAME}
-%\caption{TEXT}
-%\label{fig:}
-%\end{figure*}
-%
-
 \section{Corrected Measurement and Confidence Interval}
 
 Recall that $m(t ,\, y)$ and $v(t ,\, y)$ give the expectation and variance of the error $E$ at $(t,y)$.
@@ -1294,10 +1305,20 @@ Multiplying numerator and denominator by 2 yields
     \text{.}
 \end{equation}
 %
+In practice, we substitute the empirical-Bayes estimates
+$\hat{\kappa}$ and $\hat{\theta}$ obtained by maximizing Equation~\ref{eq:hierarchical_likelihood}
+in place of the population parameters $\kappa$ and $\theta$.
 Defining the shrinkage weight
 %
 \begin{equation}
     \hat{w}_j := \frac{K_j}{K_j + 2(\hat{\kappa} - 1)}
+    \text{,}
+\end{equation}
+%
+and the empirical-Bayes estimate of the population mean
+%
+\begin{equation}
+    \bar{\hat{\sigma}}^2 := \hat{\theta}/(\hat{\kappa}-1)
     \text{,}
 \end{equation}
 %
@@ -1361,6 +1382,9 @@ where the posterior mean is
     \text{.}
 \end{align}
 %
+In practice, we substitute the empirical-Bayes estimates
+$\hat{\nu}$ and $\hat{\tau}^2$ from the main text
+in place of the population parameters $\nu$ and $\tau^2$.
 Defining the shrinkage weight
 %
 \begin{equation}
