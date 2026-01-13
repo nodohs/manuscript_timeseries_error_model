@@ -110,7 +110,7 @@ def main() -> None:
         }
     )
 
-    # 12 cm width = 12/2.54 inches, maintain aspect ratio
+    # 12 cm width = 12/2.54 inches
     fig = plt.figure(figsize=(12/2.54, 7/2.54))
     ax = fig.add_subplot(1, 1, 1)
 
@@ -143,7 +143,7 @@ def main() -> None:
     # Annotate endpoints
     ax.scatter(
         [t0, t1], [v0, v1], zorder=5,
-        label=r"variance in the check, $t=0$ and $t=10$",
+        label=r"variance of the check, $t=0$ and $t=10$",
         color="black",
         )
 
