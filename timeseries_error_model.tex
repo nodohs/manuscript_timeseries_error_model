@@ -1143,13 +1143,23 @@ the empirical-Bayes shrinkage estimator for
 the drift rate is
 %
 \begin{equation}
-    \tilde{\mu}_j = w_j \hat{\mu}_j + (1 - w_j) \mu_0
+    \tilde{\mu}_j = w_j \hat{\mu}_j + (1 - w_j) \hat{\mu}_0
     \text{,} \qquad
     w_j =  \frac{K_j}
                 {K_j + \hat{\kappa}_{\sigma}}
     \text{,}
 \end{equation}
 %
+and the shrinkage estimator for the diffusion rate is the posterior mean
+%
+\begin{equation}
+   \tilde{\sigma}_j^2 = 
+   \frac{\hat{\beta}_{\sigma} + \frac{K_j \hat{\sigma}_j^2}{2} 
+         + \frac{\hat{\kappa}_{\sigma} K_j (\hat{\mu}_j - \hat{\mu}_0)^2}{2(\hat{\kappa}_{\sigma} + K_j)}}
+        {\hat{\alpha}_{\sigma} + \frac{K_j}{2} - 1}
+    \text{.}            
+\end{equation}
+
 % \eta
 For the $y$-dimension diffusion parameter $\eta$,
 we assume an inverse-gamma prior on the device-diffusion rate,
