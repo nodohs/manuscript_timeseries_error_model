@@ -145,22 +145,22 @@ In practice, these measurements can exhibit systematic errors
 from fouling and calibration drift,
 as well as irreducible noise.
 Consequently, the measurement device must be periodically checked against known references,
-cleaned, and recalibrated, which resets the systematic error to zero.
-Later, the information from these checks is used to correct
-the raw measurements by linearly interpolating errors
-between check measurements \citep{Wagner_2006}.
+cleaned, and recalibrated, which resets the systematic error to zero
+within the precision of the device.
+In standard practice, information from these checks is later used to correct
+the raw measurements by linearly interpolating estimated errors
+between check events \citep{Wagner_2006}.
 This correction procedure is mathematically equivalent to modeling the error
 as a Wiener process conditioned on the check measurements.
-Following that assumption, we derive expressions for the conditional mean and variance,
-which are equivalent to Kalman filtering and smoothing for this system.
-As the checks are also imprecise,
-their uncertainty is propagated into the time-series model.
-Next, we extend the model to multipoint calibrations
+Under this assumption, we derive closed-form expressions for the conditional mean
+and variance of the error,
+which correspond to a special case of time-continuous Kalman filtering-and-smoothing.
+We then extend the model to multipoint calibrations
 and monitoring networks of similar devices.
 The result is a transparent and tractable framework for estimating
-fouling and drift corrections with confidence intervals
-that is consistent with standard operating procedures for environmental monitoring.
-
+fouling and drift corrections with associated confidence intervals
+that is consistent with standard operating procedures
+for environmental monitoring.
 
 \section{Preliminaries}
 %
@@ -376,7 +376,7 @@ The conditional distribution of the bridge at time $t$ is
     p(e_t \mid E_{t_{k-1}} = e_{k-1},\, E_{t_k} = e_k)
     =
     \mathcal{N} \left(
-        m^c(t),\, v^c(t)
+        m_k^c(t),\, v_k^c(t)
         %\delta_{k-1} \left( 1 - \lambda(t) \right)e_{k-1}
         %+ 
         %\lambda(t) e_k,\;
@@ -468,9 +468,9 @@ For a bridge with uncertain endpoints,
 the endpoint expectations and variances are defined as
 %
 \begin{equation}
-    e_{k-1} := \mathbb{E}\left[ E_{k-1}\right]
+    m_{k-1} := \mathbb{E}\left[ E_{k-1}\right] = e_{k-1}
     \text{,} \qquad
-    e_{k} := \mathbb{E}\left[ E_{k}\right]
+    m_{k} := \mathbb{E}\left[ E_{k}\right] = e_{k}
     \text{,} \qquad
     v_{k-1} := \operatorname{Var}\left[ E_{k-1}\right]
     \text{,} \qquad
@@ -536,13 +536,11 @@ where $\tilde{v}_k(t)$ is the contribution from check-measurement uncertainty
     figures/variance_between_uncertain_checkpoints.pdf
 }
 \caption{
-    Error variance during open and closed-interval intervals with uncertain check measurements.
-    where the diffusion rate is
-    $\sigma^2 = 0.02$,
-    and the check variances are
-    $v(t=0) = 0.04$
-    and
-    $v(t=10) = 0.09$.
+    Error variance during open and closed intervals
+    with diffusion rate $\sigma^2 = 0.02$
+    and check variances $v(t=0) = 0.04$ and $v(t=10) = 0.09$.
+    The two variance components represent uncertainty from the check measurements
+    and from evolution of the Wiener-process error.
 }
 \label{fig:variance_between_uncertain_checkpoints}
 \end{figure*}
@@ -709,6 +707,8 @@ The previous sections showed how single-point checks form a Gaussian bridge thro
 The multipoint check extends the same basic idea,
 using the check measurements as boundary conditions for the bridge.
 In this case, the boundary condition is not a point but a second bridge between the standards in the $y$ dimension.
+We assume the error diffusion in time is independent of the diffusion across the $y$ dimension,
+so the two bridges evolve independently.
 
 Let $z_s$ denote the standard values for $s = 1, 2, \ldots, S$,
 let $E_{k,s} := E(t_k,\, z_s)$ be the error at time $t_k$ and standard $z_s$,
@@ -1049,9 +1049,9 @@ is estimated by maximizing the log-likelihood (omitting constants),
     \text{,}
 \end{equation}
 %
-where $S_k$ is the number of points in the $k$-th check.
-%This is necessary because in practice,
-%only some of the standards may be checked at a time.
+where $S_k$ is the number of standards used in the $k$-th check.
+In operation,
+checks commonly use different numbers of standards in order to save time or cost.
 
 Assuming no observational uncertainty,
 $v_s = v_{s-1} \equiv 0$,
@@ -1067,7 +1067,7 @@ the maximum-likelihood estimator for $\eta$ is
 \end{equation}
 %
 where $N = \sum_{k=1}^{K} (S_k - 1)$.
-This is better conditioned than $\hat{\sigma}$,
+This estimator is better conditioned than $\hat{\sigma}$,
 because calibration standards are typically separated in the $y$-dimension,
 so the denominator never approaches zero.
 
@@ -1076,16 +1076,16 @@ so the denominator never approaches zero.
 After deploying a measurement device,
 several checks may be required before the drift and diffusion
 parameters can be estimated reliably.
-
-During this initial period, the estimates can be stabilized
+During this initial period, parameter estimates can be stabilized
 by pooling information across similar devices in a monitoring network.
-We propose using an empirical-Bayes approach with conjugate priors to obtain a closed-form 
-expression for the prior, which shrinks the individual estimate toward the network (population) mean.
+We propose using an empirical-Bayes approach with conjugate priors
+to obtain closed-form shrinkage estimators,
+so named because they ``shrink'' or pull the device-specific
+parameter estimates toward the network (population) mean.
 
+For notational convenience, we omit the index $k \in {f,d}$ for fouling and drift in this section.
 Let $\hat{\sigma}_j^2$ be the maximum-likelihood diffusion estimate for device $j \in \{1,\ldots,J\}$,
-and let $K_j$ be the number of checks for that particular device.
-
-% \sigma
+and let $K_j$ be the number of checks for device $j$.
 Let the population hyperparameters be
 %
 \begin{equation}
@@ -1106,7 +1106,7 @@ Let the population hyperparameters be
     \text{.}
 \end{equation}
 %
-Assume a normal-inverse-gamma prior on the device-drift rate and diffusion rate,
+and assume a normal-inverse-gamma prior on the device-drift rate and diffusion rate,
 %
 \begin{equation}
     \sigma_j^2 \sim \operatorname{IG}(\alpha_{\sigma},\, \beta_{\sigma})
@@ -1129,7 +1129,7 @@ the marginal log-likelihood for $\Theta$ is
         - \frac{1}{2} \ln\left(\kappa_{\sigma} + K_j\right)
         + \ln \Gamma\left(\alpha_{\sigma} + \frac{K_j}{2}\right)
           - \left(\alpha_{\sigma} + \frac{K_j}{2}\right)
-            \ln \psi_j
+            \ln \psi_j(\Theta)
     \right)
     \label{eq:hierarchical_likelihood_sigma}
     \text{,}
@@ -1138,16 +1138,15 @@ the marginal log-likelihood for $\Theta$ is
 where
 %
 \begin{equation}
-    \psi_j :=
+    \psi_j(\Theta) :=
                 \beta_{\sigma} + \frac{K_j \hat{\sigma}_j^2}{2}
                 + \frac{\kappa_{\sigma} K_j (\hat{\mu}_j - \mu_0)^2}
                      {2(\kappa_{\sigma} + K_j)}
-    \text{,}
+    \text{.}
 \end{equation}
 %
-After computing $\hat{\Theta}$,
-the empirical-Bayes shrinkage estimator for
-the drift rate is
+After maximizing the marginal likelihood to obtain $\hat{\Theta}$,
+the empirical-Bayes shrinkage estimator for the drift rate is the posterior mean
 %
 \begin{equation}
     \tilde{\mu}_j = w_j \hat{\mu}_j + (1 - w_j) \hat{\mu}_0
@@ -1161,14 +1160,12 @@ and the shrinkage estimator for the diffusion rate is the posterior mean
 %
 \begin{equation}
    \tilde{\sigma}_j^2 = 
-   \frac{\hat{\psi}_j}
+   \frac{\hat{\psi}_j(\hat{\Theta})}
         {\hat{\alpha}_{\sigma} + \frac{K_j}{2} - 1}
-    \text{,}            
+    \text{.}            
 \end{equation}
 %
-where $\hat{\psi}_j$ is $\psi_j$ evaluated at the estimated hyperparameters.
 
-% \eta
 For the $y$-dimension diffusion parameter $\eta$,
 we assume an inverse-gamma prior on the device-diffusion rate,
 %
@@ -1198,8 +1195,8 @@ Omitting additive constants, the marginal log-likelihood for $(\alpha_{\eta}, \b
     \label{eq:hierarchical_likelihood_eta}
 \end{equation}  
 %
-Given the maximum likelihood estimate for $\hat{\eta}_j^2$,
-the empirical-Bayes shrinkage estimate is
+After maximizing the marginal likelihood to obtain $(\hat{\alpha}_{\eta}, \hat{\beta}_{\eta})$,
+the empirical-Bayes shrinkage estimator is
 %
 \begin{equation}
    \tilde{\eta}_j^2 = w_j \hat{\eta}_j^2 + (1 - w_j) \hat{\bar{\eta}}^2
@@ -1209,18 +1206,18 @@ the empirical-Bayes shrinkage estimate is
     \text{,}            
 \end{equation}
 %
-where $\hat{\bar{\eta}}^2$ is the estimated prior mean.
+where $\hat{\bar{\eta}}^2 := \hat{\beta}_{\eta}/(\hat{\alpha}_{\eta} - 1)$.
 
-In practice, per-device estimates for
+In practice, the per-device estimates
 $\hat{\sigma}_j^2$, $\hat{\eta}_j^2$, $\hat{\mu}_j$, $\tilde{\mu}_j$, and $\tilde{\eta}_j^2$
 can be recomputed after each check,
-whereas the population hyperparameters 
+whereas the population hyperparameters
 $(\hat{\mu}_0, \hat{\kappa}_{\sigma}, \hat{\alpha}_{\sigma}, \hat{\beta}_{\sigma}, \hat{\alpha}_{\eta}, \hat{\beta}_{\eta})$
 may be updated less frequently.
-The main limitation of our Empirical-Bayes approach is that
-the inverse-gamma prior is known to be suboptimal \citep{Gelman_2006}.
+The main limitation of our empirical-Bayes approach is that the inverse-gamma prior
+is known to be suboptimal \citep{Gelman_2006}.
 Nevertheless, its closed-form shrinkage estimator is advantageous for large, real-time monitoring networks.
-Otherwise, each new check measurement incurs a significant computational cost.
+Fully Bayesian approaches, while more accurate, are computationally expensive to rerun after each check.
 
 \section{Data Requirements}
 
