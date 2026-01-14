@@ -1076,6 +1076,7 @@ so the denominator never approaches zero.
 After deploying a measurement device,
 several checks may be required before the drift and diffusion
 parameters can be estimated reliably.
+
 During this initial period, the estimates can be stabilized
 by pooling information across similar devices in a monitoring network.
 We propose using an empirical-Bayes approach with conjugate priors to obtain a closed-form 
@@ -1123,19 +1124,25 @@ the marginal log-likelihood for $\Theta$ is
     \sum_{j=1}^{J}
     \left(
         \frac{1}{2} \ln(\kappa_{\sigma})
-        - \alpha_{\sigma} \ln(\beta_{\sigma})
+        + \alpha_{\sigma} \ln(\beta_{\sigma})
         - \ln \Gamma(\alpha_{\sigma})
         - \frac{1}{2} \ln\left(\kappa_{\sigma} + K_j\right)
         + \ln \Gamma\left(\alpha_{\sigma} + \frac{K_j}{2}\right)
           - \left(\alpha_{\sigma} + \frac{K_j}{2}\right)
-            \ln\left(
+            \ln \psi_j
+    \right)
+    \label{eq:hierarchical_likelihood_sigma}
+    \text{,}
+\end{equation}
+%
+where
+%
+\begin{equation}
+    \psi_j :=
                 \beta_{\sigma} + \frac{K_j \hat{\sigma}_j^2}{2}
                 + \frac{\kappa_{\sigma} K_j (\hat{\mu}_j - \mu_0)^2}
                      {2(\kappa_{\sigma} + K_j)}
-              \right)
-    \right)
     \text{,}
-    \label{eq:hierarchical_likelihood_sigma}
 \end{equation}
 %
 After computing $\hat{\Theta}$,
@@ -1154,11 +1161,12 @@ and the shrinkage estimator for the diffusion rate is the posterior mean
 %
 \begin{equation}
    \tilde{\sigma}_j^2 = 
-   \frac{\hat{\beta}_{\sigma} + \frac{K_j \hat{\sigma}_j^2}{2} 
-         + \frac{\hat{\kappa}_{\sigma} K_j (\hat{\mu}_j - \hat{\mu}_0)^2}{2(\hat{\kappa}_{\sigma} + K_j)}}
+   \frac{\hat{\psi}_j}
         {\hat{\alpha}_{\sigma} + \frac{K_j}{2} - 1}
-    \text{.}            
+    \text{,}            
 \end{equation}
+%
+where $\hat{\psi}_j$ is $\psi_j$ evaluated at the estimated hyperparameters.
 
 % \eta
 For the $y$-dimension diffusion parameter $\eta$,
@@ -1172,13 +1180,11 @@ we assume an inverse-gamma prior on the device-diffusion rate,
     \beta_{\eta} > 0
 \end{equation}
 %
-with mean $\mathbb{E}[\eta^2] = \beta_{\eta}/(\alpha_{\eta} - 1)$.
-
-The marginal log-likelihood for $(\alpha_{\eta}, \beta_{\eta})$,
-which, omitting additive constants, is
+with mean $\bar{\eta}^2 := \mathbb{E}[\eta^2] = \beta_{\eta}/(\alpha_{\eta} - 1)$.
+Omitting additive constants, the marginal log-likelihood for $(\alpha_{\eta}, \beta_{\eta})$ is
 %
 \begin{equation}
-    \ln \mathcal{L} (\eta \mid \alpha_{\eta}, \beta_{\eta})
+    \ln \mathcal{L} (\alpha_{\eta}, \beta_{\eta})
     =
     \sum_{j=1}^{J}
     \left(
@@ -1192,18 +1198,18 @@ which, omitting additive constants, is
     \label{eq:hierarchical_likelihood_eta}
 \end{equation}  
 %
-
 Given the maximum likelihood estimate for $\hat{\eta}_j^2$,
 the empirical-Bayes shrinkage estimate is
 %
 \begin{equation}
-   \tilde{\eta}_j^2 = w_j \hat{\eta}_j^2 + (1 - w_j) \frac{\hat{\beta}_{\eta}}{\hat{\alpha}_{\eta} - 1}
+   \tilde{\eta}_j^2 = w_j \hat{\eta}_j^2 + (1 - w_j) \hat{\bar{\eta}}^2
    \text{,} \qquad
     w_j =  \frac{K_j}
                 {K_j + 2(\hat{\alpha}_{\eta} - 1)}
-    \text{.}            
+    \text{,}            
 \end{equation}
-
+%
+where $\hat{\bar{\eta}}^2$ is the estimated prior mean.
 
 In practice, per-device estimates for
 $\hat{\sigma}_j^2$, $\hat{\eta}_j^2$, $\hat{\mu}_j$, $\tilde{\mu}_j$, and $\tilde{\eta}_j^2$
