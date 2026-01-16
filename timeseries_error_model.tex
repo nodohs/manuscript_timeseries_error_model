@@ -320,7 +320,7 @@ The drift term $\mu$ represents the mean rate of change
 and is important for devices that gradually lose responsiveness due
 to the degradation of their components over time,
 like the chemical degradation of reagents in a colorimetric analyzer.
-Note that the reset is ``soft'' in the sense that
+Also note that the reset is ``soft'' in the sense that
 the error is not known exactly:
 when $\delta_{k-1}=0$ we set $\mathbb{E}[E_{k-1}]=0$ but retain the check variance
 $\operatorname{Var}[E_{k-1}]=v_{k-1}$.
@@ -1099,10 +1099,10 @@ to obtain closed-form shrinkage estimators,
 so named because they ``shrink'' or pull the device-specific
 parameter estimates toward the network (population) mean.
 
-For notational convenience, we omit the index $k \in {f,d}$ for fouling and drift in this section.
+For brevity, we omit the index $k \in \{f,d\}$ for fouling and drift in this section.
 Let $\hat{\sigma}_j^2$ be the maximum-likelihood diffusion estimate for device $j \in \{1,\ldots,J\}$,
 and let $K_j$ be the number of checks for device $j$.
-Let the population hyperparameters be
+Let the population prior hyperparameters be
 %
 \begin{equation}
     \Theta := {
@@ -1130,6 +1130,8 @@ and assume a normal-inverse-gamma prior on the device-drift rate and diffusion r
     \mu_j \mid \sigma_j^2 \sim \mathcal{N}\left(\mu_0,\, \frac{\sigma_j^2}{\kappa_0}\right)
     \text{.}
 \end{equation}
+%
+with mean $\sigma_0^2 := \mathbb{E}[\sigma^2] = \beta_0/(\alpha_0 - 1)$.
 %
 Omitting the additive constants,
 the marginal log-likelihood for $\Theta$ is
@@ -1161,7 +1163,7 @@ where
     \text{.}
 \end{equation}
 %
-After maximizing the marginal likelihood to obtain $\hat{\Theta}$,
+After maximizing the marginal likelihood to obtain parameter estimates $\hat{\Theta}$,
 the empirical-Bayes shrinkage estimator for the drift rate is the posterior mean
 %
 \begin{equation}
@@ -1175,7 +1177,7 @@ the empirical-Bayes shrinkage estimator for the drift rate is the posterior mean
 and the shrinkage estimator for the diffusion rate is the posterior mean
 %
 \begin{equation}
-   \tilde{\sigma}_j^2 = 
+   \tilde{\sigma}_j^2 =
    \frac{\hat{\beta}_j}
         {\hat{\alpha}_0 + \frac{K_j}{2} - 1}
     \text{.}            
@@ -1186,51 +1188,54 @@ For the $y$-dimension diffusion parameter $\eta$,
 we assume an inverse-gamma prior on the device-diffusion rate,
 %
 \begin{equation}
-    \eta_j^2 \sim \operatorname{IG}(\alpha_1,\, \beta_1)
+    \eta_j^2 \sim \operatorname{IG}(\alpha_0,\, \beta_0)
     \text{,} \qquad
-    \alpha_1 > 1
+    \alpha_0 > 1
     \text{,} \quad
-    \beta_1 > 0
+    \beta_0 > 0
 \end{equation}
 %
-with mean $\bar{\eta}^2 := \mathbb{E}[\eta^2] = \beta_1/(\alpha_1 - 1)$.
+with mean $\eta_0^2 := \mathbb{E}[\eta^2] = \beta_0/(\alpha_0 - 1)$.
+Subscripts are omitted for brevity,
+but these are not the time-dimension priors
+(i.e., $\alpha_{0,\sigma} \ne \alpha_{0,\eta}$).
+
 Let $N_j$ be the total number of standard intervals used to estimate $\hat{\eta}_j^2$
 (i.e., the total count of adjacent standard pairs across all checks for device $j$).
-Omitting additive constants, the marginal log-likelihood for $(\alpha_1, \beta_1)$ is
+Omitting additive constants, the marginal log-likelihood for $(\alpha_0, \beta_0)$ is
 %
 \begin{equation}
-    \ln \mathcal{L} (\alpha_1, \beta_1)
+    \ln \mathcal{L} (\alpha_0, \beta_0)
     =
     \sum_{j=1}^{J}
     \left(
-        \alpha_1 \ln(\beta_1)
-        - \ln \Gamma(\alpha_1)
-        - \left(\alpha_1 + \frac{N_j}{2}\right)
-                    \ln\left(\beta_1 + \frac{N_j \hat{\eta}_j^2}{2} \right)
-        + \ln \Gamma\left(\alpha_1 + \frac{N_j}{2}\right)
+        \alpha_0 \ln(\beta_0)
+        - \ln \Gamma(\alpha_0)
+        - \left(\alpha_0 + \frac{N_j}{2}\right)
+                    \ln\left(\beta_0 + \frac{N_j \hat{\eta}_j^2}{2} \right)
+        + \ln \Gamma\left(\alpha_0 + \frac{N_j}{2}\right)
     \right)
     \text{.}
     \label{eq:hierarchical_likelihood_eta}
 \end{equation}  
 %
-After maximizing the marginal likelihood to obtain $(\hat{\alpha}_1, \hat{\beta}_1)$,
+After maximizing the marginal likelihood to obtain $(\hat{\alpha}_0, \hat{\beta}_0)$,
 the empirical-Bayes shrinkage estimator is
 %
 \begin{equation}
-   \tilde{\eta}_j^2 = w_j \hat{\eta}_j^2 + (1 - w_j) \hat{\bar{\eta}}^2
+    \tilde{\eta}_j^2 = w_j \hat{\eta}_j^2 + (1 - w_j) \hat{\eta}_0^2
    \text{,} \qquad
     w_j =  \frac{N_j}
-                {N_j + 2(\hat{\alpha}_1 - 1)}
+                     {N_j + 2(\hat{\alpha}_0 - 1)}
     \text{,}            
 \end{equation}
 %
-where $\hat{\bar{\eta}}^2 := \hat{\beta}_1/(\hat{\alpha}_1 - 1)$.
-
+where $\hat{\eta}_0^2 := \hat{\beta}_0/(\hat{\alpha}_0 - 1)$.
 In practice, the per-device estimates
 $\tilde{\mu}_j$, $\tilde{\sigma}_j^2$ and $\tilde{\eta}_j^2$
 can be recomputed after each check,
 whereas the population hyperparameters
-$(\hat{\mu}_0, \hat{\kappa}_0, \hat{\alpha}_0, \hat{\beta}_0, \hat{\alpha}_1, \hat{\beta}_1)$
+$(\hat{\mu}_0, \hat{\kappa}_0, \hat{\alpha}_0, \hat{\beta}_0)$
 may be updated less frequently.
 The main limitation of our empirical-Bayes approach is that the inverse-gamma prior
 is known to be suboptimal \citep{Gelman_2006}.
