@@ -154,7 +154,7 @@ This correction procedure is mathematically equivalent to modeling the error
 as a Wiener process conditioned on the check measurements.
 Under this assumption, we derive closed-form expressions for the conditional mean
 and variance of the error,
-which correspond to a special case of time-continuous Kalman filtering-and-smoothing.
+which correspond to a special case of time-continuous Kalman filtering and smoothing.
 We then extend the model to multipoint calibrations
 and monitoring networks of similar devices.
 The result is a transparent and tractable framework for estimating
@@ -284,11 +284,11 @@ observations $e_{k-1}$ and $e_k$.
 Throughout, the index $k$ will be substituted with $f$ and $d$
 to denote fouling and calibration-drift checks, respectively.
 
-We assume the fouling or calibration-drift error evolve as a continuous-time
+We assume the fouling or calibration-drift error evolves as a continuous-time
 stochastic process, defined by
 %
 \begin{equation}
-    E_t = \delta_{k-1} E_{k-1} + \mu (t - t_{k-1}) + \sigma W_t
+    E_t = \delta_{k-1} E_{k-1} + \mu (t - t_{k-1}) + \sigma \left(W_t - W_{t_{k-1}}\right)
     \text{,}
 \end{equation}
 %
@@ -309,10 +309,10 @@ where $\delta_{k-1}$ indicates whether the error process was reset during the pr
 %specified by its mean and variance,
 $\mu$ is the ``drift'' rate (mean change per unit time),
 $\sigma$ is the ``diffusion'' rate,
-and $W_t$ is a standard Wiener process,
+and $W_t$ is a standard Wiener process, so its increment satisfies
 %
 \begin{equation}
-    W_t \sim \mathcal{N}(0,\, t - t_{k-1})
+    W_t - W_{t_{k-1}} \sim \mathcal{N}(0,\, t - t_{k-1})
     \qquad \text{\citep{Taylor_1998}.}
 \end{equation}
 %
@@ -320,8 +320,12 @@ The drift term $\mu$ represents the mean rate of change
 and is important for devices that gradually lose responsiveness due
 to the degradation of their components over time,
 like the chemical degradation of reagents in a colorimetric analyzer.
+Note that the reset is ``soft'' in the sense that
+the error is not known exactly:
+when $\delta_{k-1}=0$ we set $\mathbb{E}[E_{k-1}]=0$ but retain the check variance
+$\operatorname{Var}[E_{k-1}]=v_{k-1}$.
 
-The timeseries $E_t$ is subdivided into intervals that are bracketed by check measurements.
+The time series $E_t$ is subdivided into intervals that are bracketed by check measurements.
 An interval bracketed by a single check is called ``open.''
 For example, the interval after the last check ($t > t_K$) is open until
 the next check occurs sometime in the future ($t_{K+1}$).
@@ -436,7 +440,7 @@ and letting $\zeta^+_k(t)$ be a drift factor, extended by
 \begin{equation}
     \zeta^+_k(t) :=
     \begin{cases}
-        (t_{1} - t), & t < t_{1} \\
+        (t - t_{1}), & t < t_{1} \\
         0 , & t \in [t_{k-1}, t_{k}] \\
         (t - t_{K}), & t > t_{K}
     \end{cases}
@@ -444,7 +448,7 @@ and letting $\zeta^+_k(t)$ be a drift factor, extended by
 \end{equation}
 so the drift term is set to zero for closed intervals.
 %
-Then conditional mean and variance can be written without superscripts
+The conditional mean and variance can be written without superscripts
 ($m^o$, $m^c$, etc.) as
 %
 \begin{align}
@@ -563,7 +567,7 @@ For open intervals, this reduces to
 $ \tilde{v}^o_k(t) = v_{k-1}$,
 which is constant in time.
 
-The next sections derive variance formula for the
+The next sections derive variance formulas for the
 fouling and calibration-drift checks,
 $v_{f}$ and $v_{d}$,
 to use in Equation~\ref{eq:check_constant_variance}.
@@ -629,8 +633,8 @@ such that the before-and-after errors cancel and the check variance is zero,
     \text{.}
 \end{equation}
 %
-Similarly, for the reference device, if it also uses filtering.
-Otherwise, we assume its errors are independent,
+Similarly for the reference device if it also uses filtering; otherwise,
+we assume its errors are independent,
 and the check variance is given by
 %
 \begin{equation}
@@ -650,7 +654,7 @@ or $2\sigma_r^2$ (if the errors are independent).
 \subsection{Calibration-Check Uncertainty}
 
 For a calibration check, 
-the standard and measurement have known precisions $\sigma_s$ and $\sigma_m$
+the standard and measurement device have known precisions $\sigma_s$ and $\sigma_m$
 and independent errors,
 %
 \begin{equation}
@@ -714,7 +718,8 @@ Let $z_s$ denote the standard values for $s = 1, 2, \ldots, S$,
 let $E_{k,s} := E(t_k,\, z_s)$ be the error at time $t_k$ and standard $z_s$,
 and let $e_{k,s}$ be its realization.
 Given check-measurement errors $e_{k,s-1}$ and $e_{k,s}$,
-the conditional mean of the $y$-bridge at time $t_k$ is given by
+the conditional mean of the $y$-bridge at time $t_k$ is
+a linear interpolation between the standards,
 %
 \begin{align}
 m_{k}(y) &:= \mathbb{E} \left[
@@ -732,7 +737,7 @@ m_{k}(y) &:= \mathbb{E} \left[
 \text{,}
 \end{align}
 %
-which linearly interpolates between the standard values.
+where $\lambda^+_s$ and $\phi^+_s$ are defined analogously to $\lambda^+_k$ and $\phi^+_k$.
 Unlike the time-bridge, the $y$-bridge has no drift or reset terms ($\delta$, $\mu$).
 The conditional variance of the $y$-bridge at time $t_k$ is
 %
@@ -806,10 +811,10 @@ Expanding the right-hand side yields
 which satisfies the conditions for the four check points,
 %
 \begin{align}
-    m_k(t_{k-1}, y_{s-1}) &=  \delta_{k-1}e_{k-1,s-1} \text{,} \notag \\
-    m_k(t_{k-1}, y_{s})   &=  \delta_{k-1}e_{k-1,s} \text{,} \notag \\
-    m_k(t_{k}, y_{s-1})   &=  e_{k,s-1} \text{,} \notag \\
-    m_k(t_{k}, y_{s})     &=  e_{k,s} \text{.}
+    m_k(t_{k-1}, z_{s-1}) &=  \delta_{k-1}e_{k-1,s-1} \text{,} \notag \\
+    m_k(t_{k-1}, z_{s})   &=  \delta_{k-1}e_{k-1,s} \text{,} \notag \\
+    m_k(t_{k}, z_{s-1})   &=  e_{k,s-1} \text{,} \notag \\
+    m_k(t_{k}, z_{s})     &=  e_{k,s} \text{.}
 \end{align}
 %
 To derive the conditional variance,
@@ -819,6 +824,8 @@ into the equation for a time bridge with uncertain endpoints
 (Equation~\ref{eq:variance_uncertain_bridge})
 %
 \begin{align}
+    \dot{v}_k(t,y)
+    :=
     \operatorname{Var}\left[
         E_{t,y}\,\mid\,
         \mathcal{C}
@@ -836,7 +843,9 @@ into the equation for a time bridge with uncertain endpoints
 Expanding the right-hand side yields
 %
 \begin{align}
-    \tilde{v}_k(t,y) &:=
+    \dot{v}_k(t,y)
+    &=
+    %\tilde{v}_k(t,y) &:=
         \left((1 - \lambda^+_k(t))^2,\; \lambda^+_k(t)^2\right)
         \begin{bmatrix}
             v_{k-1,s-1} & v_{k-1,s} \\
@@ -857,31 +866,32 @@ Expanding the right-hand side yields
 which satisfies the four boundary conditions
 %
 \begin{align}
-    \tilde{v}_k(t, y_{s-1})   &=    (1 - \lambda^+_k(t))^2 v_{k-1,s-1}
+    \dot{v}_k(t,z_{s-1})    &=  (1 - \lambda^+_k(t))^2 v_{k-1,s-1}
                                     + \lambda^+_k(t)^2 v_{k,s-1}
                                     + \sigma^2_k \phi^+_k(t)
                                     \text{,} \notag \\
-    \tilde{v}_k(t, y_{s})     &=    (1 - \lambda^+_k(t))^2 v_{k-1,s}
+    \dot{v}_k(t,z_{s})      &=  (1 - \lambda^+_k(t))^2 v_{k-1,s}
                                     + \lambda^+_k(t)^2 v_{k,s}
                                     + \sigma^2_k \phi^+_k(t)
                                     \text{,} \notag \\
-    \tilde{v}_k(t_{k-1}, y)   &=    (1 - \lambda^+_s(y))^2 v_{k-1,s-1}
+    \dot{v}_k(t_{k-1},y)    &=  (1 - \lambda^+_s(y))^2 v_{k-1,s-1}
                                     + \lambda^+_s(y)^2 v_{k-1,s}
                                     + \eta^2 \phi^+_s(y)
                                     \text{,} \notag \\
-    \tilde{v}_k(t_{k}, y)     &=    (1 - \lambda^+_s(y))^2 v_{k,s-1} 
+    \dot{v}_k(t_{k},y)      &=  (1 - \lambda^+_s(y))^2 v_{k,s-1} 
                                     + \lambda^+_s(y)^2 v_{k,s}
                                     + \eta^2 \phi^+_s(y)
     \text{,}
 \end{align}
 %
-each being a one-dimensional Gaussian bridge.
+each being a one-dimensional Gaussian bridge in its respective dimension.
 
 Another application of a multipoint check is to apply a percentage correction
 using a single reference value.
 This is common in fouling checks where the only available reference is the post-cleaning value.
 For consistency with the multipoint notation,
-let this check value be at $z_s$ with error $e_s$ and variance $v_s$.
+let this check value be at $z_s$ with errors $e_{k-1,s}$ and $e_{k,s}$
+and (for simplicity) equal variances $v_s$ at both times.
 Here, we may apply a percentage or absolute correction depending on the device characteristics.
 For an absolute correction,
 we apply the appropriate formula from previous sections
@@ -900,17 +910,22 @@ Substituting back into the conditional mean (Equation~\ref{eq:multi_check_mean})
 %
 and the conditional variance (Equation~\ref{eq:multi_check_variance}) gives 
 \begin{equation}
-    v_k(t,y) = \left(\frac{y}{z_s}\right)^2 v_s + \eta^2 \frac{y(z_s - y)}{z_s}
-    \text{.}
+    \dot{v}_k(t,y) = \left((1 - \lambda^+_k(t))^2 + \lambda^+_k(t)^2\right)
+    \left[
+        \left(\frac{y}{z_s}\right)^2 v_s + \eta^2 \frac{y(z_s - y)}{z_s}
+    \right]
+    + \sigma^2_k \phi^+_k(t)
+    \text{;}
 \end{equation}
+in implementation, we could use the general forms given earlier.   
 %
 
 \section{Combined Error}
 
-Recall that the fouling and calibration-drift variance has two components:
+Recall that the fouling and calibration-drift variances have two components:
 %
 \begin{equation}
-    \dot{v}_k := \operatorname{Var}\!\left[E_k\right] = v_k(t) + \tilde v_k(t)
+    \dot{v}_k(t) := \operatorname{Var}\!\left[E_t\right] = v_k(t) + \tilde v_k(t)
     \text{,}
 \end{equation}
 %
@@ -1005,18 +1020,19 @@ are estimated by maximizing the Gaussian log-likelihood function
 %
 
 For the special case of no observational uncertainty,
-$v_k = v_r \equiv 0$,
+$v_{k-1} = v_k \equiv 0$,
 the drift and diffusion parameters have closed-form maximum-likelihood estimators,
 %
 \begin{equation}
-    \hat{\mu}_k = \frac{\sum_{k=1}^{K} e_k - \delta_{k-1} e_{k-1}}
+    \hat{\mu}_k = \frac{\sum_{k=1}^{K} (e_k - \delta_{k-1} e_{k-1})}
                        {\sum_{k=1}^{K} (t_k - t_{k-1})}
 \end{equation}
 %
 and
 %
 \begin{equation}
-    \hat{\sigma}_k^2 = \frac{1}{K}{\sum_{k=1}^{K} \frac{r_k^2}{t_k - t_{k-1}}}
+    \hat{\sigma}_k^2 = \frac{1}{K}
+                       \sum_{k=1}^{K} \frac{r_k^2}{t_k - t_{k-1}}
     \text{;}
 \end{equation}
 %
@@ -1028,7 +1044,7 @@ the residual and its variance are given by
 %
 \begin{align}
     r_{k,s} &= e_{k,s} - e_{k,s-1} \\
-    u_{k,s} &= \eta^2 (z_{k,s} - z_{k,s-1})
+    u_{k,s} &= \eta^2 (z_{s} - z_{s-1})
                 + v_{k,s} + v_{k,s-1}
     \text{,}
 \end{align}
@@ -1067,7 +1083,7 @@ the maximum-likelihood estimator for $\eta$ is
 \end{equation}
 %
 where $N = \sum_{k=1}^{K} (S_k - 1)$.
-This estimator is better conditioned than $\hat{\sigma}$,
+This estimator is better conditioned than $\hat{\sigma}^2$,
 because calibration standards are typically separated in the $y$-dimension,
 so the denominator never approaches zero.
 
@@ -1091,27 +1107,27 @@ Let the population hyperparameters be
 \begin{equation}
     \Theta := {
         \mu_0,\,
-        \kappa_{\sigma},\,
-        \alpha_{\sigma},\,
-        \beta_{\sigma}
+        \kappa_0,\,
+        \alpha_0,\,
+        \beta_0
     }
     \text{,} \qquad
     \mu_0 \in \mathbb{R}
     \text{,} \quad
-    \kappa_{\sigma} > 0
+    \kappa_0 > 0
     \text{,} \quad
-    \alpha_{\sigma} > 1
+    \alpha_0 > 1
     \text{,} \quad
-    \beta_{\sigma} > 0
+    \beta_0 > 0
     \text{.}
 \end{equation}
 %
 and assume a normal-inverse-gamma prior on the device-drift rate and diffusion rate,
 %
 \begin{equation}
-    \sigma_j^2 \sim \operatorname{IG}(\alpha_{\sigma},\, \beta_{\sigma})
+    \sigma_j^2 \sim \operatorname{IG}(\alpha_0,\, \beta_0)
     \text{,} \qquad
-    \mu_j \mid \sigma_j^2 \sim \mathcal{N}\left(\mu_0,\, \frac{\sigma_j^2}{\kappa_{\sigma}}\right)
+    \mu_j \mid \sigma_j^2 \sim \mathcal{N}\left(\mu_0,\, \frac{\sigma_j^2}{\kappa_0}\right)
     \text{.}
 \end{equation}
 %
@@ -1123,13 +1139,13 @@ the marginal log-likelihood for $\Theta$ is
     =
     \sum_{j=1}^{J}
     \left(
-        \frac{1}{2} \ln(\kappa_{\sigma})
-        + \alpha_{\sigma} \ln(\beta_{\sigma})
-        - \ln \Gamma(\alpha_{\sigma})
-        - \frac{1}{2} \ln\left(\kappa_{\sigma} + K_j\right)
-        + \ln \Gamma\left(\alpha_{\sigma} + \frac{K_j}{2}\right)
-          - \left(\alpha_{\sigma} + \frac{K_j}{2}\right)
-            \ln \psi_j(\Theta)
+        \frac{1}{2} \ln(\kappa_0)
+        + \alpha_0 \ln(\beta_0)
+        - \ln \Gamma(\alpha_0)
+        - \frac{1}{2} \ln\left(\kappa_0 + K_j\right)
+        + \ln \Gamma\left(\alpha_0 + \frac{K_j}{2}\right)
+          - \left(\alpha_0 + \frac{K_j}{2}\right)
+            \ln \beta_j
     \right)
     \label{eq:hierarchical_likelihood_sigma}
     \text{,}
@@ -1138,10 +1154,10 @@ the marginal log-likelihood for $\Theta$ is
 where
 %
 \begin{equation}
-    \psi_j(\Theta) :=
-                \beta_{\sigma} + \frac{K_j \hat{\sigma}_j^2}{2}
-                + \frac{\kappa_{\sigma} K_j (\hat{\mu}_j - \mu_0)^2}
-                     {2(\kappa_{\sigma} + K_j)}
+    \beta_j :=  
+        \beta_0 + \frac{K_j \hat{\sigma}_j^2}{2}
+        + \frac{\kappa_0 K_j (\hat{\mu}_j - \mu_0)^2}
+        {2(\kappa_0 + K_j)}
     \text{.}
 \end{equation}
 %
@@ -1152,7 +1168,7 @@ the empirical-Bayes shrinkage estimator for the drift rate is the posterior mean
     \tilde{\mu}_j = w_j \hat{\mu}_j + (1 - w_j) \hat{\mu}_0
     \text{,} \qquad
     w_j =  \frac{K_j}
-                {K_j + \hat{\kappa}_{\sigma}}
+                {K_j + \hat{\kappa}_0}
     \text{,}
 \end{equation}
 %
@@ -1160,8 +1176,8 @@ and the shrinkage estimator for the diffusion rate is the posterior mean
 %
 \begin{equation}
    \tilde{\sigma}_j^2 = 
-   \frac{\hat{\psi}_j(\hat{\Theta})}
-        {\hat{\alpha}_{\sigma} + \frac{K_j}{2} - 1}
+   \frac{\hat{\beta}_j}
+        {\hat{\alpha}_0 + \frac{K_j}{2} - 1}
     \text{.}            
 \end{equation}
 %
@@ -1170,49 +1186,51 @@ For the $y$-dimension diffusion parameter $\eta$,
 we assume an inverse-gamma prior on the device-diffusion rate,
 %
 \begin{equation}
-    \eta_j^2 \sim \operatorname{IG}(\alpha_{\eta},\, \beta_{\eta})
+    \eta_j^2 \sim \operatorname{IG}(\alpha_1,\, \beta_1)
     \text{,} \qquad
-    \alpha_{\eta} > 1
+    \alpha_1 > 1
     \text{,} \quad
-    \beta_{\eta} > 0
+    \beta_1 > 0
 \end{equation}
 %
-with mean $\bar{\eta}^2 := \mathbb{E}[\eta^2] = \beta_{\eta}/(\alpha_{\eta} - 1)$.
-Omitting additive constants, the marginal log-likelihood for $(\alpha_{\eta}, \beta_{\eta})$ is
+with mean $\bar{\eta}^2 := \mathbb{E}[\eta^2] = \beta_1/(\alpha_1 - 1)$.
+Let $N_j$ be the total number of standard intervals used to estimate $\hat{\eta}_j^2$
+(i.e., the total count of adjacent standard pairs across all checks for device $j$).
+Omitting additive constants, the marginal log-likelihood for $(\alpha_1, \beta_1)$ is
 %
 \begin{equation}
-    \ln \mathcal{L} (\alpha_{\eta}, \beta_{\eta})
+    \ln \mathcal{L} (\alpha_1, \beta_1)
     =
     \sum_{j=1}^{J}
     \left(
-        \alpha_{\eta} \ln(\beta_{\eta})
-        - \ln \Gamma(\alpha_{\eta})
-        - \left(\alpha_{\eta} + \frac{K_j}{2}\right)
-                    \ln\left(\beta_{\eta} + \frac{K_j \hat{\eta}_j^2}{2} \right)
-        + \ln \Gamma\left(\alpha_{\eta} + \frac{K_j}{2}\right)
+        \alpha_1 \ln(\beta_1)
+        - \ln \Gamma(\alpha_1)
+        - \left(\alpha_1 + \frac{N_j}{2}\right)
+                    \ln\left(\beta_1 + \frac{N_j \hat{\eta}_j^2}{2} \right)
+        + \ln \Gamma\left(\alpha_1 + \frac{N_j}{2}\right)
     \right)
     \text{.}
     \label{eq:hierarchical_likelihood_eta}
 \end{equation}  
 %
-After maximizing the marginal likelihood to obtain $(\hat{\alpha}_{\eta}, \hat{\beta}_{\eta})$,
+After maximizing the marginal likelihood to obtain $(\hat{\alpha}_1, \hat{\beta}_1)$,
 the empirical-Bayes shrinkage estimator is
 %
 \begin{equation}
    \tilde{\eta}_j^2 = w_j \hat{\eta}_j^2 + (1 - w_j) \hat{\bar{\eta}}^2
    \text{,} \qquad
-    w_j =  \frac{K_j}
-                {K_j + 2(\hat{\alpha}_{\eta} - 1)}
+    w_j =  \frac{N_j}
+                {N_j + 2(\hat{\alpha}_1 - 1)}
     \text{,}            
 \end{equation}
 %
-where $\hat{\bar{\eta}}^2 := \hat{\beta}_{\eta}/(\hat{\alpha}_{\eta} - 1)$.
+where $\hat{\bar{\eta}}^2 := \hat{\beta}_1/(\hat{\alpha}_1 - 1)$.
 
 In practice, the per-device estimates
-$\hat{\sigma}_j^2$, $\hat{\eta}_j^2$, $\hat{\mu}_j$, $\tilde{\mu}_j$, and $\tilde{\eta}_j^2$
+$\tilde{\mu}_j$, $\tilde{\sigma}_j^2$ and $\tilde{\eta}_j^2$
 can be recomputed after each check,
 whereas the population hyperparameters
-$(\hat{\mu}_0, \hat{\kappa}_{\sigma}, \hat{\alpha}_{\sigma}, \hat{\beta}_{\sigma}, \hat{\alpha}_{\eta}, \hat{\beta}_{\eta})$
+$(\hat{\mu}_0, \hat{\kappa}_0, \hat{\alpha}_0, \hat{\beta}_0, \hat{\alpha}_1, \hat{\beta}_1)$
 may be updated less frequently.
 The main limitation of our empirical-Bayes approach is that the inverse-gamma prior
 is known to be suboptimal \citep{Gelman_2006}.
@@ -1235,14 +1253,14 @@ Implementing the bias-correction framework requires the following information.
 
 \conclusions  %% \conclusions[modified heading if necessary]
 
-Environmental timeseries are routinely affected by fouling and calibration drift,
+Environmental time series are routinely affected by fouling and calibration drift,
 which cause systematic bias.
 In practice, the measurement device must be periodically checked
 against known references, cleaned, and recalibrated.
-Later, these check measurements are used to correct the timeseries
+Later, these check measurements are used to correct the time series
 by interpolating between the errors observed at each check.
 Here, we formalize this correction procedure as a stochastic model
-to derive confidence intervals for the corrected timeseries.
+to derive confidence intervals for the corrected time series.
 We also extend the model to multipoint calibrations
 and to pooling information across monitoring networks of similar devices.
 
