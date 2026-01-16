@@ -92,23 +92,7 @@ def main() -> None:
     v_tot = v_check + v_proc
 
     # Publication-ready style
-    plt.rcParams.update(
-        {
-            "figure.dpi": 300,
-            "savefig.dpi": 300,
-            "font.size": 10,
-            "axes.titlesize": 11,
-            "axes.labelsize": 10,
-            "legend.fontsize": 9,
-            "xtick.labelsize": 9,
-            "ytick.labelsize": 9,
-            "font.family": "serif",
-            "mathtext.fontset": "cm",
-            "axes.linewidth": 0.8,
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-        }
-    )
+    plt.style.use("figures.mpstyle")
 
     # 12 cm width = 12/2.54 inches
     fig = plt.figure(figsize=(12/2.54, 7/2.54))
